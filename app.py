@@ -11,6 +11,7 @@
 # Supervisor) que construímos em V2.
 # ============================================================
 
+import os
 from pathlib import Path
 
 import pandas as pd
@@ -18,6 +19,7 @@ import streamlit as st
 
 from src.pipeline import CommercialPipeline
 from src.tools.company_data import BASE_PATH
+from src.agents.sdr_llm import SDRLLMAgent
 from src.presentation import (
     ORIGEM_LABEL,
     classificar_aderencia,
@@ -843,6 +845,46 @@ elif pagina == "🎯 Diagnóstico & Recomendação IA":
                 st.write("Alertas técnicos (originais):")
                 for alerta in avaliacao["alertas"]:
                     st.code(alerta, language=None)
+
+    st.divider()
+    st.subheader("🤖 Abordagem comercial gerada por IA")
+    st.caption(
+        "Usa a Claude API para transformar os dados acima em hipótese de "
+        "dor, perguntas de qualificação, argumentação e próxima ação — "
+        "em linguagem de SDR. Nunca inventa produto: só usa as "
+        "oportunidades já aprovadas acima. Cada clique é uma chamada "
+        "paga (~1-2 centavos de dólar) — por isso não é automático."
+    )
+
+    chave_estado = f"abordagem_ia_{lead.cnpj}"
+
+    if st.button("Gerar abordagem comercial com IA"):
+        if not os.environ.get("ANTHROPIC_API_KEY"):
+            st.error(
+                "ANTHROPIC_API_KEY não configurada nesta sessão. Defina "
+                "a variável de ambiente antes de iniciar o Streamlit."
+            )
+        else:
+            with st.spinner("Consultando a IA..."):
+                try:
+                    agente_llm = SDRLLMAgent()
+                    st.session_state[chave_estado] = agente_llm.gerar_abordagem(
+                        lead, qualidade, qualificacao, oportunidades
+                    )
+                except Exception as erro:
+                    st.error(f"Não foi possível gerar a abordagem: {erro}")
+
+    if chave_estado in st.session_state:
+        abordagem = st.session_state[chave_estado]
+
+        st.markdown(f"**Hipótese de dor:** {abordagem.hipotese_dor}")
+
+        st.markdown("**Perguntas de qualificação:**")
+        for pergunta in abordagem.perguntas_qualificacao:
+            st.markdown(f"- {pergunta}")
+
+        st.markdown(f"**Argumentação:** {abordagem.argumentacao}")
+        st.markdown(f"**Próxima ação:** {abordagem.proxima_acao}")
 
 
 # ------------------------------------------------------------
