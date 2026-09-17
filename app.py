@@ -16,6 +16,9 @@ from pathlib import Path
 
 import pandas as pd
 import streamlit as st
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from src.pipeline import CommercialPipeline
 from src.tools.company_data import BASE_PATH
