@@ -39,10 +39,16 @@ def preparar_base(base: pd.DataFrame) -> pd.DataFrame:
     df["cnpj_raiz"] = df["cnpj"].str[:8]
     df = df[df["cnpj"].ne("") & df["cnpj_raiz"].ne("")].copy()
 
-    if "POSSUI_SESI" not in df.columns:
-        df["POSSUI_SESI"] = _bool_col(df, "TEM_SESI")
-    if "POSSUI_SENAI" not in df.columns:
-        df["POSSUI_SENAI"] = _bool_col(df, "TEM_SENAI")
+    df["POSSUI_SESI"] = (
+        _bool_col(df, "POSSUI_SESI")
+        if "POSSUI_SESI" in df.columns
+        else _bool_col(df, "TEM_SESI")
+    )
+    df["POSSUI_SENAI"] = (
+        _bool_col(df, "POSSUI_SENAI")
+        if "POSSUI_SENAI" in df.columns
+        else _bool_col(df, "TEM_SENAI")
+    )
 
     df["POSSUI_SESI_SENAI"] = df["POSSUI_SESI"] & df["POSSUI_SENAI"]
     df["CLIENTE_SESI_SENAI"] = df["POSSUI_SESI"] | df["POSSUI_SENAI"]
