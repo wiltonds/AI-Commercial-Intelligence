@@ -24,6 +24,8 @@ from src.pipeline import CommercialPipeline
 from src.tools.company_data import BASE_PATH
 from src.tools.cnpj_raiz import consolidar_por_cnpj_raiz, resumir_consolidacao
 from src.agents.sdr_llm import SDRLLMAgent
+from painel_empresas_raiz import render_visao_raiz
+
 from src.presentation import (
     ORIGEM_LABEL,
     classificar_aderencia,
@@ -259,6 +261,7 @@ pagina = st.sidebar.radio(
     "Visões Disponíveis",
     [
         "📊 Visão Geral",
+        "🏢 Empresas (CNPJ raiz)",
         "🏭 Mercado",
         "🔵 Visão SESI",
         "🟠 Visão SENAI",
@@ -399,6 +402,13 @@ if pagina == "📊 Visão Geral":
     with col2:
         st.subheader("Distribuição por Porte")
         st.bar_chart(df_view["Porte"].value_counts())
+
+
+# ------------------------------------------------------------
+# 1A. VISÃO EMPRESARIAL — CNPJ RAIZ
+# ------------------------------------------------------------
+elif pagina == "🏢 Empresas (CNPJ raiz)":
+    render_visao_raiz(df_view)
 
 
 # ------------------------------------------------------------
