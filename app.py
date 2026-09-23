@@ -308,6 +308,18 @@ if municipio_filtro:
 if porte_filtro:
     df_view = df_view[df_view["Porte"].isin(porte_filtro)]
 
+# Independente do toggle acima, a página "Empresas (CNPJ raiz)" sempre
+# consolida por conta própria — precisa da base por estabelecimento.
+df_estabelecimentos_view = df.copy()
+if municipio_filtro:
+    df_estabelecimentos_view = df_estabelecimentos_view[
+        df_estabelecimentos_view["Municipio"].isin(municipio_filtro)
+    ]
+if porte_filtro:
+    df_estabelecimentos_view = df_estabelecimentos_view[
+        df_estabelecimentos_view["Porte"].isin(porte_filtro)
+    ]
+
 subtitulo_universo = "estabelecimentos" if visao_estabelecimento else "empresas (CNPJ raiz)"
 mercado = len(df_view)
 sesi = int(df_view["POSSUI_SESI"].sum())
@@ -408,7 +420,7 @@ if pagina == "📊 Visão Geral":
 # 1A. VISÃO EMPRESARIAL — CNPJ RAIZ
 # ------------------------------------------------------------
 elif pagina == "🏢 Empresas (CNPJ raiz)":
-    render_visao_raiz(df_view)
+    render_visao_raiz(df_estabelecimentos_view)
 
 
 # ------------------------------------------------------------

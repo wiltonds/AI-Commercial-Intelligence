@@ -80,6 +80,9 @@ def consolidar_por_cnpj_raiz(
         representantes["POSSUI_SESI_SENAI"] = (
             representantes["POSSUI_SESI"] & representantes["POSSUI_SENAI"]
         )
+        representantes["CLIENTE_SESI_SENAI"] = (
+            representantes["POSSUI_SESI"] | representantes["POSSUI_SENAI"]
+        )
         representantes["STATUS_RELACIONAMENTO_REAL"] = "Sem relacionamento"
         representantes.loc[
             representantes["POSSUI_SESI"] & ~representantes["POSSUI_SENAI"],
@@ -93,15 +96,59 @@ def consolidar_por_cnpj_raiz(
             representantes["POSSUI_SESI_SENAI"], "STATUS_RELACIONAMENTO_REAL"
         ] = "SESI + SENAI"
 
+    representantes["TIPO_EMPRESA"] = representantes["TEM_FILIAL"].map(
+        {True: "Multiestabelecimento", False: "Unidade única"}
+    )
+
+    if "Municipio" in df.columns:
+        municipios_por_raiz = (
+            df.groupby(col_raiz)["Municipio"]
+            .apply(_municipios_unicos)
+            .rename("Municipios")
+            .reset_index()
+        )
+        representantes = representantes.merge(municipios_por_raiz, on=col_raiz, how="left")
+
     return representantes.reset_index(drop=True)
+
+
+def _municipios_unicos(serie: pd.Series) -> str:
+    valores = serie.dropna().astype(str).str.strip()
+    valores = valores[valores.ne("")]
+    return " | ".join(sorted(valores.unique()))
+
+
+def separar_pistas(df_empresas: pd.DataFrame) -> dict[str, pd.DataFrame]:
+    """Três lentes comerciais mutuamente exclusivas sobre as empresas.
+
+    novos: sem relacionamento e unidade única — prospecção fria.
+    antigos: já clientes e unidade única — expansão/cross-sell.
+    contas_nomeadas: mais de um estabelecimento — tratamento estrutural
+    próprio, independente de já serem clientes ou não.
+    """
+    multi = df_empresas["TEM_FILIAL"]
+    cliente = df_empresas.get(
+        "CLIENTE_SESI_SENAI", pd.Series(False, index=df_empresas.index)
+    )
+
+    return {
+        "novos": df_empresas[~multi & ~cliente].copy(),
+        "antigos": df_empresas[~multi & cliente].copy(),
+        "contas_nomeadas": df_empresas[multi].copy(),
+    }
 
 
 def resumir_consolidacao(df_estabelecimentos: pd.DataFrame, df_empresas: pd.DataFrame) -> dict:
     """Números de auditoria para explicar a diferença estabelecimento × empresa."""
 
-    return {
+    resumo = {
         "total_estabelecimentos": len(df_estabelecimentos),
         "total_empresas": len(df_empresas),
         "empresas_com_filial": int(df_empresas["TEM_FILIAL"].sum()),
         "total_filiais": int(df_empresas["QTD_FILIAIS"].sum()),
     }
+
+    if "CLIENTE_SESI_SENAI" in df_empresas.columns:
+        resumo["ja_clientes"] = int(df_empresas["CLIENTE_SESI_SENAI"].sum())
+
+    return resumo
