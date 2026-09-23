@@ -22,6 +22,7 @@ load_dotenv()
 
 from src.pipeline import CommercialPipeline
 from src.tools.company_data import BASE_PATH
+from src.tools.cnpj_raiz import consolidar_por_cnpj_raiz, resumir_consolidacao
 from src.agents.sdr_llm import SDRLLMAgent
 from src.presentation import (
     ORIGEM_LABEL,
@@ -230,12 +231,21 @@ def carregar_pipeline() -> CommercialPipeline:
     return CommercialPipeline()
 
 
+@st.cache_data
+def consolidar_empresas(df: pd.DataFrame) -> pd.DataFrame:
+    """Uma linha por CNPJ raiz — matriz e filiais deixam de contar em dobro."""
+    return consolidar_por_cnpj_raiz(df)
+
+
 try:
     df = carregar_base()
 except Exception as erro:
     st.error("❌ Erro ao carregar o arquivo CSV Mestre.")
     st.code(str(erro))
     st.stop()
+
+df_empresas = consolidar_empresas(df)
+resumo_consolidacao = resumir_consolidacao(df, df_empresas)
 
 pipeline = carregar_pipeline()
 
@@ -262,22 +272,40 @@ pagina = st.sidebar.radio(
 )
 
 st.sidebar.divider()
+st.sidebar.subheader("Visão")
+visao_estabelecimento = st.sidebar.toggle(
+    "Ver por estabelecimento (matriz + filiais)",
+    value=False,
+    help=(
+        "Por padrão, cada empresa conta uma única vez pelo CNPJ raiz "
+        "(matriz e filiais consolidadas). Ative esta opção para ver "
+        "cada estabelecimento separadamente — útil para auditoria, "
+        "mas não reflete o tamanho real do mercado (uma empresa com "
+        "5 filiais apareceria como 6 empresas)."
+    ),
+)
+base_ativa = df if visao_estabelecimento else df_empresas
+
+st.sidebar.divider()
 st.sidebar.subheader("Filtros Globais")
 
 municipios = sorted(
-    [m for m in df["Municipio"].unique() if m and m != "NÃO INFORMADO"]
+    [m for m in base_ativa["Municipio"].unique() if m and m != "NÃO INFORMADO"]
 )
 municipio_filtro = st.sidebar.multiselect("Município", municipios)
 
-portes = sorted([p for p in df["Porte"].unique() if p and p != "NÃO INFORMADO"])
+portes = sorted(
+    [p for p in base_ativa["Porte"].unique() if p and p != "NÃO INFORMADO"]
+)
 porte_filtro = st.sidebar.multiselect("Porte", portes)
 
-df_view = df.copy()
+df_view = base_ativa.copy()
 if municipio_filtro:
     df_view = df_view[df_view["Municipio"].isin(municipio_filtro)]
 if porte_filtro:
     df_view = df_view[df_view["Porte"].isin(porte_filtro)]
 
+subtitulo_universo = "estabelecimentos" if visao_estabelecimento else "empresas (CNPJ raiz)"
 mercado = len(df_view)
 sesi = int(df_view["POSSUI_SESI"].sum())
 senai = int(df_view["POSSUI_SENAI"].sum())
@@ -296,6 +324,19 @@ st.caption(
     "Ecossistema de Negócios e Diagnóstico do Mercado Industrial de "
     "Alagoas — com recomendação de produto real por IA."
 )
+st.caption(
+    f"🏢 {numero(resumo_consolidacao['total_empresas'])} empresas (CNPJ raiz) "
+    f"a partir de {numero(resumo_consolidacao['total_estabelecimentos'])} "
+    f"estabelecimentos cadastrados — "
+    f"{numero(resumo_consolidacao['empresas_com_filial'])} empresas têm mais "
+    f"de uma unidade ({numero(resumo_consolidacao['total_filiais'])} filiais "
+    "consolidadas para não inflar a contagem). "
+    + (
+        "Exibindo por estabelecimento (matriz + filiais separados)."
+        if visao_estabelecimento
+        else "Exibindo por empresa — uma linha por CNPJ raiz."
+    )
+)
 st.divider()
 
 # ------------------------------------------------------------
@@ -306,7 +347,7 @@ if pagina == "📊 Visão Geral":
 
     c1, c2, c3, c4, c5 = st.columns(5)
     with c1:
-        kpi("Mercado Total", numero(mercado), "empresas")
+        kpi("Mercado Total", numero(mercado), subtitulo_universo)
     with c2:
         kpi(
             "Clientes SESI",
@@ -369,7 +410,7 @@ elif pagina == "🏭 Mercado":
 
     c1, c2, c3, c4 = st.columns(4)
     with c1:
-        kpi("Empresas", numero(len(df_view)))
+        kpi("Empresas", numero(len(df_view)), subtitulo_universo)
     with c2:
         kpi("Municípios", numero(df_view["Municipio"].nunique()))
     with c3:
@@ -381,6 +422,13 @@ elif pagina == "🏭 Mercado":
         )
     with c4:
         kpi("Relacionadas", numero(clientes_totais))
+
+    if not visao_estabelecimento:
+        st.caption(
+            f"{numero(resumo_consolidacao['empresas_com_filial'])} dessas empresas "
+            f"têm mais de um estabelecimento (matriz + filiais). Ative \"Ver por "
+            "estabelecimento\" na barra lateral para auditar unidade por unidade."
+        )
 
     st.divider()
     st.subheader("Distribuição por município")
@@ -580,7 +628,7 @@ elif pagina == "🔄 Matriz Cross-sell":
 # ------------------------------------------------------------
 elif pagina == "🔎 Explorador de Empresas":
     st.header("🔎 Explorador de Empresas")
-    st.caption(f"{numero(len(df_view))} empresas no contexto atual.")
+    st.caption(f"{numero(len(df_view))} {subtitulo_universo} no contexto atual.")
 
     busca = st.text_input(
         "Pesquisar por CNPJ ou razão social",
@@ -605,6 +653,8 @@ elif pagina == "🔎 Explorador de Empresas":
     tabela["Possui SESI + SENAI"] = tabela["POSSUI_SESI_SENAI"].map({True: "SIM", False: "NÃO"})
     tabela["Status Relacionamento"] = tabela["STATUS_RELACIONAMENTO_REAL"]
     tabela["Status SEBRAE"] = tabela["STATUS_SEBRAE"]
+    if "QTD_ESTABELECIMENTOS" in tabela.columns:
+        tabela["Estabelecimentos"] = tabela["QTD_ESTABELECIMENTOS"]
 
     colunas_finais = [
         c
@@ -614,6 +664,7 @@ elif pagina == "🔎 Explorador de Empresas":
             "Municipio",
             "Porte",
             "CNAE PRIMARIO",
+            "Estabelecimentos",
             "Possui SESI",
             "Possui SENAI",
             "Possui SESI + SENAI",
@@ -678,11 +729,15 @@ elif pagina == "🎯 Diagnóstico & Recomendação IA":
             mascara_diag |= candidatos["razao_social"].astype(str).str.contains(termo, case=False, na=False, regex=False)
         candidatos = candidatos[mascara_diag]
 
-    opcoes = {
-        f"{linha.razao_social} — {linha.Municipio} (CNPJ {linha.cnpj})": linha.cnpj
-        for linha in candidatos.itertuples()
-        if linha.razao_social and linha.cnpj
-    }
+    opcoes = {}
+    for linha in candidatos.itertuples():
+        if not (linha.razao_social and linha.cnpj):
+            continue
+        rotulo = f"{linha.razao_social} — {linha.Municipio} (CNPJ {linha.cnpj})"
+        qtd_filiais = getattr(linha, "QTD_FILIAIS", 0)
+        if qtd_filiais:
+            rotulo += f" · +{int(qtd_filiais)} filial(is)"
+        opcoes[rotulo] = linha.cnpj
 
     if not opcoes:
         st.warning("Nenhuma empresa encontrada com esse filtro.")
