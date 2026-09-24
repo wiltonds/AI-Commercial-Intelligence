@@ -25,6 +25,7 @@ from src.tools.company_data import BASE_PATH
 from src.tools.cnpj_raiz import consolidar_por_cnpj_raiz, resumir_consolidacao
 from src.agents.sdr_llm import SDRLLMAgent
 from painel_empresas_raiz import render_visao_raiz
+from painel_arquitetura import render_arquitetura
 
 from src.presentation import (
     ORIGEM_LABEL,
@@ -271,6 +272,7 @@ pagina = st.sidebar.radio(
         "🔎 Explorador de Empresas",
         "🎯 Diagnóstico & Recomendação IA",
         "✅ Auditoria de Cobertura",
+        "🏗️ Arquitetura & Fluxo",
     ],
 )
 
@@ -965,6 +967,13 @@ elif pagina == "🎯 Diagnóstico & Recomendação IA":
 
         st.markdown(f"**Argumentação:** {abordagem.argumentacao}")
         st.markdown(f"**Próxima ação:** {abordagem.proxima_acao}")
+
+
+# ------------------------------------------------------------
+# 8. ARQUITETURA & FLUXO (material de passagem ao Observatório)
+# ------------------------------------------------------------
+elif pagina == "🏗️ Arquitetura & Fluxo":
+    render_arquitetura(resumo_consolidacao)
 
 
 # ------------------------------------------------------------
