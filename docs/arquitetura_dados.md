@@ -75,16 +75,16 @@ Da linha "base-mãe + correções" (32.935) até a base atual (14.903), a difere
 
 | # | Regra | O que faz | Onde está hoje |
 | --- | --- | --- | --- |
-| 1 | Download da competência | `Estabelecimentos*.zip` + `Simples.zip`, lidos em streaming | `BI_Project/baixar_cnpj_al.py` (fora deste repo) |
-| 2 | Recorte AL + ATIVA | UF = AL e situação cadastral 02 | `BI_Project/gerar_dataset_cnpj_al_v4.py` (fora deste repo) |
-| 3 | CNPJ padronizado | 14 dígitos; CNPJ raiz = 8 primeiros | `construir_base_mestre.py` (fora deste repo) |
-| 4 | Cruzamento de CNAE | Principal e secundários × tabela DN (1.298 CNAEs) | `BI_Project/gerar_dataset_cnpj_al_v4.py` (fora deste repo) |
+| 1 | Download da competência | `Estabelecimentos*.zip` + `Simples.zip`, lidos em streaming | [`BI_Project/baixar_cnpj_al.py`](https://github.com/wiltonds/BI_Project) (privado) |
+| 2 | Recorte AL + ATIVA | UF = AL e situação cadastral 02 | [`BI_Project/gerar_dataset_cnpj_al_v4.py`](https://github.com/wiltonds/BI_Project) (privado) |
+| 3 | CNPJ padronizado | 14 dígitos; CNPJ raiz = 8 primeiros | `construir_base_mestre.py`, em [Intelig-ncia-Comercial](https://github.com/wiltonds/Intelig-ncia-Comercial) |
+| 4 | Cruzamento de CNAE | Principal e secundários × tabela DN (1.298 CNAEs) | [`BI_Project/gerar_dataset_cnpj_al_v4.py`](https://github.com/wiltonds/BI_Project) (privado) |
 | 5 | Correções auditadas | CNPJs clientes conferidos na Receita | `data/raw/CORRECAO_UNIVERSO_CONFIRMADA.csv` (neste repo) |
-| 6 | Exclusão MEI | Raiz com `opcao_mei = S` sai do universo | `construir_base_mestre.py` (fora deste repo) |
-| 7 | Relacionamento | SESI, SENAI, SEBRAE; status e cross-sell | `construir_base_mestre.py` (fora deste repo) |
+| 6 | Exclusão MEI | Raiz com `opcao_mei = S` sai do universo | `construir_base_mestre.py`, em [Intelig-ncia-Comercial](https://github.com/wiltonds/Intelig-ncia-Comercial) |
+| 7 | Relacionamento | SESI, SENAI, SEBRAE; status e cross-sell | `construir_base_mestre.py`, em [Intelig-ncia-Comercial](https://github.com/wiltonds/Intelig-ncia-Comercial) |
 | 8 | Consolidação por raiz | Uma linha por empresa; relacionamento herdado do grupo | `src/tools/cnpj_raiz.py` (neste repo, testado) |
 
-6 das 8 regras rodam hoje em `C:\Users\wilton.costa\Desktop\BI_Project`, uma pasta local **sem controle de versão**. É o maior risco de continuidade da Etapa 1 — não é falta de lógica, é falta de versionamento, agendamento e um schema de destino.
+As 8 regras agora estão todas sob controle de versão, em 3 repositórios diferentes (2 privados — peça acesso a quem for validar): [`BI_Project`](https://github.com/wiltonds/BI_Project), [`classificacao-industria-al`](https://github.com/wiltonds/classificacao-industria-al) e [`Intelig-ncia-Comercial`](https://github.com/wiltonds/Intelig-ncia-Comercial). O que ainda falta não é mais "salvar antes que se perca" — é agendamento e um schema de destino (Data Warehouse). `BI_Project` também tem um caminho hardcoded quebrado (`construir_base_mestre.py` aponta para uma pasta que não existe) e um script de auditoria (`auditar_dataset_industrial_al.py`) que confere a versão errada do dataset — ver o README de cada repositório para os detalhes.
 
 **Correção importante sobre a regra 4:** `construir_base_mestre.py` não recalcula o setor pela tabela DN acima — ele confia na coluna `SETOR` que já vem pronta no `industrias_ativas.xlsx`. Essa coluna (e a elegibilidade SEBRAE da regra 7) vêm de um terceiro pipeline, que era o pedaço mais crítico e mais escondido de todos: existia só numa pasta local sem `git`. Já foi organizado e versionado em
 [classificacao-industria-al](https://github.com/wiltonds/classificacao-industria-al) (privado) —
