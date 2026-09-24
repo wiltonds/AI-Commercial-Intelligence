@@ -4,6 +4,9 @@
 
 > An applied AI and data intelligence system that transforms company data into auditable commercial opportunities, product recommendations and AI-assisted sales preparation.
 
+![Portfolio architecture](./docs/portfolio-hero.svg)
+
+
 **Portfolio focus:** Data Engineering · Machine Learning/Scoring · Semantic Matching · AI Agents · Decision Support
 
 ## Business problem
