@@ -270,6 +270,7 @@ pagina = st.sidebar.radio(
         "🔥 Visão Integrada",
         "🔄 Matriz Cross-sell",
         "🔎 Explorador de Empresas",
+        "🎯 Base Qualificada (CRM)",
         "🎯 Diagnóstico & Recomendação IA",
         "✅ Auditoria de Cobertura",
         "🏗️ Arquitetura & Fluxo",
@@ -713,6 +714,94 @@ elif pagina == "🔎 Explorador de Empresas":
         "Vá em \"🎯 Diagnóstico & Recomendação IA\" no menu à esquerda e "
         "busque pelo mesmo CNPJ ou razão social."
     )
+
+
+# ------------------------------------------------------------
+# BASE QUALIFICADA (CRM) — cliente => cross-sell; não-cliente => inferência
+# Reusa df_view (base já carregada) e pipeline (já carregado). Sem arquivo novo.
+# ------------------------------------------------------------
+elif pagina == "🎯 Base Qualificada (CRM)":
+    st.header("🎯 Base Qualificada para o CRM")
+    st.info(
+        "🧭 **Leitura direcional.** Prioriza por CNAE + porte — ponto de partida "
+        "para o consultor, **não previsão validada**. O produto sugerido é "
+        "hipótese até o contato confirmar."
+    )
+
+    # ---- filtros (colunas que a base já tem) ----
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        f_trat = st.multiselect(
+            "Tratamento",
+            ["CROSS-SELL (já cliente)", "AQUISIÇÃO (sem vínculo)"],
+        )
+    with col2:
+        f_porte = st.multiselect(
+            "Porte", sorted(df_view["Porte"].dropna().unique())
+        )
+    with col3:
+        limite = st.slider("Quantas empresas processar", 50, 1000, 200, step=50,
+                           help="O diagnóstico roda o pipeline por empresa; comece pequeno.")
+
+    # ---- seleciona o recorte a processar ----
+    recorte = df_view.copy()
+    if f_porte:
+        recorte = recorte[recorte["Porte"].isin(f_porte)]
+    if "CROSS-SELL (já cliente)" in f_trat and "AQUISIÇÃO (sem vínculo)" not in f_trat:
+        recorte = recorte[recorte["POSSUI_SESI"] | recorte["POSSUI_SENAI"]]
+    elif "AQUISIÇÃO (sem vínculo)" in f_trat and "CROSS-SELL (já cliente)" not in f_trat:
+        recorte = recorte[~(recorte["POSSUI_SESI"] | recorte["POSSUI_SENAI"])]
+
+    recorte = recorte.head(limite)
+    st.caption(f"Processando {len(recorte)} empresas (de {len(df_view)} no contexto atual).")
+
+    if st.button("▶️ Qualificar recorte"):
+        linhas = []
+        barra = st.progress(0.0)
+        total = max(len(recorte), 1)
+        for i, (_, emp) in enumerate(recorte.iterrows()):
+            resultado = pipeline.executar(str(emp["cnpj"]))
+            barra.progress((i + 1) / total)
+            if resultado is None:
+                continue
+            lead = resultado["lead"]
+            ops = resultado["oportunidades"]  # lista de Opportunity
+            tratamento = "CROSS-SELL" if (lead.tem_sesi or lead.tem_senai) else "AQUISIÇÃO"
+            top = ops[:3]
+            linhas.append({
+                "cnpj": lead.cnpj,
+                "razao_social": lead.razao_social,
+                "municipio": lead.municipio,
+                "porte": lead.porte,
+                "setor": lead.setor,
+                "tratamento": tratamento,
+                "prioridade": resultado["qualificacao"]["score"],
+                "top_produtos": " | ".join(
+                    f"{o.solucao} [{o.area}, fit {o.score_fit:.0f}]" for o in top
+                ) or "(sem recomendação aprovada)",
+                "leitura": "DIRECIONAL — CNAE+porte, não validada por consumo",
+            })
+        barra.empty()
+
+        if not linhas:
+            st.warning("Nenhuma empresa qualificada no recorte.")
+        else:
+            qualificada = pd.DataFrame(linhas).sort_values(
+                ["tratamento", "prioridade"], ascending=[True, False]
+            )
+            c1, c2, c3 = st.columns(3)
+            c1.metric("Qualificadas", numero(len(qualificada)))
+            c2.metric("Cross-sell", numero(int((qualificada["tratamento"] == "CROSS-SELL").sum())))
+            c3.metric("Aquisição", numero(int((qualificada["tratamento"] == "AQUISIÇÃO").sum())))
+            st.dataframe(qualificada, use_container_width=True, height=520, hide_index=True)
+            st.download_button(
+                "⬇️ Baixar base qualificada (CSV)",
+                data=qualificada.to_csv(index=False, encoding="utf-8-sig"),
+                file_name="base_qualificada_crm.csv",
+                mime="text/csv",
+            )
+    else:
+        st.caption("Ajuste os filtros e clique em **Qualificar recorte** para gerar.")
 
 
 # ------------------------------------------------------------
