@@ -107,6 +107,8 @@ Não é construir do zero — é dar controle de versão, agendamento e destino 
 2. **Agendar a execução mensal** — hoje alguém dispara os scripts na mão a cada competência; precisa virar um job agendado, com registro do lote executado (ex.: uma tabela `ic.controle_lote`).
 3. **Gravar direto no Data Warehouse** — em vez de sobrescrever um CSV local, o pipeline passa a escrever nas camadas do DW abaixo, e o Power BI ou a aplicação leem de lá.
 
+**Já existe, neste repositório:** `jobs/checar_situacao_cadastral.py` — checagem diária de baixa/inaptidão, sem esperar a próxima extração mensal completa da Receita. Como a Receita só publica o dataset nacional uma vez por mês e a API pública usada (ReceitaWS, sem chave) limita a ~3 consultas/minuto, o job checa uma fatia rotativa por execução (quem está há mais tempo sem checagem) em vez das 13.978 empresas de uma vez — com o lote padrão, o universo inteiro é revisado a cada ~28 dias, e uma mudança de situação é sinalizada no dia em que a empresa é checada, não no fechamento do ciclo. Testado manualmente contra um CNPJ já conhecido como INAPTA (detectou corretamente) antes de ser considerado pronto. Falta só o agendamento — decisão do time do Observatório, já que a execução final vai rodar a partir do Data Warehouse.
+
 ```mermaid
 flowchart LR
     A["Fontes<br/>Receita, SESI/SENAI, SEBRAE<br/>Moskit, catalogo, novas bases"] --> B["stg<br/>bruto, por lote"]

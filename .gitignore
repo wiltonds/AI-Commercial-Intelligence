@@ -5,3 +5,7 @@ __pycache__/
 .ipynb_checkpoints/
 .streamlit/
 .env
+
+# Estado operacional do job diário — muda a cada execução; quando isto
+# virar uma tabela no Data Warehouse, este arquivo local deixa de existir.
+data/processed/MONITORAMENTO_SITUACAO_CADASTRAL.csv
