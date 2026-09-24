@@ -40,7 +40,13 @@ A base de relacionamento institucional (quem já é cliente SESI e/ou SENAI) e a
 
 ## Etapa 1.2 — Curadoria: o que conta como indústria
 
-Nem todo CNAE que a empresa declarou é indústria no sentido que o CNI/SESI/SENAI atende. A curadoria cruza CNAE principal **e secundários** contra uma tabela de referência de 1.298 CNAEs (tabela DN), em `gerar_dataset_cnpj_al_v4.py`. O resultado vira a coluna `EH_INDUSTRIA` na base mestre deste repositório.
+A regra real tem duas etapas, confirmadas cruzando os CNPJs de cada base (não é suposição):
+
+1. **Filtro amplo** (`gerar_dataset_cnpj_al_v4.py`, `BI_Project`) — cruza CNAE principal e secundários contra a tabela DN (1.298 CNAEs aprovados pelo CNI). Resultado: 56.448 raízes com alguma atividade industrial.
+2. **Corte pelo CNAE principal** — dessas 56.448, ficam só as que têm o CNAE **principal** (não só secundário) aprovado pelo CNI: 35.880 raízes. 97,8% do universo usado em `classificacao-industria-al` está coberto por esse corte — confirmado comparando CNPJ a CNPJ, não é estimativa.
+3. **Rótulo de setor/subsetor** (`setor_cnae_ibge.py`, `classificacao-industria-al`) — classifica pela seção CNAE/IBGE (B, C, D, E, F = indústria). O resultado vira a coluna `EH_INDUSTRIA` na base mestre deste repositório.
+
+Existe uma terceira função de classificação, `identificar_industria()` em `construir_base_mestre.py` (divisão 10-33 + busca por palavra-chave) — **não decide `EH_INDUSTRIA`**, só preenche o campo `CNAE_DIVISAO`, que o próprio dicionário de dados já marca como não confiável. O comentário no código admite que essa régua subestimava o universo (17.676 de 32.926) e foi descartada da decisão — é código morto que ainda roda, não uma segunda regra em disputa.
 
 Decisão já tomada: divisões de fronteira como correio, energia e construção continuam como indústria-alvo, mesmo não sendo indústria de transformação pura — são setores que o SESI/SENAI atende hoje na prática.
 
@@ -88,11 +94,13 @@ As 8 regras agora estão todas sob controle de versão, em 3 repositórios difer
 
 **Já corrigido:** `construir_base_mestre.py` (em `Intelig-ncia-Comercial`) tinha um caminho hardcoded quebrado — apontava para `Desktop\projeto_comercial`, mas o script vive em `Desktop\PROJETOS\projeto_comercial`, então quebrava com `FileNotFoundError` fora daquela máquina exata. Também tinha 3 `print()` com símbolos (`⚠`/`✓`) que travavam o script no fim da execução com `UnicodeEncodeError` no console do Windows — o CSV já tinha sido salvo corretamente, mas parecia que tinha falhado. Corrigido e testado ponta a ponta: roda sem erro e reproduz byte a byte a base atual (14.903 linhas, mesmos CNPJs).
 
-**Ainda em aberto:** em `BI_Project`, o script de auditoria (`auditar_dataset_industrial_al.py`) confere a versão errada do dataset (a v1, não a v4 atual) — ver o README de cada repositório para os detalhes.
+**Já corrigido:** o script de auditoria do `BI_Project` (`auditar_dataset_industrial_al.py`) conferia a versão errada do dataset (a v1, não a v4 atual). Corrigido e testado — roda contra a v4 e confere os mesmos números do funil (58.100 estabelecimentos industriais, 56.448 empresas, 1.298 CNAEs DN).
 
 **Correção importante sobre a regra 4:** `construir_base_mestre.py` não recalcula o setor pela tabela DN acima — ele confia na coluna `SETOR` que já vem pronta no `industrias_ativas.xlsx`. Essa coluna (e a elegibilidade SEBRAE da regra 7) vêm de um terceiro pipeline, que era o pedaço mais crítico e mais escondido de todos: existia só numa pasta local sem `git`. Já foi organizado e versionado em
 [classificacao-industria-al](https://github.com/wiltonds/classificacao-industria-al) (privado) —
-`casar_e_classificar.py` (recupera o código do CNAE casando a descrição contra a tabela oficial da CNI) → `setor_cnae_ibge.py` (classifica o setor pela seção CNAE/IBGE) → `cruzar_sebrae.py` (elegibilidade e oportunidade comercial SEBRAE). Ou seja: hoje existem **duas réguas diferentes** decidindo "o que é indústria" (a tabela DN do `BI_Project` e a seção IBGE deste pipeline) — só a segunda está de fato em uso na base atual, e nenhuma das duas foi formalmente escolhida como a oficial.
+`casar_e_classificar.py` (recupera o código do CNAE casando a descrição contra a tabela oficial da CNI) → `setor_cnae_ibge.py` (classifica o setor pela seção CNAE/IBGE) → `cruzar_sebrae.py` (elegibilidade e oportunidade comercial SEBRAE).
+
+**Atualização — não são réguas conflitantes, são sequenciais (confirmado cruzando CNPJ a CNPJ):** a tabela DN do `BI_Project` faz o filtro amplo (56.448) e o corte pelo CNAE principal (35.880, 97,8% de cobertura contra o universo real); a seção IBGE deste terceiro pipeline entra depois, só pra rotular setor/subsetor. Ver detalhe completo na Etapa 1.2 acima. A única régua realmente descartada é `identificar_industria()` em `construir_base_mestre.py` — código morto, não decide nada hoje.
 
 ## Estado atual — o que já está no GitHub
 
