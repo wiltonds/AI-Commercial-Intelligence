@@ -1,14 +1,16 @@
-# AI Commercial Intelligence
+# AI Commercial Intelligence — AI-Assisted B2B Lead Intelligence
 
 **🇧🇷 [Leia em Português](README.pt-BR.md)**
 
-> Turning a spreadsheet of 15,000 companies into a system that tells a sales team exactly who to call, what to offer, and why.
+> An applied AI and data intelligence system that transforms company data into auditable commercial opportunities, product recommendations and AI-assisted sales preparation.
 
-## The problem
+**Portfolio focus:** Data Engineering · Machine Learning/Scoring · Semantic Matching · AI Agents · Decision Support
+
+## Business problem
 
 SESI and SENAI (Brazil's national industry training and worker-wellness systems) sell hundreds of real courses and services — safety training, quality management, industrial maintenance, and more — to thousands of companies. But matching the *right* company to the *right* product, out of a catalog of **3,712 real offerings**, was a manual, gut-feeling process. A sales coordinator had no fast way to answer: *"Out of my 15,000 companies, which ones actually need what we sell, and which specific product should I lead with?"*
 
-## What this project does
+## Solution
 
 Give it a company (by tax ID / CNPJ), and it:
 
@@ -33,7 +35,7 @@ flowchart LR
     H -.optional.-> I["AI Sales Agent\n(Claude API)"]
 ```
 
-## Why this is harder than "call an API"
+## Engineering approach
 
 The interesting engineering problem here wasn't wiring up a database — it was making the *matching* trustworthy. Along the way, real data testing surfaced real failure modes that a demo built on 2-3 examples would never catch:
 
@@ -43,7 +45,7 @@ The interesting engineering problem here wasn't wiring up a database — it was 
 
 That "evidence, then trust" order is deliberate: the AI writes the sales pitch, but it never chooses what to sell — that decision is fully auditable, rule-based, and tested.
 
-## What's inside
+## Architecture and components
 
 | Layer | What it does |
 |---|---|
@@ -61,7 +63,7 @@ That "evidence, then trust" order is deliberate: the AI writes the sales pitch, 
 
 **Test coverage:** 40 automated tests, including a dedicated *evaluation suite* of real edge cases discovered during development — a permanent regression check so a future change can't silently reintroduce a bug that was already fixed once.
 
-## Running it locally
+## Run locally
 
 ```bash
 pip install -r requirements.txt
@@ -72,4 +74,14 @@ The AI sales-approach feature requires an `ANTHROPIC_API_KEY` environment variab
 
 ---
 
-*Built iteratively as a working pilot, with every design decision — thresholds, quality checks, what the AI is and isn't allowed to do — driven by testing against real data rather than assumptions.*
+## Portfolio perspective
+
+This project demonstrates an end-to-end pattern for **turning structured business data into explainable AI-assisted decisions**.
+
+The core principle is simple:
+
+**evidence → deterministic intelligence → validation → AI assistance → human decision**
+
+The LLM is intentionally downstream of the data and validation layers. It helps prepare communication, while verified business rules and evidence remain the source of the recommendation.
+
+> **Privacy:** sensitive company/customer datasets and credentials should remain outside public repositories. This repository should contain only data that is safe to publish or synthetic/anonymized demonstrations.
