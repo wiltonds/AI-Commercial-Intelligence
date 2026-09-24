@@ -86,6 +86,10 @@ Da linha "base-mãe + correções" (32.935) até a base atual (14.903), a difere
 
 6 das 8 regras rodam hoje em `C:\Users\wilton.costa\Desktop\BI_Project`, uma pasta local **sem controle de versão**. É o maior risco de continuidade da Etapa 1 — não é falta de lógica, é falta de versionamento, agendamento e um schema de destino.
 
+**Correção importante sobre a regra 4:** `construir_base_mestre.py` não recalcula o setor pela tabela DN acima — ele confia na coluna `SETOR` que já vem pronta no `industrias_ativas.xlsx`. Essa coluna (e a elegibilidade SEBRAE da regra 7) vêm de um terceiro pipeline, que era o pedaço mais crítico e mais escondido de todos: existia só numa pasta local sem `git`. Já foi organizado e versionado em
+[classificacao-industria-al](https://github.com/wiltonds/classificacao-industria-al) (privado) —
+`casar_e_classificar.py` (recupera o código do CNAE casando a descrição contra a tabela oficial da CNI) → `setor_cnae_ibge.py` (classifica o setor pela seção CNAE/IBGE) → `cruzar_sebrae.py` (elegibilidade e oportunidade comercial SEBRAE). Ou seja: hoje existem **duas réguas diferentes** decidindo "o que é indústria" (a tabela DN do `BI_Project` e a seção IBGE deste pipeline) — só a segunda está de fato em uso na base atual, e nenhuma das duas foi formalmente escolhida como a oficial.
+
 ## Estado atual — o que já está no GitHub
 
 - `data/processed/BASE_MESTRE_COMERCIAL.csv` — saída do funil acima: uma linha por estabelecimento, já sem MEI, com os sinalizadores de indústria, relacionamento e CNPJ raiz.
