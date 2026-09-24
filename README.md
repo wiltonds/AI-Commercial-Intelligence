@@ -6,6 +6,19 @@
 
 ![Portfolio architecture](./docs/portfolio-hero.svg)
 
+## Application Demo
+
+![AI Commercial Intelligence demo](./docs/screenshots/ai-commercial-demo.svg)
+
+> **Demo mode:** the interface below uses synthetic company data so the commercial workflow can be demonstrated safely without exposing production customer records.
+
+Run the recruiter-facing demo locally:
+
+```bash
+streamlit run demo_app.py
+```
+
+
 
 **Portfolio focus:** Data Engineering · Machine Learning/Scoring · Semantic Matching · AI Agents · Decision Support
 
