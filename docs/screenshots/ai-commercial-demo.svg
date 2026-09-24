@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980">
+<rect width="1600" height="980" fill="#f7f7f7"/>
+<rect x="45" y="35" width="1510" height="910" rx="18" fill="white" stroke="#d9d9d9"/>
+<text x="85" y="95" font-family="Arial" font-size="34" font-weight="700" fill="#111">🎯 AI Commercial Intelligence</text>
+<text x="85" y="130" font-family="Arial" font-size="18" fill="#666">Demo executável · dados sintéticos · company → intelligence → recommendation</text>
+<g font-family="Arial">
+<g><rect x="85" y="170" width="330" height="105" rx="12" fill="#fff" stroke="#ddd"/><text x="110" y="205" font-size="16" fill="#555">LEAD PRIORITÁRIO</text><text x="110" y="245" font-size="32" font-weight="700">92 / 100</text><text x="110" y="265" font-size="13" fill="#777">commercial priority</text></g>
+<g><rect x="440" y="170" width="330" height="105" rx="12" fill="#fff" stroke="#ddd"/><text x="465" y="205" font-size="16" fill="#555">DATA QUALITY</text><text x="465" y="245" font-size="32" font-weight="700">96 / 100</text><text x="465" y="265" font-size="13" fill="#777">ready for decision</text></g>
+<g><rect x="795" y="170" width="330" height="105" rx="12" fill="#fff" stroke="#ddd"/><text x="820" y="205" font-size="16" fill="#555">CATALOG</text><text x="820" y="245" font-size="32" font-weight="700">3,712</text><text x="820" y="265" font-size="13" fill="#777">real offerings in system</text></g>
+<g><rect x="1150" y="170" width="330" height="105" rx="12" fill="#fff" stroke="#ddd"/><text x="1175" y="205" font-size="16" fill="#555">QUALITY GATE</text><text x="1175" y="245" font-size="30" font-weight="700">APPROVED</text><text x="1175" y="265" font-size="13" fill="#777">evidence passed</text></g>
+</g>
+<line x1="85" y1="305" x2="1480" y2="305" stroke="#ddd"/>
+<text x="85" y="350" font-family="Arial" font-size="23" font-weight="700" fill="#111">Company Diagnosis</text>
+<g font-family="Arial" font-size="16" fill="#333">
+<text x="85" y="390">Metalúrgica Horizonte Ltda.</text><text x="85" y="420">CNPJ 12.345.678/0001-90</text><text x="85" y="450">Maceió · Manufacturing · Medium</text>
+<text x="550" y="390">Data Quality</text><text x="550" y="420">✓ CNPJ identified</text><text x="550" y="450">✓ CNAE available · ✓ Sector classified</text>
+<text x="1000" y="390">SDR Qualification</text><text x="1000" y="420">Priority: HIGH</text><text x="1000" y="450">Cross-sell opportunity</text>
+</g>
+<line x1="85" y1="485" x2="1480" y2="485" stroke="#ddd"/>
+<text x="85" y="530" font-family="Arial" font-size="23" font-weight="700" fill="#111">Approved Recommendations</text>
+<g font-family="Arial">
+<rect x="85" y="560" width="1395" height="95" rx="10" fill="#fff" stroke="#ddd"/>
+<text x="110" y="598" font-size="18" font-weight="700" fill="#111">NR-12 — Segurança em Máquinas e Equipamentos</text><text x="110" y="625" font-size="14" fill="#666">Safety · CNAE + sector + catalog evidence</text><text x="1180" y="610" font-size="25" font-weight="700">94%</text><text x="1325" y="610" font-size="15" fill="#555">✓ APPROVED</text>
+<rect x="85" y="675" width="1395" height="95" rx="10" fill="#fff" stroke="#ddd"/>
+<text x="110" y="713" font-size="18" font-weight="700" fill="#111">Manutenção Industrial — Formação Técnica</text><text x="110" y="740" font-size="14" fill="#666">Maintenance · sector + technical affinity</text><text x="1180" y="725" font-size="25" font-weight="700">89%</text><text x="1325" y="725" font-size="15" fill="#555">✓ APPROVED</text>
+<rect x="85" y="790" width="1395" height="95" rx="10" fill="#fff" stroke="#ddd"/>
+<text x="110" y="828" font-size="18" font-weight="700" fill="#111">Programa de Melhoria da Produtividade</text><text x="110" y="855" font-size="14" fill="#666">Industrial management · size + sector</text><text x="1180" y="840" font-size="25" font-weight="700">82%</text><text x="1325" y="840" font-size="15" fill="#555">✓ APPROVED</text>
+</g>
+<text x="85" y="920" font-family="Arial" font-size="14" fill="#777">DEMO — synthetic data. AI assists communication; verified rules and evidence remain the recommendation source.</text>
+</svg>
