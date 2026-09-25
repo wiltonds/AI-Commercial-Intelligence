@@ -4,7 +4,7 @@
 
 Material de apresentação para o time do Observatório, responsável por colocar o modelo em produção (Data Warehouse → Power BI / aplicação). Cobre a Etapa 1 (dados) do início ao fim e fecha com o que vem na Etapa 2.
 
-Repositório (código-fonte de tudo abaixo): [github.com/wiltonds/AI-Commercial-Intelligence](https://github.com/wiltonds/AI-Commercial-Intelligence). Schema coluna a coluna da base atual: [Dicionário de Dados](dicionario_dados.md). Versão comentável/editável deste material: [doc no claude.ai](https://claude.ai/artifact/5nNAR3w952B3YAbkQboAve). Visão interativa (com números ao vivo): página "🏗️ Arquitetura & Fluxo" no próprio dashboard (`painel_arquitetura.py`).
+Repositório (código-fonte de tudo abaixo): [github.com/wiltonds/AI-Commercial-Intelligence](https://github.com/wiltonds/AI-Commercial-Intelligence). Schema coluna a coluna da base atual: [Dicionário de Dados](dicionario_dados.md). Passo a passo para automatizar e manter o painel: [Guia para o Observatório](guia_observatorio.md). Versão comentável/editável deste material: [doc no claude.ai](https://claude.ai/artifact/5nNAR3w952B3YAbkQboAve). Visão interativa (com números ao vivo): página "🏗️ Arquitetura & Fluxo" no próprio dashboard (`painel_arquitetura.py`).
 
 ## Pipeline de dados, ponta a ponta
 
@@ -25,7 +25,7 @@ flowchart LR
     I -.->|resultado da venda| G
 ```
 
-As cinco primeiras caixas são a Etapa 1. As três seguintes são a Etapa 2 (roadmap, ver seção final). Hoje só a consolidação por CNPJ raiz (`src/tools/cnpj_raiz.py`) e o painel estão neste repositório e sob teste automatizado — o resto da Etapa 1 já existe como script, mas fora de controle de versão (ver "Estado atual").
+As cinco primeiras caixas são a Etapa 1. As três seguintes são a Etapa 2 (roadmap, ver seção final). Hoje só a consolidação por CNPJ raiz (`src/tools/cnpj_raiz.py`) e o painel estão neste repositório e sob teste automatizado — o resto da Etapa 1 já existe como script, versionado em outros 3 repositórios, mas roda manualmente e sem agendamento (ver "Estado atual").
 
 ## Etapa 1.1 — Coleta
 
@@ -115,7 +115,7 @@ Importante para quem for produtizar: as regras 1–7 do funil rodam manualmente,
 
 Não é construir do zero — é dar controle de versão, agendamento e destino a algo que já funciona manualmente:
 
-1. **Versionar `BI_Project`** — trazer as 6 regras que rodam fora deste repositório para controle de versão (git), com revisão de código e histórico.
+1. ~~**Versionar `BI_Project`**~~ — feito: as 8 regras estão versionadas em 3 repositórios (ver "Regras aplicadas, em ordem").
 2. **Agendar a execução mensal** — hoje alguém dispara os scripts na mão a cada competência; precisa virar um job agendado, com registro do lote executado (ex.: uma tabela `ic.controle_lote`).
 3. **Gravar direto no Data Warehouse** — em vez de sobrescrever um CSV local, o pipeline passa a escrever nas camadas do DW abaixo, e o Power BI ou a aplicação leem de lá.
 
