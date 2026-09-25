@@ -9,3 +9,8 @@ __pycache__/
 # Estado operacional do job diário — muda a cada execução; quando isto
 # virar uma tabela no Data Warehouse, este arquivo local deixa de existir.
 data/processed/MONITORAMENTO_SITUACAO_CADASTRAL.csv
+
+# Sinais externos: dado bruto e saídas dos jobs ficam fora do Git
+data/raw/cno/
+data/processed/SINAIS_*.csv
+data/processed/LOG_FONTES.csv

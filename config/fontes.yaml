@@ -1,0 +1,146 @@
+# ============================================================
+# CATÁLOGO DE FONTES — Inteligência Comercial (AL)
+#
+# Uma entrada por fonte externa. É o "de onde vem cada dado" do
+# projeto: substitui a dependência das tabelas fontes_externas.* do
+# DW institucional (que pararam de atualizar) e vira o documento de
+# passagem para a TI/Observatório.
+#
+# Campos:
+#   tabela_dw         tabela equivalente no DW (para rastreabilidade)
+#   modulo            sinais | concorrencia | enriquecimento
+#   granularidade     empresa (tem CNPJ, junção direta) | setor (CNAE x município)
+#   chave             como o dado se liga à Base Mestre
+#   frequencia_dias   de quanto em quanto tempo a fonte publica dado novo;
+#                     a página "Saúde das Fontes" usa isso no semáforo
+#   status            implementado | planejado | lacuna
+#   url_*             links oficiais. "A CONFIRMAR" = link de download
+#                     muda com frequência; o job aceita arquivo local
+# ============================================================
+
+fontes:
+
+  cno:
+    nome: Cadastro Nacional de Obras (CNO) — Receita Federal
+    tabela_dw: fontes_externas.gov_cnoalagoas
+    modulo: sinais
+    granularidade: empresa
+    chave: NI do responsável (CNPJ) e CNO_VINCULOS (CNPJ)
+    frequencia_dias: 1
+    status: implementado
+    job: jobs/coletar_cno.py
+    saida: data/processed/SINAIS_CNO.csv
+    url_pagina: https://dados.gov.br/dados/conjuntos-dados/cadastro-nacional-de-obras-cno
+    url_layout: https://www.gov.br/receitafederal/pt-br/assuntos/orientacao-tributaria/cadastros/cno/arquivos/cno-cadastro-nacional-de-obras-layout.pdf
+    # Link direto (repositório WebDAV da Receita). Atrás de um WAF: exige
+    # headers de navegador, bloqueia PROPFIND e às vezes alterna 200/404.
+    url_download: https://arquivos.receitafederal.gov.br/public.php/dav/files/gn672Ad4CF8N6TK/Dados/Cadastros/CNO/cno.zip
+    observacao: >
+      CPF do responsável não é publicado (LGPD); só CNPJ quando o
+      responsável é pessoa jurídica — é justamente o recorte B2B.
+    sinal:
+      tipo: obra_nova
+      validade_dias: 120
+      peso_base: 3
+      bonus_area_m2: {1000: 1, 5000: 1}   # +1 acima de 1.000 m², +1 acima de 5.000 m²
+      janela_coleta_dias: 180
+
+  cnpj_socios:
+    nome: CNPJ — Sócios (dados abertos Receita)
+    tabela_dw: fontes_externas.gov_cnpjsociosalagoas
+    modulo: enriquecimento
+    granularidade: empresa
+    chave: CNPJ básico
+    frequencia_dias: 31
+    status: planejado
+    url_pagina: https://dados.gov.br/dados/conjuntos-dados/cadastro-nacional-da-pessoa-juridica---cnpj
+    url_download: https://arquivos.receitafederal.gov.br/index.php/s/YggdBLfdninEJX9
+    observacao: Nome do decisor (gargalo de contato). O BI_Project já baixa Estabelecimentos; falta o arquivo Socios.
+
+  cnpj_concorrentes:
+    nome: CNPJ — Estabelecimentos com CNAE de concorrente
+    tabela_dw: fontes_externas.gov_cnpjestabelecimentos
+    modulo: concorrencia
+    granularidade: empresa
+    chave: CNPJ
+    frequencia_dias: 31
+    status: planejado
+    url_download: https://arquivos.receitafederal.gov.br/index.php/s/YggdBLfdninEJX9
+    observacao: Mesma extração do BI_Project, com segunda lista de CNAEs (clínicas SST, consultorias, escolas técnicas).
+
+  cota_aprendizagem:
+    nome: Certidão de regularidade na contratação de aprendizes (MTE)
+    tabela_dw: fontes_externas.gov_cotaaprendizagem
+    modulo: sinais
+    granularidade: empresa
+    chave: CNPJ completo (a cota é por estabelecimento)
+    frequencia_dias: 30
+    status: planejado
+    url_pagina: https://www.gov.br/pt-br/servicos/certidao-de-regularidade-na-contratacao-de-aprendizes
+    observacao: >
+      Consulta rotativa por CNPJ (mesmo padrão do checar_situacao_cadastral).
+      ME/EPP são dispensadas — filtrar médio/grande antes. Verificar captcha.
+    sinal:
+      tipo: abaixo_cota_aprendiz
+      validade_dias: 60
+      peso_base: 4
+
+  pncp:
+    nome: Portal Nacional de Contratações Públicas (PNCP)
+    tabela_dw: (nova)
+    modulo: sinais
+    granularidade: empresa
+    chave: CNPJ do fornecedor
+    frequencia_dias: 1
+    status: planejado
+    url_pagina: https://pncp.gov.br
+    url_api: A CONFIRMAR  # API de consulta pública do PNCP
+
+  novo_caged:
+    nome: Novo CAGED — microdados (MTE/PDET)
+    tabela_dw: fontes_externas.gov_cagedalagoas
+    modulo: sinais
+    granularidade: setor
+    chave: CNAE subclasse x município (microdados não têm CNPJ)
+    frequencia_dias: 31
+    status: planejado
+    url_download: A CONFIRMAR  # FTP do PDET
+    sinal:
+      tipo: setor_aquecido
+      validade_dias: 60
+      peso_base: 1
+
+  noticias:
+    nome: Notícias e radar de investimentos (Google News RSS + portais AL)
+    tabela_dw: fontes_externas.gpt_radarinvestimentos / sites_novosempreendimentos / sites_noticiasacidentes
+    modulo: sinais
+    granularidade: empresa
+    chave: nome citado -> CNPJ (resolução de entidade)
+    frequencia_dias: 1
+    status: planejado
+    url_api: https://news.google.com/rss/search?q=<termo>&hl=pt-BR&gl=BR&ceid=BR:pt-419
+    observacao: Reaproveita o classificador LLM do Radar de Oportunidades (Apps Script).
+    sinal:
+      tipo: noticia_investimento
+      validade_dias: 30
+      peso_base: 3
+
+  inep_ep:
+    nome: Censo Escolar — Educação Profissional (INEP)
+    tabela_dw: fontes_externas.inep_censoescolarep
+    modulo: concorrencia
+    granularidade: setor
+    chave: código INEP da escola / município
+    frequencia_dias: 365
+    status: planejado
+    url_pagina: https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados
+
+  mp_tacs:
+    nome: TACs do Ministério Público do Trabalho
+    tabela_dw: fontes_externas.mp_tacs
+    modulo: sinais
+    granularidade: empresa
+    chave: CNPJ citado no termo
+    frequencia_dias: 30
+    status: lacuna
+    observacao: Sem fonte aberta estruturada identificada; provável raspagem do site da PRT 19ª Região.
