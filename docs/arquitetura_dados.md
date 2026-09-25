@@ -86,7 +86,7 @@ Da linha "base-mãe + correções" (32.935) até a base atual (14.903), a difere
 | 3 | CNPJ padronizado | 14 dígitos; CNPJ raiz = 8 primeiros | `construir_base_mestre.py`, em [Intelig-ncia-Comercial](https://github.com/wiltonds/Intelig-ncia-Comercial) |
 | 4 | Cruzamento de CNAE | Principal e secundários × tabela DN (1.298 CNAEs) | [`BI_Project/gerar_dataset_cnpj_al_v4.py`](https://github.com/wiltonds/BI_Project) (privado) |
 | 5 | Correções auditadas | CNPJs clientes conferidos na Receita | `data/raw/CORRECAO_UNIVERSO_CONFIRMADA.csv` (neste repo) |
-| 6 | Exclusão MEI | Raiz com `opcao_mei = S` sai do universo | `construir_base_mestre.py`, em [Intelig-ncia-Comercial](https://github.com/wiltonds/Intelig-ncia-Comercial) |
+| 6 | Exclusão MEI | Raiz com `opcao_mei = S` sai do universo | Situação MEI gerada por [`BI_Project/gerar_situacao_mei.py`](https://github.com/wiltonds/BI_Project) (privado); exclusão aplicada em `construir_base_mestre.py`, em [Intelig-ncia-Comercial](https://github.com/wiltonds/Intelig-ncia-Comercial). Ver [guia do Observatório](guia_observatorio.md), Passo 4 |
 | 7 | Relacionamento | SESI, SENAI, SEBRAE; status e cross-sell | `construir_base_mestre.py`, em [Intelig-ncia-Comercial](https://github.com/wiltonds/Intelig-ncia-Comercial) |
 | 8 | Consolidação por raiz | Uma linha por empresa; relacionamento herdado do grupo | `src/tools/cnpj_raiz.py` (neste repo, testado) |
 

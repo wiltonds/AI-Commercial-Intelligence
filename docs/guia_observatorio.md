@@ -142,6 +142,30 @@ Checagens que devem **bloquear a publicação** se falharem:
 
 Registrar cada execução (competência, data, contagens, sucesso ou falha) numa tabela de controle, por exemplo `ic.controle_lote`.
 
+### Exclusão de MEI: precisa entrar na carga mensal
+
+Regra: toda empresa (CNPJ raiz) com `opcao_mei = S` no arquivo Simples da Receita fica fora do painel. Na base atual, nenhum optante do MEI aparece.
+
+Como funciona hoje:
+
+1. `BI_Project/gerar_situacao_mei.py` baixa o `Simples.zip` da Receita (arquivo nacional, sem cabeçalho, 7 colunas), filtra para as raízes do universo industrial de AL e grava `dataset_<competência>_v4/AUDITORIA/SITUACAO_MEI_SIMPLES.csv`.
+   - Pré-requisito: `gerar_dataset_cnpj_al_v4.py` já rodado, porque ele usa o arquivo de empresas do universo.
+2. **Passo manual:** esse CSV é copiado para `projeto_comercial/saida/SITUACAO_MEI_SIMPLES.csv`.
+3. `construir_base_mestre.py` lê o arquivo e remove as raízes MEI.
+
+O que o Observatório precisa garantir na automação:
+
+- **Gerar de novo todo mês, na mesma competência da Receita.** Empresas entram e saem do MEI. Usar o arquivo de um mês com a Receita de outro mês gera erro silencioso no universo.
+- **A competência e a URL da Receita estão fixas no código** (`COMPETENCIA = "2026-07"` e o link de compartilhamento do mês). Precisam virar parâmetro do job.
+- **Tirar a cópia manual do passo 2:** o job grava o arquivo onde o passo seguinte lê, ou os dois leem da mesma tabela no DW.
+- **Falhar se o arquivo não existir.** Até 25/09/2026, o `construir_base_mestre.py` só imprimia um aviso e seguia **com os MEI dentro**. Agora ele para com erro. A checagem "aparecer algum CNPJ optante do MEI", listada acima, continua valendo como segunda barreira.
+- **O script foi reconstruído:** o original que gerou o arquivo em uso (14/09/2026) se perdeu, e `gerar_situacao_mei.py` recria a mesma lógica a partir do layout do arquivo. Em 25/09/2026 ele foi rodado contra o `Simples.zip` de julho de 2026 e comparado com o arquivo em uso:
+  - **Mesmo layout** (7 colunas, mesmo formato).
+  - **195 empresas da base final mudariam para MEI** e 224 raízes hoje excluídas voltariam. A diferença vem da **versão do arquivo da Receita**, não da lógica: o arquivo em uso tem saídas do MEI com data de até 12/09/2026, então saiu de uma publicação de setembro, e o teste usou a de julho. Para confirmar a equivalência de ponta a ponta, rodar o script de novo com a publicação mais recente e comparar.
+  - **Não substituir o arquivo em uso pelo de julho:** ele é mais antigo.
+  - Isso também mostra o tamanho da variação: em dois meses, cerca de 400 raízes mudaram de situação no MEI. É por isso que o arquivo precisa ser gerado de novo em toda carga.
+  - Raízes do universo que não aparecem no `Simples.zip` (4.328 no teste) são tratadas como não MEI.
+
 ## Passo 5 — O painel
 
 Duas opções. A decisão é do Observatório junto com o time comercial:
