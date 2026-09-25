@@ -173,7 +173,7 @@ def rodar(
     ARQ_SAIDA.parent.mkdir(parents=True, exist_ok=True)
     saida.to_csv(ARQ_SAIDA, index=False, encoding="utf-8-sig")
 
-    na_base = int(saida["na_base_mestre"].sum())
+    na_base = int(saida.loc[saida["na_base_mestre"], "cnpj_basico"].nunique())
     avisar(f"Salvo: {ARQ_SAIDA.name}")
     avisar(f"Sinais (CNPJ x obra): {len(saida):,} | empresas distintas: "
           f"{saida['cnpj_basico'].nunique():,} | já na Base Mestre: {na_base:,}")
