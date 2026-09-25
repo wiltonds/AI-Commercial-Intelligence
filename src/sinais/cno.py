@@ -227,6 +227,9 @@ def extrair_sinais(
     ]
 
     responsaveis = base[colunas_obra].copy()
+    # data em que o fato ficou público: base do selo "novo"
+    responsaveis["data_publicacao"] = pd.to_datetime(
+        base.get("data_registro"), errors="coerce").fillna(base["data_evento"])
     responsaveis["cnpj"] = _so_digitos(base["ni_responsavel"])
     responsaveis["qualificacao"] = _so_digitos(base["qualificacao"]).str.zfill(4)
     responsaveis["papel"] = "responsável"
@@ -238,7 +241,10 @@ def extrair_sinais(
         vinc = vinculos.copy()
         fim = pd.to_datetime(vinc.get("data_fim"), errors="coerce")
         vinc = vinc[fim.isna() | (fim >= pd.Timestamp(hoje))]
-        vinc = vinc.merge(base[colunas_obra], on="cno", how="inner")
+        registro_vinc = pd.to_datetime(vinc.get("data_registro"), errors="coerce")
+        vinc = vinc.drop(columns=["data_registro", "data_inicio", "data_fim"], errors="ignore")
+        vinc = vinc.assign(_registro=registro_vinc).merge(base[colunas_obra], on="cno", how="inner")
+        vinc["data_publicacao"] = vinc["_registro"].fillna(vinc["data_evento"])
         vinc["cnpj"] = _so_digitos(vinc["ni_responsavel"])
         vinc["qualificacao"] = _so_digitos(vinc["qualificacao"]).str.zfill(4)
         vinc["papel"] = "vínculo"

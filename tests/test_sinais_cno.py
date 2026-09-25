@@ -189,3 +189,60 @@ def test_baixar_aceita_zip(tmp_path, monkeypatch):
     monkeypatch.setattr(job.requests, "get", lambda *a, **k: _RespostaFalsa(b"PK\x03\x04resto"))
     destino = job.baixar("https://x/cno.zip", tmp_path / "cno.zip", tentativas=1, espera=0)
     assert destino.read_bytes().startswith(b"PK")
+
+
+# ------------------------------------------------------------
+# Camada genérica: novidades e oferta sugerida
+# ------------------------------------------------------------
+from src.sinais.consolidar import (  # noqa: E402
+    aplicar_ofertas, carregar_ofertas, carregar_todos_sinais, marcar_novidades, sugerir,
+)
+
+
+def test_novidade_pela_data_de_publicacao():
+    df = pd.DataFrame({"data_publicacao": pd.to_datetime(["2026-09-24", "2026-09-10", "2026-09-30"])})
+    out = marcar_novidades(df, HOJE, dias=7)
+    assert list(out["novo"]) == [True, False, False]  # futura não conta como novidade
+
+
+def test_oferta_construtora_vs_dono_e_bonus_grande_porte():
+    ofertas = carregar_ofertas()
+    construtora = sugerir({"tipo_sinal": "obra_nova", "qualificacao": "53", "area_total": 800}, ofertas)
+    dono_grande = sugerir({"tipo_sinal": "obra_nova", "qualificacao": "0057", "area_total": 6000}, ofertas)
+
+    assert construtora["perfil"] == "Construtora no canteiro"
+    assert "NR 35" in construtora["oferta_sesi"]
+    assert "Montador de Andaimes" in construtora["oferta_senai"]
+    assert construtora["perfil_extra"] == ""
+
+    assert dono_grande["perfil"] == "Dono da obra (expansão)"
+    assert dono_grande["perfil_extra"] == "Obra de grande porte"
+    assert "LTCAT" in dono_grande["oferta_sesi"]
+
+
+def test_tipo_desconhecido_nao_quebra():
+    s = sugerir({"tipo_sinal": "algo_novo"}, carregar_ofertas())
+    assert s["rotulo_tipo"] == "algo_novo" and s["oferta_sesi"] == ""
+
+
+def test_todos_os_tipos_do_catalogo_tem_perfil_padrao():
+    for tipo, cfg in carregar_ofertas().items():
+        assert any(not p.get("quando") for p in cfg["perfis"]) or len(cfg["perfis"]) >= 1, tipo
+
+
+def test_carregar_todos_sinais_junta_arquivos_de_fontes_diferentes(tmp_path):
+    comum = {"cnpj_basico": "11111111", "razao_social": "A", "na_base_mestre": "True",
+             "descricao": "x", "municipio": "MACEIO", "score_momento": 3,
+             "data_evento": "2026-09-20"}
+    pd.DataFrame([{**comum, "tipo_sinal": "obra_nova", "data_publicacao": "2026-09-21",
+                   "STATUS_RELACIONAMENTO_REAL": "Somente SESI"}]).to_csv(
+        tmp_path / "SINAIS_CNO.csv", index=False, encoding="utf-8-sig")
+    pd.DataFrame([{**comum, "tipo_sinal": "empresa_nova"}]).to_csv(
+        tmp_path / "SINAIS_CNPJ.csv", index=False, encoding="utf-8-sig")
+
+    df = aplicar_ofertas(carregar_todos_sinais(tmp_path), carregar_ofertas())
+    assert set(df["rotulo_tipo"]) == {"Obra nova", "Empresa nova"}
+    # arquivo sem data_publicacao usa data_evento; sem relacionamento vira "Fora da Base Mestre"
+    nova = df[df["tipo_sinal"] == "empresa_nova"].iloc[0]
+    assert nova["data_publicacao"] == pd.Timestamp("2026-09-20")
+    assert nova["STATUS_RELACIONAMENTO_REAL"] == "Fora da Base Mestre"

@@ -59,9 +59,9 @@ FONTE_ID = "cno"
 COLUNAS_SAIDA = [
     "score_momento", "cnpj_basico", "cnpj", "razao_social", "na_base_mestre",
     "STATUS_RELACIONAMENTO_REAL", "Porte", "CNAE PRIMARIO",
-    "tipo_sinal", "descricao", "papel", "qualificacao_desc",
+    "tipo_sinal", "descricao", "papel", "qualificacao", "qualificacao_desc",
     "municipio", "bairro", "area_total", "unidade_medida",
-    "data_evento", "idade_dias", "peso", "validade_dias", "cno", "fonte",
+    "data_evento", "data_publicacao", "idade_dias", "peso", "validade_dias", "cno", "fonte",
 ]
 
 

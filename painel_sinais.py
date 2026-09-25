@@ -1,10 +1,12 @@
 """
 Páginas "⚡ Sinais & Momento" e "🚦 Saúde das Fontes".
 
-Sinais respondem "QUANDO abordar": a Base Mestre já diz quem tem
-aderência ao portfólio; aqui entra quem está em movimento agora. Cada
-fonte vira um CSV em data/processed/SINAIS_<FONTE>.csv, gerado por um
-job em jobs/. Hoje: CNO (obra nova).
+Sinais respondem "QUANDO abordar e O QUE ofertar": a Base Mestre já
+diz quem tem aderência ao portfólio; aqui entra quem está em movimento
+agora. A página é genérica: lê todo data/processed/SINAIS_*.csv (um por
+fonte/job), marca novidades pela data de publicação na fonte e aplica a
+oferta sugerida de config/ofertas.yaml. Fonte nova = job novo, sem mexer
+na tela. Hoje: CNO (obra nova).
 """
 from __future__ import annotations
 
@@ -14,6 +16,13 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+from src.sinais.consolidar import (
+    ARQ_OFERTAS,
+    aplicar_ofertas,
+    carregar_ofertas,
+    carregar_todos_sinais,
+    marcar_novidades,
+)
 from src.sinais.fontes import carregar_catalogo, carregar_log, saude_das_fontes
 
 RAIZ = Path(__file__).resolve().parent
@@ -22,30 +31,63 @@ ARQ_TRAVA = RAIZ / "data" / "processed" / ".coletando_cno.lock"
 TRAVA_MAX_MIN = 30  # trava mais velha que isso é resto de execução interrompida
 
 
-def _fmt(n) -> str:
-    return f"{int(n):,}".replace(",", ".")
+REL_BADGE = {
+    "Sem relacionamento": "🎯 Sem relacionamento",
+    "Fora da Base Mestre": "➕ Fora da Base Mestre",
+    "Somente SESI": "🔵 Cliente SESI",
+    "Somente SENAI": "🟠 Cliente SENAI",
+    "SESI + SENAI": "🟣 Cliente SESI + SENAI",
+}
+
+
+def _assinatura() -> tuple:
+    """Muda quando algum SINAIS_*.csv ou o ofertas.yaml muda → invalida o cache."""
+    arquivos = sorted(ARQ_SINAIS_CNO.parent.glob("SINAIS_*.csv")) + [ARQ_OFERTAS]
+    return tuple((a.name, a.stat().st_mtime) for a in arquivos if a.exists())
 
 
 @st.cache_data(ttl=3600)
-def _carregar_sinais_cno(_mtime: float) -> pd.DataFrame:
-    df = pd.read_csv(ARQ_SINAIS_CNO, dtype={"cnpj": str, "cnpj_basico": str, "cno": str},
-                     encoding="utf-8-sig")
-    df["na_base_mestre"] = df["na_base_mestre"].astype(str).str.upper().eq("TRUE")
-    df["STATUS_RELACIONAMENTO_REAL"] = df["STATUS_RELACIONAMENTO_REAL"].fillna("Fora da Base Mestre")
-    return df
+def _carregar_sinais(assinatura: tuple) -> pd.DataFrame:  # noqa: ARG001 (chave do cache)
+    df = carregar_todos_sinais()
+    return aplicar_ofertas(df, carregar_ofertas()) if not df.empty else df
+
+
+def _data(valor) -> str:
+    return pd.Timestamp(valor).strftime("%d/%m/%Y") if pd.notna(valor) else "—"
+
+
+def _card(linha) -> None:
+    with st.container(border=True):
+        c1, c2 = st.columns([4, 1])
+        c1.markdown(f"{linha['icone']} **{linha['rotulo_tipo']}** · **{linha['razao_social']}**")
+        c2.markdown(f"<div style='text-align:right'>Momento <b>{linha['score_momento']:.1f}</b></div>",
+                    unsafe_allow_html=True)
+        st.caption(
+            f"{REL_BADGE.get(linha['STATUS_RELACIONAMENTO_REAL'], linha['STATUS_RELACIONAMENTO_REAL'])}"
+            f" · CNPJ {linha.get('cnpj', '')} · publicado em {_data(linha['data_publicacao'])}"
+            f" (há {int(linha['dias_desde_publicacao'])} dias)"
+        )
+        st.markdown(linha["descricao"])
+        ofertas = [f"**SESI:** {linha['oferta_sesi']}" if linha["oferta_sesi"] else "",
+                   f"**SENAI:** {linha['oferta_senai']}" if linha["oferta_senai"] else "",
+                   f"**Outros:** {linha['oferta_outros']}" if linha["oferta_outros"] else ""]
+        perfil = linha["perfil"] + (f" + {linha['perfil_extra']}" if linha["perfil_extra"] else "")
+        st.markdown(f"💡 **Ofertar** ({perfil}) — " + " · ".join(o for o in ofertas if o))
+        st.markdown(f"🗣️ **Como abordar:** {linha['abordagem']}")
 
 
 def render_sinais() -> None:
     st.header("⚡ Sinais & Momento")
     st.caption(
-        "A Base Mestre diz **quem** tem aderência ao portfólio. Esta página diz "
-        "**quem está em movimento agora**. Score de momento = peso do sinal × "
-        "decaimento até a validade (regra em `config/fontes.yaml`)."
+        "A Base Mestre diz **quem** tem aderência ao portfólio. Esta página diz **quem está em "
+        "movimento agora**, **o que ofertar** e **como abordar**. Ofertas editáveis em "
+        "`config/ofertas.yaml`; peso e validade de cada sinal em `config/fontes.yaml`."
     )
 
     _bloco_atualizacao()
 
-    if not ARQ_SINAIS_CNO.exists():
+    df = _carregar_sinais(_assinatura())
+    if df.empty:
         st.warning(
             "Ainda não há sinais coletados neste servidor. Clique em "
             "**🔄 Atualizar sinais** acima, ou rode na sua máquina:\n\n"
@@ -53,71 +95,93 @@ def render_sinais() -> None:
         )
         return
 
-    df = _carregar_sinais_cno(ARQ_SINAIS_CNO.stat().st_mtime)
+    hoje = pd.Timestamp.now(tz="America/Maceio").date()
+    dias = st.segmented_control(
+        "O que conta como novidade", options=[7, 15, 30], default=7,
+        format_func=lambda d: f"Últimos {d} dias",
+    ) or 7
+    df = marcar_novidades(df, hoje, dias)
+    novos = df[df["novo"]]
 
-    st.info(
-        "🏗️ **Obra nova (CNO)** — obra ATIVA registrada na Receita nos últimos "
-        "meses, com empresa responsável ou vinculada (construtora, incorporadora). "
-        "Oferta natural: PGR/PCMSO, NRs de construção, qualificação do canteiro. "
-        "Obras de pessoa física não aparecem (a Receita não publica CPF)."
-    )
+    # ---------------- NOVIDADES ----------------
+    st.subheader(f"🆕 Novidades — últimos {dias} dias")
+    quentes = novos[novos["STATUS_RELACIONAMENTO_REAL"].isin(["Sem relacionamento", "Fora da Base Mestre"])]
+    k1, k2, k3 = st.columns(3)
+    k1.metric("Sinais novos", len(novos))
+    k2.metric("Empresas com sinal novo", novos["cnpj_basico"].nunique())
+    k3.metric("🎯 Ainda não são clientes", quentes["cnpj_basico"].nunique(),
+              help="Sem relacionamento SESI/SENAI ou fora da Base Mestre: prospecção quente.")
 
-    with st.expander("Filtros", expanded=True):
+    por_tipo = df.groupby(["icone", "rotulo_tipo"]).agg(
+        total=("cnpj_basico", "size"), novos=("novo", "sum")).reset_index()
+    colunas_tipo = st.columns(max(len(por_tipo), 1))
+    for col, (_, t) in zip(colunas_tipo, por_tipo.iterrows()):
+        col.metric(f"{t['icone']} {t['rotulo_tipo']}", f"{int(t['novos'])} novos",
+                   help=f"{int(t['total'])} sinais ativos no total")
+
+    if novos.empty:
+        st.info(f"Nenhum sinal novo nos últimos {dias} dias. Veja todos os sinais ativos abaixo "
+                "ou amplie o período.")
+    else:
+        destaque = novos.sort_values("score_momento", ascending=False).head(8)
+        st.caption(f"Os {len(destaque)} sinais novos de maior momento:")
+        for _, linha in destaque.iterrows():
+            _card(linha)
+
+    # ---------------- TODOS ----------------
+    st.subheader("📋 Todos os sinais ativos")
+    with st.expander("Filtros", expanded=False):
         c1, c2, c3 = st.columns(3)
-        municipios = sorted(df["municipio"].dropna().str.title().unique())
-        f_mun = c1.multiselect("Município da obra", municipios)
-        f_rel = c2.multiselect("Relacionamento", sorted(df["STATUS_RELACIONAMENTO_REAL"].unique()))
-        f_papel = c3.multiselect("Papel na obra", sorted(df["papel"].dropna().unique()))
-        so_base = st.toggle("Só empresas da Base Mestre (universo industrial)", value=False)
+        f_tipo = c1.multiselect("Tipo de sinal", sorted(df["rotulo_tipo"].unique()))
+        f_mun = c2.multiselect("Município", sorted(df["municipio"].dropna().str.title().unique()))
+        f_rel = c3.multiselect("Relacionamento", sorted(df["STATUS_RELACIONAMENTO_REAL"].unique()))
+        c4, c5 = st.columns(2)
+        so_novos = c4.toggle(f"Só novidades ({dias} dias)")
+        so_base = c5.toggle("Só empresas da Base Mestre")
 
-    v = df.copy()
+    v = df
+    if f_tipo:
+        v = v[v["rotulo_tipo"].isin(f_tipo)]
     if f_mun:
         v = v[v["municipio"].str.title().isin(f_mun)]
     if f_rel:
         v = v[v["STATUS_RELACIONAMENTO_REAL"].isin(f_rel)]
-    if f_papel:
-        v = v[v["papel"].isin(f_papel)]
+    if so_novos:
+        v = v[v["novo"]]
     if so_base:
         v = v[v["na_base_mestre"]]
 
-    quentes = v[v["STATUS_RELACIONAMENTO_REAL"].isin(["Sem relacionamento", "Fora da Base Mestre"])]
-    k1, k2, k3, k4 = st.columns(4)
-    k1.metric("Sinais ativos", _fmt(len(v)))
-    k2.metric("Empresas distintas", _fmt(v["cnpj_basico"].nunique()))
-    k3.metric("Já na Base Mestre", _fmt(v.loc[v["na_base_mestre"], "cnpj_basico"].nunique()))
-    k4.metric("Sem relacionamento SESI/SENAI", _fmt(quentes["cnpj_basico"].nunique()),
-              help="Prospecção quente: em movimento e ainda não é cliente.")
+    tabela = v.assign(
+        selo=v["novo"].map({True: "🆕", False: ""}),
+        tipo=v["icone"] + " " + v["rotulo_tipo"],
+        relacionamento=v["STATUS_RELACIONAMENTO_REAL"].map(REL_BADGE).fillna(v["STATUS_RELACIONAMENTO_REAL"]),
+    ).sort_values(["novo", "score_momento"], ascending=[False, False])
 
-    st.subheader("Prioridade por momento")
-    colunas = [c for c in [
-        "score_momento", "razao_social", "cnpj", "STATUS_RELACIONAMENTO_REAL",
-        "descricao", "data_evento", "idade_dias", "Porte", "CNAE PRIMARIO", "cno",
-    ] if c in v.columns]
     st.dataframe(
-        v.sort_values("score_momento", ascending=False)[colunas],
+        tabela[["selo", "tipo", "score_momento", "razao_social", "cnpj", "relacionamento",
+                "descricao", "oferta_sesi", "oferta_senai", "abordagem", "data_publicacao", "municipio"]],
         width="stretch", hide_index=True,
         column_config={
+            "selo": st.column_config.TextColumn(" ", width="small"),
+            "tipo": "Sinal",
             "score_momento": st.column_config.ProgressColumn(
-                "Momento", min_value=0, max_value=float(df["score_momento"].max() or 1),
-                format="%.1f"),
-            "STATUS_RELACIONAMENTO_REAL": "Relacionamento",
-            "descricao": "Sinal",
-            "data_evento": "Início da obra",
-            "idade_dias": "Dias",
+                "Momento", min_value=0, max_value=float(df["score_momento"].max() or 1), format="%.1f"),
+            "razao_social": "Empresa",
+            "cnpj": "CNPJ",
+            "relacionamento": "Relacionamento",
+            "descricao": "O que aconteceu",
+            "oferta_sesi": "Ofertar SESI",
+            "oferta_senai": "Ofertar SENAI",
+            "abordagem": "Como abordar",
+            "data_publicacao": st.column_config.DateColumn("Publicado em", format="DD/MM/YYYY"),
+            "municipio": "Município",
         },
     )
-
     st.download_button(
-        "⬇️ Baixar lista filtrada (CSV)",
-        v.to_csv(index=False, sep=";", encoding="utf-8-sig").encode("utf-8-sig"),
-        file_name="sinais_obra_nova.csv", mime="text/csv",
+        "⬇️ Baixar lista filtrada (CSV, abre no Excel)",
+        tabela.drop(columns=["selo"]).to_csv(index=False, sep=";").encode("utf-8-sig"),
+        file_name=f"sinais_{hoje:%Y-%m-%d}.csv", mime="text/csv",
     )
-
-    st.subheader("Onde estão as obras")
-    por_mun = (v.assign(Município=v["municipio"].str.title())
-                 .groupby("Município")["cnpj_basico"].nunique()
-                 .sort_values(ascending=False).head(15))
-    st.bar_chart(por_mun)
 
 
 def _travado() -> bool:
@@ -176,7 +240,7 @@ def _bloco_atualizacao() -> None:
         ARQ_TRAVA.unlink(missing_ok=True)
 
     barra.empty()
-    _carregar_sinais_cno.clear()
+    _carregar_sinais.clear()
     st.rerun()
 
 
