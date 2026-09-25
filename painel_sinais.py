@@ -8,6 +8,7 @@ job em jobs/. Hoje: CNO (obra nova).
 """
 from __future__ import annotations
 
+import time
 from pathlib import Path
 
 import pandas as pd
@@ -17,6 +18,8 @@ from src.sinais.fontes import carregar_catalogo, carregar_log, saude_das_fontes
 
 RAIZ = Path(__file__).resolve().parent
 ARQ_SINAIS_CNO = RAIZ / "data" / "processed" / "SINAIS_CNO.csv"
+ARQ_TRAVA = RAIZ / "data" / "processed" / ".coletando_cno.lock"
+TRAVA_MAX_MIN = 30  # trava mais velha que isso é resto de execução interrompida
 
 
 def _fmt(n) -> str:
@@ -40,12 +43,13 @@ def render_sinais() -> None:
         "decaimento até a validade (regra em `config/fontes.yaml`)."
     )
 
+    _bloco_atualizacao()
+
     if not ARQ_SINAIS_CNO.exists():
         st.warning(
-            "Ainda não há sinais coletados. Rode o job:\n\n"
-            "```\npython jobs/coletar_cno.py --arquivo <caminho do cno.zip>\n```\n"
-            "O cno.zip é baixado na página de dados abertos do CNO "
-            "(link na página 🚦 Saúde das Fontes)."
+            "Ainda não há sinais coletados neste servidor. Clique em "
+            "**🔄 Atualizar sinais** acima, ou rode na sua máquina:\n\n"
+            "```\npython jobs/coletar_cno.py\n```"
         )
         return
 
@@ -116,6 +120,71 @@ def render_sinais() -> None:
     st.bar_chart(por_mun)
 
 
+def _travado() -> bool:
+    if not ARQ_TRAVA.exists():
+        return False
+    if time.time() - ARQ_TRAVA.stat().st_mtime > TRAVA_MAX_MIN * 60:
+        ARQ_TRAVA.unlink(missing_ok=True)
+        return False
+    return True
+
+
+def _bloco_atualizacao() -> None:
+    """Botão que roda o job do CNO dentro do próprio app.
+
+    Serve também de teste: se a Receita bloquear o servidor em nuvem, a
+    falha fica registrada em 🚦 Saúde das Fontes com a mensagem do erro.
+    """
+    c1, c2 = st.columns([1, 3])
+    if ARQ_SINAIS_CNO.exists():
+        atualizado = pd.Timestamp(ARQ_SINAIS_CNO.stat().st_mtime, unit="s", tz="UTC")
+        atualizado = atualizado.tz_convert("America/Maceio").strftime("%d/%m/%Y %H:%M")
+        c2.caption(f"Última coleta neste servidor: **{atualizado}**. "
+                   "Leva de 2 a 5 minutos (baixa ~315 MB da Receita).")
+    else:
+        c2.caption("Leva de 2 a 5 minutos (baixa ~315 MB da Receita e filtra Alagoas).")
+
+    ocupado = _travado()
+    if not c1.button("🔄 Atualizar sinais", type="primary", disabled=ocupado):
+        if ocupado:
+            c2.info("⏳ Já existe uma coleta em andamento. Recarregue a página em alguns minutos.")
+        return
+
+    from jobs.coletar_cno import executar  # import tardio: só quando clica
+
+    ARQ_TRAVA.parent.mkdir(parents=True, exist_ok=True)
+    ARQ_TRAVA.touch()
+    barra = st.progress(0.0, text="Baixando o CNO da Receita ...")
+    try:
+        with st.status("Coletando obras novas (CNO) ...", expanded=True) as status:
+            saida = executar(
+                avisar=status.write,
+                progresso=lambda f: barra.progress(min(f, 1.0), text=f"Baixando o CNO ... {f:.0%}"),
+                manter_zip=False,
+            )
+            status.update(label=f"✅ {saida['cnpj_basico'].nunique()} empresas com obra nova",
+                          state="complete", expanded=False)
+    except Exception as erro:  # noqa: BLE001 — mostra ao usuário e registra no log
+        barra.empty()
+        st.error(
+            f"A coleta falhou: `{erro}`\n\n"
+            "Se for bloqueio da Receita ao servidor em nuvem, rode o job na sua "
+            "máquina (`python jobs/coletar_cno.py`). A falha ficou registrada em 🚦 Saúde das Fontes."
+        )
+        return
+    finally:
+        ARQ_TRAVA.unlink(missing_ok=True)
+
+    barra.empty()
+    _carregar_sinais_cno.clear()
+    st.rerun()
+
+
+ROTULO_STATUS = {"implementado": "✅ Implementada", "planejado": "🗓️ Planejada", "lacuna": "❓ Sem fonte aberta"}
+ROTULO_MODULO = {"sinais": "Sinais", "concorrencia": "Concorrência", "enriquecimento": "Enriquecimento"}
+ROTULO_GRAN = {"empresa": "Por empresa (CNPJ)", "setor": "Por setor (CNAE × município)"}
+
+
 def render_saude_fontes() -> None:
     st.header("🚦 Saúde das Fontes")
     st.caption(
@@ -123,20 +192,58 @@ def render_saude_fontes() -> None:
         "atualizou de fato. Existe porque as tabelas do DW pararam sem ninguém "
         "perceber — aqui, atraso aparece em vermelho."
     )
-    saude = saude_das_fontes(carregar_catalogo(), carregar_log())
+    catalogo = carregar_catalogo()
+    saude = saude_das_fontes(catalogo, carregar_log())
 
+    implementadas = int((saude["status"] == "implementado").sum())
     c1, c2, c3 = st.columns(3)
     c1.metric("Fontes no catálogo", len(saude))
-    c2.metric("Implementadas", int((saude["status"] == "implementado").sum()))
-    c3.metric("Em dia (🟢)", int((saude["semaforo"] == "🟢").sum()))
+    c2.metric("Implementadas", f"{implementadas} de {len(saude)}")
+    c3.metric("Em dia 🟢", int((saude["semaforo"] == "🟢").sum()))
+    st.progress(implementadas / max(len(saude), 1),
+                text="Construção das fontes externas (substituem as tabelas paradas do DW)")
+
+    tabela = saude.assign(
+        status=saude["status"].map(ROTULO_STATUS).fillna(saude["status"]),
+        modulo=saude["modulo"].map(ROTULO_MODULO).fillna(saude["modulo"]),
+        granularidade=saude["granularidade"].map(ROTULO_GRAN).fillna(saude["granularidade"]),
+        dias_desde_sucesso=saude["dias_desde_sucesso"].astype("Int64"),
+        link=saude["link"].where(saude["link"].str.startswith("http"), None),
+    )
+    tabela["ordem"] = tabela["status"].map({v: i for i, v in enumerate(ROTULO_STATUS.values())})
+    tabela = tabela.sort_values(["ordem", "modulo"]).drop(columns=["ordem", "fonte"])
 
     st.dataframe(
-        saude, width="stretch", hide_index=True,
+        tabela[["semaforo", "nome", "status", "modulo", "granularidade", "frequencia_dias",
+                "ultimo_sucesso", "dias_desde_sucesso", "ultima_mensagem", "link", "tabela_dw"]],
+        width="stretch", hide_index=True,
         column_config={
-            "semaforo": " ",
-            "link": st.column_config.LinkColumn("Fonte oficial"),
-            "dias_desde_sucesso": "Dias desde o último sucesso",
-            "tabela_dw": "Equivalente no DW",
+            "semaforo": st.column_config.TextColumn(" ", width="small"),
+            "nome": "Fonte",
+            "status": "Situação",
+            "modulo": "Alimenta",
+            "granularidade": "Identifica",
+            "frequencia_dias": st.column_config.NumberColumn("Atualiza a cada (dias)"),
+            "ultimo_sucesso": "Última coleta OK",
+            "dias_desde_sucesso": st.column_config.NumberColumn("Dias sem atualizar"),
+            "ultima_mensagem": "Última mensagem",
+            "link": st.column_config.LinkColumn("Fonte oficial", display_text="abrir ↗"),
+            "tabela_dw": "Substitui no DW",
         },
     )
-    st.caption("🟢 em dia · 🟡 atrasada até 3× a frequência · 🔴 atrasada ou última execução falhou · ⚪ não implementada / nunca rodou")
+    st.caption("🟢 em dia · 🟡 atrasada até 3× a frequência · 🔴 atrasada ou última execução falhou · "
+               "⚪ não implementada ou ainda não rodou neste servidor")
+
+    with st.expander("Detalhes de cada fonte (links, chave de junção, observações)"):
+        for fonte_id, cfg in catalogo.items():
+            st.markdown(f"**{cfg.get('nome', fonte_id)}**  ·  {ROTULO_STATUS.get(cfg.get('status'), '')}")
+            linhas = [f"- Junção com a Base Mestre: {cfg.get('chave', '—')}"]
+            for chave, rotulo in [("url_pagina", "Página"), ("url_download", "Download"),
+                                  ("url_api", "API"), ("url_layout", "Layout")]:
+                valor = str(cfg.get(chave) or "")
+                if valor:
+                    linhas.append(f"- {rotulo}: {valor}" if valor.startswith("http")
+                                  else f"- {rotulo}: _{valor.lower()}_")
+            if cfg.get("observacao"):
+                linhas.append(f"- Observação: {' '.join(str(cfg['observacao']).split())}")
+            st.markdown("\n".join(linhas))

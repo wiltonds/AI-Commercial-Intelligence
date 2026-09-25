@@ -14,3 +14,4 @@ data/processed/MONITORAMENTO_SITUACAO_CADASTRAL.csv
 data/raw/cno/
 data/processed/SINAIS_*.csv
 data/processed/LOG_FONTES.csv
+data/processed/.coletando_cno.lock

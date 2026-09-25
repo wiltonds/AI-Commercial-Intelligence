@@ -77,9 +77,15 @@ HEADERS_NAVEGADOR = {
     "Accept-Language": "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3",
 }
 TENTATIVAS = 4
+ESPERA_SEG = 30  # multiplicada pelo nº da tentativa
 
 
-def baixar(url: str, destino: Path, tentativas: int = TENTATIVAS, espera: int = 30) -> Path:
+def baixar(
+    url: str, destino: Path, tentativas: int | None = None, espera: int | None = None,
+    avisar=print, progresso=None,
+) -> Path:
+    tentativas = tentativas or TENTATIVAS
+    espera = ESPERA_SEG if espera is None else espera
     destino.parent.mkdir(parents=True, exist_ok=True)
     temporario = destino.with_suffix(".zip.part")
     ultimo_erro = None
@@ -95,9 +101,12 @@ def baixar(url: str, destino: Path, tentativas: int = TENTATIVAS, espera: int = 
                     for pedaco in r.iter_content(chunk_size=1 << 20):
                         f.write(pedaco)
                         baixado += len(pedaco)
-                        if total:
+                        if total and progresso:
+                            progresso(baixado / total)
+                        elif total and progresso is None:
                             print(f"\r  {baixado / 1e6:,.0f} de {total / 1e6:,.0f} MB", end="")
-                print()
+                if progresso is None:
+                    print()
 
             with open(temporario, "rb") as f:
                 if f.read(2) != b"PK":  # WAF devolve HTML "Request Rejected" com status 200
@@ -107,7 +116,7 @@ def baixar(url: str, destino: Path, tentativas: int = TENTATIVAS, espera: int = 
             return destino
         except (requests.RequestException, ValueError) as erro:
             ultimo_erro = erro
-            print(f"  tentativa {tentativa}/{tentativas} falhou: {erro}")
+            avisar(f"tentativa {tentativa}/{tentativas} falhou: {erro}")
             if tentativa < tentativas:
                 sleep(espera * tentativa)
 
@@ -129,7 +138,10 @@ def carregar_empresas() -> pd.DataFrame:
     return empresas
 
 
-def rodar(arquivo: Path | None, url: str | None, hoje: date) -> pd.DataFrame:
+def rodar(
+    arquivo: Path | None, url: str | None, hoje: date,
+    avisar=print, progresso=None, manter_zip: bool = True,
+) -> pd.DataFrame:
     regra = carregar_catalogo()[FONTE_ID]
     janela = int(regra["sinal"].get("janela_coleta_dias", 180))
 
@@ -141,15 +153,17 @@ def rodar(arquivo: Path | None, url: str | None, hoje: date) -> pd.DataFrame:
                 f"  {regra['url_pagina']}\n"
                 "e rode:  python jobs/coletar_cno.py --arquivo <caminho do cno.zip>"
             )
-        print(f"Baixando {url} ...")
-        arquivo = baixar(url, ZIP_LOCAL)
+        avisar(f"Baixando o CNO da Receita (~315 MB) ...")
+        arquivo = baixar(url, ZIP_LOCAL, avisar=avisar, progresso=progresso)
 
-    print(f"Lendo {arquivo} (só AL) ...")
+    avisar("Lendo o arquivo nacional e filtrando Alagoas ...")
     obras, vinculos = ler_zip_cno(arquivo)
-    print(f"  obras em AL: {len(obras):,} | vínculos dessas obras: {len(vinculos):,}")
+    if not manter_zip and arquivo == ZIP_LOCAL:
+        ZIP_LOCAL.unlink(missing_ok=True)  # libera ~315 MB (servidor em nuvem)
+    avisar(f"Obras em AL: {len(obras):,} | vínculos dessas obras: {len(vinculos):,}")
 
     recentes = filtrar_obras_recentes(obras, hoje, janela)
-    print(f"  ativas nos últimos {janela} dias: {len(recentes):,}")
+    avisar(f"Ativas nos últimos {janela} dias: {len(recentes):,}")
 
     sinais = extrair_sinais(recentes, vinculos, hoje)
     sinais = pontuar(sinais, hoje, regra["sinal"])
@@ -160,9 +174,30 @@ def rodar(arquivo: Path | None, url: str | None, hoje: date) -> pd.DataFrame:
     saida.to_csv(ARQ_SAIDA, index=False, encoding="utf-8-sig")
 
     na_base = int(saida["na_base_mestre"].sum())
-    print(f"\nSalvo: {ARQ_SAIDA}")
-    print(f"Sinais (CNPJ x obra): {len(saida):,} | empresas distintas: "
+    avisar(f"Salvo: {ARQ_SAIDA.name}")
+    avisar(f"Sinais (CNPJ x obra): {len(saida):,} | empresas distintas: "
           f"{saida['cnpj_basico'].nunique():,} | já na Base Mestre: {na_base:,}")
+    return saida
+
+
+def executar(
+    arquivo: Path | None = None, url: str | None = None, hoje: date | None = None,
+    avisar=print, progresso=None, manter_zip: bool = True,
+) -> pd.DataFrame:
+    """Roda e registra no LOG_FONTES (sucesso ou falha) — usado pelo
+    agendador (main) e pelo botão "Atualizar sinais" do app."""
+    hoje = hoje or date.today()
+    try:
+        saida = rodar(arquivo, url, hoje, avisar=avisar, progresso=progresso,
+                      manter_zip=manter_zip)
+    except SystemExit:
+        registrar_execucao(FONTE_ID, "sem_arquivo", 0, "download não configurado")
+        raise
+    except Exception as erro:
+        registrar_execucao(FONTE_ID, "falha", 0, f"{type(erro).__name__}: {erro}")
+        raise
+    registrar_execucao(FONTE_ID, "sucesso", len(saida),
+                       f"{saida['cnpj_basico'].nunique()} empresas")
     return saida
 
 
@@ -175,16 +210,7 @@ def main():
     args = parser.parse_args()
 
     hoje = date.fromisoformat(args.hoje) if args.hoje else date.today()
-    try:
-        saida = rodar(args.arquivo, args.url, hoje)
-    except SystemExit:
-        registrar_execucao(FONTE_ID, "sem_arquivo", 0, "download não configurado")
-        raise
-    except Exception as erro:  # registra a falha para o semáforo e propaga
-        registrar_execucao(FONTE_ID, "falha", 0, f"{type(erro).__name__}: {erro}")
-        raise
-    registrar_execucao(FONTE_ID, "sucesso", len(saida),
-                       f"{saida['cnpj_basico'].nunique()} empresas")
+    executar(args.arquivo, args.url, hoje)
 
 
 if __name__ == "__main__":
