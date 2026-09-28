@@ -670,7 +670,28 @@ elif pagina == "🔎 Explorador de Empresas":
             mascara |= resultado["razao_social"].astype(str).str.contains(busca, case=False, na=False, regex=False)
         resultado = resultado[mascara]
 
-    st.metric("Empresas encontradas", numero(len(resultado)))
+    # ---- contatos (data/contatos/CONTATOS_EMPRESAS.csv, preenchido por jobs/enriquecer_contatos.py)
+    from src.tools.contatos import carregar_contatos, juntar_contatos
+    contatos = carregar_contatos()
+    resultado = resultado.assign(cnpj_basico=resultado["cnpj"].astype(str).str[:8])
+    resultado = juntar_contatos(resultado, contatos)
+    for c in ("telefone_1", "email", "decisor", "confianca"):
+        resultado[c] = resultado[c].fillna("")
+    fc1, fc2 = st.columns([1, 2])
+    so_contato = fc1.toggle("Só empresas com contato")
+    conf = fc2.multiselect("Confiança do contato", ["alta", "media", "baixa"])
+    if so_contato:
+        resultado = resultado[resultado["confianca"].isin(["alta", "media"])]
+    if conf:
+        resultado = resultado[resultado["confianca"].isin(conf)]
+
+    m1, m2 = st.columns(2)
+    m1.metric("Empresas encontradas", numero(len(resultado)))
+    m2.metric("Com contato utilizável", numero(int(resultado["confianca"].isin(["alta", "media"]).sum())),
+              help="Confiança alta = decisor + contato que não é de contador; média = contato sem decisor.")
+    if contatos.empty:
+        st.info("Nenhum contato carregado ainda. Rode `python jobs/enriquecer_contatos.py` "
+                "para preencher a base (as empresas com sinal vêm primeiro).")
 
     tabela = resultado.copy()
     tabela["Possui SESI"] = tabela["POSSUI_SESI"].map({True: "SIM", False: "NÃO"})
@@ -681,14 +702,30 @@ elif pagina == "🔎 Explorador de Empresas":
     if "QTD_ESTABELECIMENTOS" in tabela.columns:
         tabela["Estabelecimentos"] = tabela["QTD_ESTABELECIMENTOS"]
 
+    tabela["Telefone"] = tabela["telefone_1"]
+    tabela["WhatsApp"] = tabela.get("whatsapp_provavel", "")
+    tabela["E-mail"] = tabela["email"]
+    tabela["Responsável"] = (tabela["decisor"] + tabela.get("decisor_cargo", "").fillna("")
+                             .map(lambda c: f" ({c})" if c else "")).str.strip()
+    tabela["Confiança"] = tabela["confianca"]
+    tabela["CNAEs secundários"] = tabela.get("cnaes_secundarios", "")
+    tabela["Endereço"] = tabela.get("endereco", "")
+
     colunas_finais = [
         c
         for c in [
             "cnpj",
             "razao_social",
             "Municipio",
+            "Endereço",
+            "Telefone",
+            "WhatsApp",
+            "E-mail",
+            "Responsável",
+            "Confiança",
             "Porte",
             "CNAE PRIMARIO",
+            "CNAEs secundários",
             "Estabelecimentos",
             "Possui SESI",
             "Possui SENAI",
