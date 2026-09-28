@@ -151,6 +151,10 @@ def render_sinais() -> None:
     if so_base:
         v = v[v["na_base_mestre"]]
 
+    from src.tools.contatos import carregar_contatos, juntar_contatos
+    v = juntar_contatos(v, carregar_contatos())
+    for c in ("telefone_1", "email", "decisor", "confianca"):
+        v[c] = v[c].fillna("")
     tabela = v.assign(
         selo=v["novo"].map({True: "🆕", False: ""}),
         tipo=v["icone"] + " " + v["rotulo_tipo"],
@@ -163,7 +167,7 @@ def render_sinais() -> None:
 
     st.dataframe(
         tabela[["selo", "tipo", "score_momento", "razao_social", "cnpj", "relacionamento",
-                "descricao", "oferta_sesi", "oferta_senai", "abordagem", "data_publicacao", "municipio",
+                "decisor", "telefone_1", "email", "confianca", "descricao", "oferta_sesi", "oferta_senai", "abordagem", "data_publicacao", "municipio",
                 "url_fonte"]],
         width="stretch", hide_index=True,
         column_config={
@@ -174,6 +178,10 @@ def render_sinais() -> None:
             "razao_social": "Empresa",
             "cnpj": "CNPJ",
             "relacionamento": "Relacionamento",
+            "decisor": "Responsável",
+            "telefone_1": "Telefone",
+            "email": "E-mail",
+            "confianca": "Confiança do contato",
             "descricao": "O que aconteceu",
             "oferta_sesi": "Ofertar SESI",
             "oferta_senai": "Ofertar SENAI",
