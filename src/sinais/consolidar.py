@@ -80,6 +80,10 @@ def _bate(condicao: dict | None, linha) -> bool:
         area = pd.to_numeric(linha.get("area_total"), errors="coerce")
         if pd.isna(area) or area < float(condicao["area_min"]):
             return False
+    if "valor_min" in condicao:
+        valor = pd.to_numeric(linha.get("valor"), errors="coerce")
+        if pd.isna(valor) or valor < float(condicao["valor_min"]):
+            return False
     return True
 
 

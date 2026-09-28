@@ -156,10 +156,15 @@ def render_sinais() -> None:
         tipo=v["icone"] + " " + v["rotulo_tipo"],
         relacionamento=v["STATUS_RELACIONAMENTO_REAL"].map(REL_BADGE).fillna(v["STATUS_RELACIONAMENTO_REAL"]),
     ).sort_values(["novo", "score_momento"], ascending=[False, False])
+    if "url_fonte" not in tabela:
+        tabela["url_fonte"] = None
+    tabela["url_fonte"] = tabela["url_fonte"].where(
+        tabela["url_fonte"].astype(str).str.startswith("http"), None)
 
     st.dataframe(
         tabela[["selo", "tipo", "score_momento", "razao_social", "cnpj", "relacionamento",
-                "descricao", "oferta_sesi", "oferta_senai", "abordagem", "data_publicacao", "municipio"]],
+                "descricao", "oferta_sesi", "oferta_senai", "abordagem", "data_publicacao", "municipio",
+                "url_fonte"]],
         width="stretch", hide_index=True,
         column_config={
             "selo": st.column_config.TextColumn(" ", width="small"),
@@ -175,6 +180,7 @@ def render_sinais() -> None:
             "abordagem": "Como abordar",
             "data_publicacao": st.column_config.DateColumn("Publicado em", format="DD/MM/YYYY"),
             "municipio": "Município",
+            "url_fonte": st.column_config.LinkColumn("Fonte", display_text="abrir ↗"),
         },
     )
     st.download_button(

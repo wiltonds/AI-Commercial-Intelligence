@@ -15,3 +15,9 @@ data/raw/cno/
 data/processed/SINAIS_*.csv
 data/processed/LOG_FONTES.csv
 data/processed/.coletando_cno.lock
+
+# Cache diário do PNCP (só contratos de AL)
+data/raw/pncp/
+
+# Log do agendador
+logs/

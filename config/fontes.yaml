@@ -86,15 +86,39 @@ fontes:
       peso_base: 4
 
   pncp:
-    nome: Portal Nacional de Contratações Públicas (PNCP)
+    nome: Portal Nacional de Contratações Públicas (PNCP) — contratos
     tabela_dw: (nova)
     modulo: sinais
     granularidade: empresa
-    chave: CNPJ do fornecedor
+    chave: CNPJ do fornecedor contratado (niFornecedor)
     frequencia_dias: 1
-    status: planejado
+    status: implementado
+    job: jobs/coletar_pncp.py
+    saida: data/processed/SINAIS_PNCP.csv
+    uf: AL
     url_pagina: https://pncp.gov.br
-    url_api: A CONFIRMAR  # API de consulta pública do PNCP
+    url_api: https://pncp.gov.br/api/consulta/v1/contratos
+    url_layout: https://pncp.gov.br/api/consulta/swagger-ui/index.html
+    observacao: >
+      A API não filtra por UF nem por palavra-chave: o job baixa todos os
+      contratos do dia e guarda só os de órgãos de AL (cache por dia em
+      data/raw/pncp). Município = sede da unidade do órgão contratante,
+      que é aproximação do local da execução.
+    recorte:                 # obra ou serviço de engenharia
+      categorias: [obra, engenharia]
+      ignorar_expressoes: [mao de obra, mao-de-obra]
+      termos_incluir: [obra, obras, construcao, reforma, ampliacao, pavimentacao,
+                       recapeamento, drenagem, esgotamento, saneamento, edificacao,
+                       urbanizacao, terraplenagem, servicos de engenharia, recuperacao estrutural,
+                       manutencao predial, implantacao de]
+      termos_excluir: [aquisicao de, fornecimento de material, locacao de veiculo,
+                       material de expediente, genero alimenticio]
+    sinal:
+      tipo: licitacao_vencida
+      validade_dias: 120
+      peso_base: 3
+      bonus_valor: {1000000: 1, 10000000: 1}   # +1 acima de R$ 1 mi, +1 acima de R$ 10 mi
+      janela_coleta_dias: 90
 
   novo_caged:
     nome: Novo CAGED — microdados (MTE/PDET)

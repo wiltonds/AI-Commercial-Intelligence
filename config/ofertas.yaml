@@ -10,7 +10,7 @@
 #   perfis           lista avaliada em ordem; vale o PRIMEIRO cujo
 #                    "quando" bate. Sem "quando" = perfil padrão.
 #                    Condições aceitas: qualificacao (lista de códigos),
-#                    area_min (m²)
+#                    area_min (m²), valor_min (R$)
 #   adicionais       blocos somados a qualquer perfil quando a
 #                    condição bate (ex.: obra de grande porte)
 # ============================================================
@@ -154,11 +154,28 @@ licitacao_vencida:
   rotulo: Venceu licitação
   icone: "🏛️"
   perfis:
-    - nome: Contrato público novo
+    - nome: Obra pública contratada
       abordagem: >
-        Contrato novo com prazo de execução: equipe a mobilizar e exigências
-        de SST do contratante público.
+        Contrato assinado com prazo de execução: equipe a mobilizar agora e
+        contratante público que costuma exigir SST em dia (PGR, PCMSO, ASO,
+        NRs). Abrir a conversa pelo contrato ("vimos que vocês assumiram a
+        obra X") e oferecer resolver a documentação e o treinamento da frente
+        de trabalho antes do início.
       sesi:
-        - PGR e PCMSO para o contrato
+        - PGR - Programa de Gerenciamento de Riscos (Construção Civil)
+        - PCMSO - Programa de Controle Médico de Saúde Ocupacional
+        - Avaliação clínica - ASO (admissionais da equipe mobilizada)
+        - Treinamento de NR 35 - Trabalho em Altura
       senai:
-        - Qualificação da equipe mobilizada
+        - Pedreiro de Alvenaria
+        - Eletricista Instalador Predial
+        - Encanador Instalador Predial
+  adicionais:
+    - nome: Contrato de grande valor
+      quando: {valor_min: 5000000}
+      sesi:
+        - Treinamento de NR 11/NR 18 - PEMT (Plataforma Elevatória)
+        - Treinamento de NR 10 - Segurança em Eletricidade
+        - LTCAT - Laudo Técnico das Condições Ambientais do Trabalho
+      senai:
+        - Mestre de Obras
