@@ -32,13 +32,15 @@ COLS_EMPRESA = ["cnpj_basico", "razao_social", "natureza_juridica", "qualificaca
 PORTE = {"01": "MICRO EMPRESA", "03": "PEQUENO PORTE", "05": "DEMAIS", "00": "NÃO INFORMADO"}
 ATIVA = "02"
 
-# Indústria pela seção CNAE: B extrativa, C transformação, D energia,
-# E água/esgoto/resíduos, F construção (divisões 05 a 43).
-DIVISOES_INDUSTRIA = set(range(5, 44))
+# Régua de indústria do Sistema (docs/arquitetura_dados.md): CNAE PRINCIPAL
+# na Tabela DN da CNI (1.298 CNAEs). Ela inclui serviços que a seção IBGE
+# não conta como indústria (engenharia, reparação de veículos, telecom...).
+ARQ_TABELA_DN = Path(__file__).resolve().parents[2] / "config" / "referencia" / "tabela_dn_cni.csv"
 
 # Faixa de colaboradores equivalente a cada Porte FIEA (critério de nº de
 # empregados SEBRAE/IBGE, que difere entre indústria e comércio/serviços).
 FAIXAS = {
+    "Indústria fora da Base Mestre": {"Micro": "até 19", "Pequena": "20 a 99", "Média": "100 a 499", "Grande": "500 ou mais"},
     "Indústria": {"Micro": "até 19", "Pequena": "20 a 99", "Média": "100 a 499", "Grande": "500 ou mais"},
     "Não indústria": {"Micro": "até 9", "Pequena": "10 a 49", "Média": "50 a 99", "Grande": "100 ou mais"},
 }
@@ -71,11 +73,35 @@ def ler_codigos(caminho: Path) -> dict[str, str]:
     return dict(zip(tabela["codigo"].str.strip(), tabela["descricao"].str.strip()))
 
 
-def tipo_por_cnae(cnae: str) -> str:
-    try:
-        return "Indústria" if int(str(cnae)[:2]) in DIVISOES_INDUSTRIA else "Não indústria"
-    except ValueError:
-        return "Não indústria"
+def _cnae7(valor) -> str:
+    d = "".join(ch for ch in str(valor or "").split(".")[0] if ch.isdigit())
+    return d.zfill(7) if d else ""
+
+
+def carregar_regua_industria(tabela_dn: Path = ARQ_TABELA_DN,
+                             base_mestre: Path | None = None) -> tuple[set[str], str]:
+    """CNAEs que contam como indústria, e de onde veio a régua.
+
+    1. Tabela DN da CNI, se estiver em config/referencia/tabela_dn_cni.csv
+       (primeira coluna com o código CNAE, em qualquer formato).
+    2. Senão, aproximação: os CNAEs principais presentes na Base Mestre —
+       que foi montada com a própria Tabela DN.
+    """
+    if Path(tabela_dn).exists():
+        t = pd.read_csv(tabela_dn, dtype=str, sep=None, engine="python", encoding="utf-8-sig")
+        codigos = {c for c in t.iloc[:, 0].map(_cnae7) if c}
+        return codigos, f"Tabela DN da CNI ({len(codigos)} CNAEs)"
+    if base_mestre is not None and Path(base_mestre).exists():
+        b = pd.read_csv(base_mestre, dtype=str, usecols=["SEBRAE_cnae_norm"], encoding="utf-8-sig")
+        codigos = {c for c in b["SEBRAE_cnae_norm"].map(_cnae7) if c}
+        return codigos, f"aproximação: CNAEs da Base Mestre ({len(codigos)}) — copie a Tabela DN para config/referencia/"
+    raise FileNotFoundError("Sem Tabela DN nem Base Mestre para definir o que é indústria.")
+
+
+def tipo_empresa(cnae: str, na_base_mestre: bool, regua: set[str]) -> str:
+    if na_base_mestre:
+        return "Indústria"
+    return "Indústria fora da Base Mestre" if _cnae7(cnae) in regua else "Não indústria"
 
 
 def consolidar_por_raiz(estab: pd.DataFrame) -> pd.DataFrame:

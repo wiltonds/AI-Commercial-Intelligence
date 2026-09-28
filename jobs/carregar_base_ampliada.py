@@ -4,8 +4,10 @@ carregar_base_ampliada.py — Não indústrias de AL + colaboradores + contatos 
 Lê os dados abertos do CNPJ (Receita Federal, carga mensal) e gera:
 
   data/processed/BASE_AMPLIADA_AL.csv
-      empresas NÃO industriais ativas de AL, médias e grandes (porte
+      empresas ativas de AL FORA da Base Mestre, médias e grandes (porte
       Receita DEMAIS ou EPP), uma linha por CNPJ raiz — sem contatos.
+      Tipo "Não indústria" (CNAE fora da Tabela DN da CNI) ou "Indústria
+      fora da Base Mestre" (CNAE na Tabela DN, mas ausente da base — lacuna).
       Órgãos públicos ficam fora (recorte B2B).
 
   data/contatos/CONTATOS_RECEITA.csv   (fora do Git — LGPD)
@@ -40,13 +42,14 @@ from src.tools.company_data import BASE_PATH  # noqa: E402
 from src.tools.receita_cnpj import (  # noqa: E402
     PORTE,
     carregar_porte_fiea,
+    carregar_regua_industria,
     consolidar_por_raiz,
     faixa_colaboradores,
     formatar_tel,
     ler_codigos,
     ler_empresas,
     ler_estabelecimentos,
-    tipo_por_cnae,
+    tipo_empresa,
 )
 
 RAIZ = Path(__file__).resolve().parent.parent
@@ -101,8 +104,10 @@ def montar(pasta: Path, uf: str = "AL") -> tuple[pd.DataFrame, pd.DataFrame]:
     mestre = pd.read_csv(BASE_PATH, dtype=str, usecols=["CNPJ_BASICO"], encoding="utf-8-sig")
     raizes_mestre = set(mestre["CNPJ_BASICO"].str.zfill(8))
 
-    df["Tipo"] = df["cnae_principal"].map(tipo_por_cnae)
+    regua, origem_regua = carregar_regua_industria(base_mestre=BASE_PATH)
+    print(f"Régua de indústria: {origem_regua}")
     df["na_base_mestre"] = df["cnpj_basico"].isin(raizes_mestre)
+    df["Tipo"] = [tipo_empresa(c, m, regua) for c, m in zip(df["cnae_principal"], df["na_base_mestre"])]
     df["Porte"] = df["porte_codigo"].map(PORTE).fillna("NÃO INFORMADO")
     df["Municipio"] = df["municipio_codigo"].map(municipios).fillna("").str.title()
     df["CNAE PRIMARIO"] = df["cnae_principal"].map(cnaes).fillna("")
@@ -114,7 +119,7 @@ def montar(pasta: Path, uf: str = "AL") -> tuple[pd.DataFrame, pd.DataFrame]:
     df["POSSUI_SENAI"] = df["cnpj_basico"].map(fiea["senai"]).fillna(False).astype(bool)
 
     # contatos da Receita: indústrias da Base Mestre + não indústrias do recorte
-    alvo = (~df["na_base_mestre"] & (df["Tipo"] == "Não indústria") & df["Porte"].isin(PORTES_ALVO)
+    alvo = (~df["na_base_mestre"] & df["Porte"].isin(PORTES_ALVO)
             & df["natureza_juridica"].str[:1].isin(NATUREZAS_B2B))
     contatos = df[df["na_base_mestre"] | alvo].assign(
         telefone_1=lambda d: [formatar_tel(a, b) for a, b in zip(d["ddd_1"], d["telefone_1"])],
@@ -152,7 +157,7 @@ def main():
     contatos.to_csv(ARQ_CONTATOS, index=False, encoding="utf-8-sig")
 
     print(f"\nSalvo: {ARQ_SAIDA.relative_to(RAIZ)}  ({len(amp):,} não indústrias)")
-    print(amp["Porte"].value_counts().to_string())
+    print(pd.crosstab(amp["Tipo"], amp["Porte"]).to_string())
     print(f"Com faixa de colaboradores: {int((amp['Origem colaboradores'] != 'Sem informação').sum()):,}")
     print(f"Salvo: {ARQ_CONTATOS.relative_to(RAIZ)}  ({len(contatos):,} empresas, "
           f"{int((contatos['email'] != '').sum()):,} com e-mail)")

@@ -670,14 +670,19 @@ elif pagina == "🔎 Explorador de Empresas":
     u1, u2 = st.columns([1, 2])
     universo_exp = u1.radio("Universo", ["Indústrias", "Não indústrias", "Todas"], horizontal=True,
                             disabled=nao_ind.empty,
-                            help="Não indústrias = médias e grandes de comércio e serviços de AL (Receita).")
+                            help="Indústria = CNAE principal na Tabela DN da CNI. Não indústrias = médias e "
+                                 "grandes de AL com CNAE fora dela (Receita).")
     if nao_ind.empty:
         u1.caption("Base de não indústrias ainda não carregada (jobs/carregar_base_ampliada.py).")
     industrias = anotar_industrias(df_view, _porte_fiea())
+    lacunas = nao_ind[nao_ind["Tipo"] == "Indústria fora da Base Mestre"] if not nao_ind.empty else nao_ind
     if universo_exp == "Indústrias" or nao_ind.empty:
-        resultado = industrias
+        resultado = pd.concat([industrias, lacunas], ignore_index=True) if not lacunas.empty else industrias
+        if not lacunas.empty:
+            st.caption(f"Inclui {numero(len(lacunas))} empresas com CNAE da Tabela DN (CNI) que ainda "
+                       "não estão na Base Mestre — Tipo \"Indústria fora da Base Mestre\".")
     elif universo_exp == "Não indústrias":
-        resultado = nao_ind.copy()
+        resultado = nao_ind[nao_ind["Tipo"] == "Não indústria"].copy()
         st.caption("Os filtros da barra lateral valem só para as indústrias.")
     else:
         resultado = pd.concat([industrias, nao_ind], ignore_index=True)
