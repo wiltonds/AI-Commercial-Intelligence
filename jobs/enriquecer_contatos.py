@@ -48,8 +48,16 @@ PORTE_ORDEM = {"DEMAIS": 0, "PEQUENO PORTE": 1, "MICRO EMPRESA": 2}
 
 
 def carregar_universo() -> pd.DataFrame:
-    from jobs.coletar_cno import carregar_empresas
-    emp = carregar_empresas()
+    """Base Mestre consolidada por CNPJ raiz (só depende de src/tools, que
+    existe em todas as branches — o robô roda na master e na sinais-cno)."""
+    from src.tools.cnpj_raiz import consolidar_por_cnpj_raiz
+    from src.tools.company_data import BASE_PATH
+    df = pd.read_csv(BASE_PATH, dtype=str, low_memory=False, encoding="utf-8-sig")
+    df["cnpj"] = df["cnpj"].str.replace(r"\D", "", regex=True).str.zfill(14)
+    df["POSSUI_SESI"] = df.get("TEM_SESI", "").astype(str).str.upper().eq("TRUE")
+    df["POSSUI_SENAI"] = df.get("TEM_SENAI", "").astype(str).str.upper().eq("TRUE")
+    df["POSSUI_SEBRAE"] = False
+    emp = consolidar_por_cnpj_raiz(df)
     emp["cnpj_basico"] = emp["CNPJ_BASICO"].astype(str).str.zfill(8)
     return emp[["cnpj_basico", "cnpj", "razao_social", "Porte"]]
 
