@@ -116,7 +116,7 @@ def salvar(contatos: pd.DataFrame) -> None:
 
 
 def rodar(limite: int, delay: float, validade: int, so_sinais: bool) -> pd.DataFrame:
-    contatos = carregar_contatos()
+    contatos = carregar_contatos(receita=None)   # só o que o robô consultou
     fila = montar_fila(carregar_universo(), contatos, cnpjs_com_sinal(), validade, so_sinais).head(limite)
     print(f"Na fila agora: {len(fila)} empresas ({int(fila['tem_sinal'].sum())} com sinal)")
 
@@ -139,7 +139,7 @@ def rodar(limite: int, delay: float, validade: int, so_sinais: bool) -> pd.DataF
 
     contatos = _mesclar(contatos, novos)
     salvar(contatos)
-    final = carregar_contatos()
+    final = carregar_contatos(receita=None)
     print(f"\nSalvo: {ARQ_CONTATOS.relative_to(RAIZ)}")
     print(f"Empresas com cadastro de contato: {len(final):,}")
     print(final["confianca"].value_counts().rename("confiança").to_string())

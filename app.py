@@ -655,12 +655,43 @@ elif pagina == "🔎 Explorador de Empresas":
     st.header("🔎 Explorador de Empresas")
     st.caption(f"{numero(len(df_view))} {subtitulo_universo} no contexto atual.")
 
+    # ---- universo: indústrias (Base Mestre) e/ou não indústrias (Base Ampliada da Receita)
+    from src.tools.universo_ampliado import anotar_industrias, carregar_ampliada, opcoes_faixa, porte_fiea
+
+    @st.cache_data(show_spinner=False)
+    def _ampliada():
+        return carregar_ampliada()
+
+    @st.cache_data(show_spinner=False)
+    def _porte_fiea():
+        return porte_fiea()
+
+    nao_ind = _ampliada()
+    u1, u2 = st.columns([1, 2])
+    universo_exp = u1.radio("Universo", ["Indústrias", "Não indústrias", "Todas"], horizontal=True,
+                            disabled=nao_ind.empty,
+                            help="Não indústrias = médias e grandes de comércio e serviços de AL (Receita).")
+    if nao_ind.empty:
+        u1.caption("Base de não indústrias ainda não carregada (jobs/carregar_base_ampliada.py).")
+    industrias = anotar_industrias(df_view, _porte_fiea())
+    if universo_exp == "Indústrias" or nao_ind.empty:
+        resultado = industrias
+    elif universo_exp == "Não indústrias":
+        resultado = nao_ind.copy()
+        st.caption("Os filtros da barra lateral valem só para as indústrias.")
+    else:
+        resultado = pd.concat([industrias, nao_ind], ignore_index=True)
+    faixas = u2.multiselect("Colaboradores (faixa)", opcoes_faixa(resultado["Colaboradores (faixa)"]),
+                            help="Faixa equivalente ao Porte FIEA da base de relacionamento. "
+                                 "Não há fonte pública com nº de empregados por CNPJ.")
+    if faixas:
+        resultado = resultado[resultado["Colaboradores (faixa)"].isin(faixas)]
+
     busca = st.text_input(
         "Pesquisar por CNPJ ou razão social",
         placeholder="Digite parte do CNPJ ou nome da empresa",
     )
 
-    resultado = df_view.copy()
     if busca:
         busca = busca.strip()
         mascara = pd.Series(False, index=resultado.index)
@@ -723,7 +754,11 @@ elif pagina == "🔎 Explorador de Empresas":
             "E-mail",
             "Responsável",
             "Confiança",
+            "Tipo",
             "Porte",
+            "Porte FIEA",
+            "Colaboradores (faixa)",
+            "Origem colaboradores",
             "CNAE PRIMARIO",
             "CNAEs secundários",
             "Estabelecimentos",

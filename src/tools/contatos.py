@@ -25,6 +25,7 @@ import pandas as pd
 
 RAIZ = Path(__file__).resolve().parents[2]
 ARQ_CONTATOS = RAIZ / "data" / "contatos" / "CONTATOS_EMPRESAS.csv"
+ARQ_RECEITA = RAIZ / "data" / "contatos" / "CONTATOS_RECEITA.csv"   # jobs/carregar_base_ampliada.py
 
 COLUNAS = [
     "cnpj_basico", "cnpj", "razao_social", "nome_fantasia", "situacao",
@@ -140,10 +141,32 @@ def avaliar_qualidade(df: pd.DataFrame, limite_repeticao: int = 3) -> pd.DataFra
     return df
 
 
-def carregar_contatos(caminho: Path = ARQ_CONTATOS) -> pd.DataFrame:
-    if not caminho.exists():
-        return pd.DataFrame(columns=COLUNAS)
-    return pd.read_csv(caminho, dtype=str, encoding="utf-8-sig").fillna("")
+def carregar_contatos(caminho: Path = ARQ_CONTATOS, receita: Path | None = ARQ_RECEITA) -> pd.DataFrame:
+    """Contatos do robô (BrasilAPI) complementados pelos dados abertos da Receita.
+
+    A Receita entra só onde falta: preenche e-mail/telefone vazios de quem o
+    robô já consultou e acrescenta quem ele ainda não consultou (sem
+    decisor). A confiança é recalculada sobre o conjunto.
+    """
+    base = (pd.read_csv(caminho, dtype=str, encoding="utf-8-sig").fillna("")
+            if caminho.exists() else pd.DataFrame(columns=COLUNAS))
+    base = base.reindex(columns=list(dict.fromkeys(COLUNAS + list(base.columns)))).fillna("")
+    if receita is None or not Path(receita).exists():
+        return base
+    rec = pd.read_csv(receita, dtype=str, encoding="utf-8-sig").fillna("").drop_duplicates("cnpj_basico")
+    campos = ["telefone_1", "telefone_2", "email"]
+    if not base.empty:
+        ref = rec.set_index("cnpj_basico")
+        for c in campos:
+            vazio = base[c].eq("")
+            base.loc[vazio, c] = base.loc[vazio, "cnpj_basico"].map(ref[c]).fillna("")
+    novos = rec[~rec["cnpj_basico"].isin(base["cnpj_basico"])].copy()
+    novos["fonte"] = "Receita Federal (dados abertos)"
+    todos = pd.concat([base, novos], ignore_index=True).reindex(columns=COLUNAS).fillna("")
+    todos["whatsapp_provavel"] = [
+        w or next((t for t in (a, b) if e_celular(t)), "")
+        for w, a, b in zip(todos["whatsapp_provavel"], todos["telefone_1"], todos["telefone_2"])]
+    return avaliar_qualidade(todos).astype(str).replace("nan", "")
 
 
 def juntar_contatos(empresas: pd.DataFrame, contatos: pd.DataFrame,
