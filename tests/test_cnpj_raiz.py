@@ -102,17 +102,18 @@ def test_numeros_reais_da_base_mestre():
     df_empresas = consolidar_por_cnpj_raiz(df)
     resumo = resumir_consolidacao(df, df_empresas)
 
-    assert resumo["total_estabelecimentos"] == 14903
-    assert resumo["total_empresas"] == 13978
-    assert resumo["empresas_com_filial"] == 428
-    assert resumo["total_filiais"] == 925
-    assert resumo["ja_clientes"] == 766
-    assert int(
-        (df_empresas["STATUS_RELACIONAMENTO_REAL"] != "Sem relacionamento").sum()
-    ) == 766
+    # A base passa a ser atualizada (competências da Receita, propostas), então o
+    # teste verifica CONSISTÊNCIA em vez de fixar números de uma versão.
+    raizes = df["cnpj"].str[:8].nunique()
+    assert resumo["total_estabelecimentos"] == len(df)
+    assert resumo["total_empresas"] == raizes == len(df_empresas)
+    assert resumo["total_filiais"] == len(df) - raizes
+    assert 0 < resumo["empresas_com_filial"] <= resumo["total_filiais"]
+    clientes = int((df_empresas["STATUS_RELACIONAMENTO_REAL"] != "Sem relacionamento").sum())
+    assert resumo["ja_clientes"] == clientes > 0
 
     pistas = separar_pistas(df_empresas)
     assert (
         len(pistas["novos"]) + len(pistas["antigos"]) + len(pistas["contas_nomeadas"])
-        == 13978
+        == resumo["total_empresas"]
     )

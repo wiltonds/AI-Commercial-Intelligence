@@ -1,0 +1,4 @@
+# Quem conta como cliente (jobs/atualizar_relacionamento.py)
+meses_ativo: 24              # "Ativo" = última compra nos últimos N meses; antes disso = "Inativo"
+status_venda: [Aceita]       # status de proposta que conta como venda
+entidades: [SESI, SENAI]     # IEL e FIEA ficam de fora

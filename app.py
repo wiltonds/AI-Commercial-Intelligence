@@ -264,6 +264,7 @@ pagina = st.sidebar.radio(
         "📊 Visão Geral",
         "🏢 Empresas (CNPJ raiz)",
         "🏭 Mercado",
+        "📈 Share & Relacionamento",
         "🔵 Visão SESI",
         "🟠 Visão SENAI",
         "🟢 Visão SEBRAE",
@@ -474,6 +475,11 @@ elif pagina == "🏭 Mercado":
 # ------------------------------------------------------------
 # 2. VISÃO SESI
 # ------------------------------------------------------------
+elif pagina == "📈 Share & Relacionamento":
+    from src.paginas.share_relacionamento import render as render_share
+    render_share(df_view, df_estabelecimentos_view)
+
+
 elif pagina == "🔵 Visão SESI":
     st.header("🔵 Visão Estratégica SESI")
     sem_sesi = mercado - sesi
@@ -738,6 +744,14 @@ elif pagina == "🔎 Explorador de Empresas":
     if "QTD_ESTABELECIMENTOS" in tabela.columns:
         tabela["Estabelecimentos"] = tabela["QTD_ESTABELECIMENTOS"]
 
+    tabela["Situação cliente"] = tabela.get("SITUACAO_CLIENTE", pd.Series("", index=tabela.index)).fillna("")
+    tabela["Última compra"] = tabela.get("ULTIMA_COMPRA", pd.Series("", index=tabela.index)).fillna("")
+    _priv = Path(__file__).resolve().parent / "data" / "privado" / "RELACIONAMENTO_POR_EMPRESA.csv"
+    if _priv.exists():   # confidencial: só aparece onde o arquivo existir (fora do Git)
+        _r = pd.read_csv(_priv, dtype=str).set_index("cnpj_basico")
+        _raiz = tabela["cnpj"].astype(str).str.replace(r"\D", "", regex=True).str.zfill(14).str[:8]
+        tabela["Linhas compradas"] = _raiz.map(_r["LINHAS_COMPRADAS"]).fillna("")
+        tabela["Valor aceito (R$)"] = pd.to_numeric(_raiz.map(_r["VALOR_ACEITO_TOTAL"]), errors="coerce")
     tabela["Telefone"] = tabela["telefone_1"]
     tabela["WhatsApp"] = tabela.get("whatsapp_provavel", "")
     tabela["E-mail"] = tabela["email"]
@@ -768,6 +782,10 @@ elif pagina == "🔎 Explorador de Empresas":
             "Responsável",
             "Confiança",
             "Tipo",
+            "Situação cliente",
+            "Última compra",
+            "Linhas compradas",
+            "Valor aceito (R$)",
             "Porte",
             "Porte FIEA",
             "Colaboradores (faixa)",

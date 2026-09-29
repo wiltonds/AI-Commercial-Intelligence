@@ -55,5 +55,16 @@ def opcoes_faixa(serie: pd.Series) -> list[str]:
     return [f for f in ORDEM_FAIXA if f in presentes] + ([SEM_INFO] if SEM_INFO in presentes else [])
 
 
-def porte_fiea(caminho: Path = ARQ_RELACIONAMENTO) -> pd.DataFrame:
-    return carregar_porte_fiea(caminho)
+ARQ_PORTE_PROPOSTAS = RAIZ / "data" / "processed" / "PORTE_FIEA.csv"
+
+
+def porte_fiea(caminho: Path = ARQ_RELACIONAMENTO, propostas: Path = ARQ_PORTE_PROPOSTAS) -> pd.DataFrame:
+    """Porte FIEA por CNPJ raiz: o das propostas (mais recente e mais amplo) tem
+    prioridade; a planilha antiga de relacionamento completa o que faltar."""
+    antigo = carregar_porte_fiea(caminho)
+    if not Path(propostas).exists():
+        return antigo
+    novo = pd.read_csv(propostas, dtype=str).fillna("")
+    novo = novo[novo["porte_fiea"] != ""]
+    resto = antigo[~antigo["cnpj_basico"].isin(novo["cnpj_basico"])] if not antigo.empty else antigo
+    return pd.concat([novo, resto[["cnpj_basico", "porte_fiea"]] if not resto.empty else resto], ignore_index=True)

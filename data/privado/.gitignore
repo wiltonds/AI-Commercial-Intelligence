@@ -1,0 +1,3 @@
+# Dados comerciais confidenciais (valores, propostas): nunca vão para o Git
+*
+!.gitignore

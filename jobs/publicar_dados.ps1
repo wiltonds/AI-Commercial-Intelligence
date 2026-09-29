@@ -15,6 +15,10 @@ Em laço, a cada 5 minutos, enquanto os jobs rodam:
 param([string]$Destino = "")
 
 $arquivos = @(
+    "data/processed/BASE_MESTRE_COMERCIAL.csv",
+    "data/processed/PORTE_FIEA.csv",
+    "data/processed/PRODUTOS_RANKING.csv",
+    "data/processed/ATENDIMENTO_POR_ANO.csv",
     "data/processed/BASE_AMPLIADA_AL.csv",
     "data/contatos/CONTATOS_EMPRESAS.csv",
     "data/contatos/CONTATOS_RECEITA.csv"
