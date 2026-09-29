@@ -796,7 +796,7 @@ elif pagina == "🔎 Explorador de Empresas":
 
     st.download_button(
         "⬇️ Baixar resultado",
-        data=tabela_final.to_csv(index=False, encoding="utf-8-sig"),
+        data=tabela_final.to_csv(index=False).encode("utf-8-sig"),  # BOM: Excel lê os acentos
         file_name="empresas_filtradas.csv",
         mime="text/csv",
     )
@@ -888,7 +888,7 @@ elif pagina == "🎯 Base Qualificada (CRM)":
             st.dataframe(qualificada, use_container_width=True, height=520, hide_index=True)
             st.download_button(
                 "⬇️ Baixar base qualificada (CSV)",
-                data=qualificada.to_csv(index=False, encoding="utf-8-sig"),
+                data=qualificada.to_csv(index=False).encode("utf-8-sig"),  # BOM: Excel lê os acentos
                 file_name="base_qualificada_crm.csv",
                 mime="text/csv",
             )
