@@ -1,0 +1,49 @@
+﻿produto,Entidade,industria_base,empresas,propostas,valor,empresas_recentes
+Consultoria,SENAI,True,629,1686,10093014.12,355
+Saúde,SESI,True,614,1261,7446024.82,612
+Segurança Do Trabalho,SESI,True,559,1246,4853934.37,556
+Saúde,SESI,False,492,744,1837315.07,489
+Segurança Do Trabalho,SESI,False,461,659,2614267.4,461
+Consultoria,SENAI,False,312,562,5894853.43,61
+Educação Profissional,SENAI,True,265,878,8844173.79,2
+Metrologia,SENAI,True,256,1443,3578883.85,156
+Educação Corporativa,SESI,True,239,540,1843718.93,238
+Aprendizagem Industrial Básica,SENAI,True,231,571,536547.95,230
+Metrologia,SENAI,False,230,875,924949.31,100
+Educação Profissional,SENAI,False,214,380,21697068.12,0
+Educação Corporativa,SESI,False,131,224,1497442.89,128
+Promoção À Saúde,SESI,True,119,220,914157.86,118
+Qualificação Profissional,SENAI,True,57,66,1569627.74,57
+Promoção À Saúde - Assti,SESI,True,54,59,0.12,54
+Locação De Espaços,SESI,False,49,129,353036.8,49
+Aperfeiçoamento Profissional,SENAI,False,47,63,982512.14,47
+Aperfeiçoamento Profissional,SENAI,True,46,160,2065148.67,45
+Habilitação Técnica De Nível Médio,SENAI,True,41,44,451459.52,41
+Promoção À Saúde,SESI,False,39,71,1199906.09,39
+Qualificação Profissional,SENAI,False,37,46,5927583.65,35
+Inovação,SENAI,False,36,49,7224940.47,4
+Aprendizagem Industrial Básica,SENAI,False,36,64,550143.27,36
+Locação De Espaços,SENAI,False,34,73,446482.8,15
+Núcleo De Prevenção E Performance,SESI,True,33,50,109795.25,33
+Inovação E Empreendedorismo,SENAI,True,24,54,430743.19,24
+Iniciação Profissional,SENAI,False,23,26,1337707.96,23
+Núcleo De Prevenção E Performance,SESI,False,21,29,106531.41,21
+Inovação,SENAI,True,18,20,183070.66,5
+Soluções Digitais,SENAI,False,17,71,47449666.78,10
+Iniciação Profissional,SENAI,True,11,15,76153.48,11
+Habilitação Técnica De Nível Médio,SENAI,False,9,16,19275221.85,9
+Locação De Espaços,SENAI,True,7,12,9905.0,6
+Inovação E Empreendedorismo,SENAI,False,7,17,3799076.8,7
+Promoção À Saúde - Assti,SESI,False,7,7,0.0,7
+Locação De Espaços,SESI,True,6,10,11625.0,6
+Segurança Do Trabalho,SENAI,False,6,8,1415.32,0
+Segurança Do Trabalho,SENAI,True,4,6,268.41,0
+Promoção À Saúde - Coração Da Indústria,SESI,True,4,4,0.0,3
+Programas E Parcerias Educacionais,SESI,False,4,6,5038804.28,4
+Demais Ações Educacionais (Ep),SENAI,True,2,9,1203927.18,2
+Soluções Digitais,SENAI,True,2,2,59660.0,1
+Observatório Da Indústria,SENAI,False,2,2,179875.52,2
+Demais Ações Educacionais (Ep),SENAI,False,1,2,3615216.8,1
+Observatório Da Indústria,SENAI,True,1,1,0.0,1
+Observatório Da Indústria,SESI,False,1,2,839875.52,1
+Programas E Parcerias Educacionais,SESI,True,1,1,366385.0,1
