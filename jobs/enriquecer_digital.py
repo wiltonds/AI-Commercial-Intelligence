@@ -31,6 +31,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.tools.contatos import ARQ_CONTATOS, COLUNAS, avaliar_qualidade, carregar_contatos  # noqa: E402
 from src.tools.presenca_digital import (  # noqa: E402
+    PAGINAS_CONTATO,
+    deve_buscar,
     escolher_resultados,
     extrair_do_site,
     montar_consulta,
@@ -61,6 +63,9 @@ def ler_site(url: str) -> str:
 
 
 def pesquisar(linha: dict, chave: str, busca=buscar, site=ler_site) -> dict:
+    agora = datetime.now().isoformat(timespec="seconds")
+    if not deve_buscar(linha.get("razao_social", "")):
+        return {"site": "", "instagram": "", "email_site": "", "whatsapp_site": "", "digital_em": agora}
     nome = nome_de_busca(linha.get("razao_social", ""), linha.get("nome_fantasia", ""))
     res = escolher_resultados(busca(montar_consulta(linha.get("razao_social", ""),
                                                     linha.get("nome_fantasia", ""),
@@ -70,10 +75,38 @@ def pesquisar(linha: dict, chave: str, busca=buscar, site=ler_site) -> dict:
                     if k == "instagram" and v})
     extra = {"email_site": "", "whatsapp_site": ""}
     if res["site"]:
-        extra = extrair_do_site(site(res["site"]), urlparse(res["site"]).netloc)
+        dominio = urlparse(res["site"]).netloc
+        extra = extrair_do_site(site(res["site"]), dominio)
+        for pagina in PAGINAS_CONTATO:                      # e-mail costuma estar na página de contato
+            if extra["email_site"] and extra["whatsapp_site"]:
+                break
+            mais = extrair_do_site(site(res["site"] + pagina), dominio)
+            extra = {k: extra[k] or mais[k] for k in extra}
         res["instagram"] = res["instagram"] or extra["instagram"]
     return {"site": res["site"], "instagram": res["instagram"], "email_site": extra["email_site"],
-            "whatsapp_site": extra["whatsapp_site"], "digital_em": datetime.now().isoformat(timespec="seconds")}
+            "whatsapp_site": extra["whatsapp_site"], "digital_em": agora}
+
+
+def revalidar(contatos: pd.DataFrame) -> tuple[pd.DataFrame, int, int]:
+    """Aplica as regras atuais ao que JÁ foi coletado, sem nenhuma busca nova.
+
+    Apaga site/Instagram que não passam (diretórios, homônimos, perfis
+    genéricos...). E-mail e WhatsApp do site só ficam se o site ficar.
+    """
+    df = contatos.copy()
+    sites_fora = igs_fora = 0
+    for i, x in df[df["digital_em"].fillna("") != ""].iterrows():
+        nome = nome_de_busca(x.get("razao_social", ""), x.get("nome_fantasia", ""))
+        pode = deve_buscar(x.get("razao_social", ""))
+        site_ok = bool(x["site"]) and pode and bool(escolher_resultados([{"link": x["site"]}], nome)["site"])
+        ig_ok = bool(x["instagram"]) and pode and bool(escolher_resultados([{"link": x["instagram"]}], nome)["instagram"])
+        if x["site"] and not site_ok:
+            df.loc[i, ["site", "email_site", "whatsapp_site"]] = ""
+            sites_fora += 1
+        if x["instagram"] and not ig_ok:
+            df.loc[i, "instagram"] = ""
+            igs_fora += 1
+    return df, sites_fora, igs_fora
 
 
 def montar_fila(contatos: pd.DataFrame, com_sinal: set[str], porte: dict[str, str]) -> pd.DataFrame:
@@ -106,12 +139,27 @@ def salvar(df: pd.DataFrame) -> None:
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--limite", type=int, default=200)
+    parser.add_argument("--revalidar", action="store_true",
+                        help="só aplica as regras atuais ao que já foi coletado (sem busca, sem custo)")
+    parser.add_argument("--refazer", action="store_true",
+                        help="apaga os resultados digitais já gravados e pesquisa de novo (usa créditos)")
     args = parser.parse_args()
+    if args.revalidar:
+        contatos, sf, igf = revalidar(carregar_contatos(receita=None))
+        salvar(contatos)
+        feitos = contatos[contatos["digital_em"] != ""]
+        print(f"Revalidado sem busca: {sf} sites e {igf} Instagrams removidos.")
+        print(f"Ficaram: {(feitos['site'] != '').sum():,} sites e {(feitos['instagram'] != '').sum():,} Instagrams "
+              f"em {len(feitos):,} empresas pesquisadas.")
+        return
     chave = os.getenv("SERPER_API_KEY", "")
     if not chave:
         sys.exit('Defina a chave antes: $env:SERPER_API_KEY="sua_chave"')
 
     contatos = carregar_contatos(receita=None)
+    if args.refazer:
+        for c in ("site", "instagram", "email_site", "whatsapp_site", "digital_em"):
+            contatos[c] = ""
     fila = montar_fila(contatos, _com_sinal(), _porte_por_raiz()).head(args.limite)
     print(f"Pesquisando presença digital de {len(fila)} empresas ...")
     idx = contatos.set_index("cnpj_basico").index
