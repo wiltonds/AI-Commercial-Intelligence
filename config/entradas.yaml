@@ -121,7 +121,8 @@ entradas:
     comando: .\jobs\publicar_dados.ps1   (depois, Reboot app no Streamlit)
     atualiza: >
       Leva ao GitHub/Streamlit tudo o que os passos anteriores geraram (menos data/privado e data/contatos),
-      e faz backup desses dois no Teams (INTELIGÊNCIA COMERCIAL - 2026\Backup), via jobs/backup_teams.ps1.
+      e prepara o backup desses dois para o Teams (jobs/backup_teams.ps1): abre a pasta
+      Downloads\PARA_O_TEAMS e o SharePoint — arrastar o .zip e as listas para lá.
     frequencia_dias: 35
     confidencial: false
     ordem: 9
