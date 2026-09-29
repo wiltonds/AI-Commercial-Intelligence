@@ -268,6 +268,7 @@ PAGINAS_COMERCIAIS = [
     "🎯 Base Qualificada (CRM)",
 ]
 PAGINAS_TECNICAS = [
+    "🗓️ Rotina de Dados",
     "🏢 Empresas (CNPJ raiz)",
     "🏭 Mercado",
     "🔵 Visão SESI",
@@ -489,6 +490,11 @@ elif pagina == "🏭 Mercado":
 # ------------------------------------------------------------
 # 2. VISÃO SESI
 # ------------------------------------------------------------
+elif pagina == "🗓️ Rotina de Dados":
+    from src.paginas.rotina_dados import render as render_rotina
+    render_rotina()
+
+
 elif pagina == "📈 Share & Relacionamento":
     from src.paginas.share_relacionamento import render as render_share
     render_share(df_view, df_estabelecimentos_view)
