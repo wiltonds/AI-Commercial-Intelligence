@@ -1,4 +1,4 @@
-<#
+﻿<#
 publicar_dados.ps1 — Sobe para o GitHub os arquivos de dados que o painel lê.
 
 Só faz commit se algum arquivo mudou. Não troca de branch: publica na
