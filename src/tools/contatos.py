@@ -34,6 +34,7 @@ COLUNAS = [
     "decisor", "decisor_cargo", "socios",
     "cnae_principal", "cnaes_secundarios",
     "contato_de_contador", "confianca", "fonte", "atualizado_em",
+    "site", "instagram", "email_site", "whatsapp_site", "digital_em",
 ]
 
 # ordem de preferência do "decisor" dentro do QSA
@@ -58,8 +59,54 @@ def formatar_telefone(bruto) -> str:
 
 
 def e_celular(telefone: str) -> bool:
+    """Celular atual (11 dígitos, 9 na frente) ou antigo, cadastrado antes do
+    nono dígito (10 dígitos começando em 6, 7, 8 ou 9 depois do DDD)."""
     d = _digitos(telefone)
-    return len(d) == 11 and d[2] == "9"
+    return (len(d) == 11 and d[2] == "9") or (len(d) == 10 and d[2] in "6789")
+
+
+def normalizar_celular(telefone: str) -> str:
+    """(82) 8176-7041 -> (82) 98176-7041. Fixo e vazio voltam como estão."""
+    d = _digitos(telefone)
+    if len(d) == 10 and d[2] in "6789":
+        return formatar_telefone(d[:2] + "9" + d[2:])
+    return telefone
+
+
+EMPRESA_NO_NOME = re.compile(
+    r"\b(ltda|s/?a|eireli|epp|cia|comercio|industria|servicos|construc|engenharia|"
+    r"distribuidora|transportes|associacao|cooperativa|consultoria|solucoes)", re.I)
+
+
+def titular_firma_individual(razao_social: str) -> str:
+    """Nome do dono quando a razão social é o próprio nome (firma individual).
+
+    Ex.: '54.220.917 JOSE DA SILVA CRUZ' -> 'Jose Da Silva Cruz'.
+    Razão com cara de empresa (LTDA, COMERCIO...) não vira pessoa.
+    """
+    nome = re.sub(r"^[\d./-]+\s*", "", str(razao_social or "")).strip()
+    palavras = nome.split()
+    if not (2 <= len(palavras) <= 6) or EMPRESA_NO_NOME.search(_sem_acento(nome)) or re.search(r"\d", nome):
+        return ""
+    return nome.title()
+
+
+def segunda_passada(df: pd.DataFrame) -> pd.DataFrame:
+    """Melhora o que já foi coletado, sem consultar nada de novo:
+    celulares antigos ganham o 9 e vão para WhatsApp; firma individual sem
+    sócio ganha o titular como responsável; confiança recalculada."""
+    df = df.copy()
+    for c in ("telefone_1", "telefone_2", "decisor", "decisor_cargo", "razao_social", "whatsapp_provavel"):
+        df[c] = df[c].fillna("").astype(str)
+    df["telefone_1"] = df["telefone_1"].map(normalizar_celular)
+    df["telefone_2"] = df["telefone_2"].map(normalizar_celular)
+    df["whatsapp_provavel"] = [next((t for t in (a, b) if e_celular(t)), "")
+                               for a, b in zip(df["telefone_1"], df["telefone_2"])]
+    sem = df["decisor"].eq("")
+    titular = df.loc[sem, "razao_social"].map(titular_firma_individual)
+    df.loc[sem, "decisor"] = titular
+    df.loc[sem & df["decisor"].ne(""), "decisor_cargo"] = "Titular (firma individual)"
+    return avaliar_qualidade(df)
 
 
 def _sem_acento(t: str) -> str:
@@ -106,7 +153,7 @@ def extrair_contato(dados: dict) -> dict:
         "municipio": str(dados.get("municipio") or "").title(), "uf": dados.get("uf") or "",
         "endereco": endereco.title(), "cep": _digitos(dados.get("cep")),
         "telefone_1": tel1, "telefone_2": tel2,
-        "whatsapp_provavel": next((t for t in (tel1, tel2) if e_celular(t)), ""),
+        "whatsapp_provavel": next((normalizar_celular(t) for t in (tel1, tel2) if e_celular(t)), ""),
         "email": str(dados.get("email") or "").strip().lower(),
         "decisor": decisor, "decisor_cargo": cargo, "socios": socios,
         "cnae_principal": f"{principal} - {dados.get('cnae_fiscal_descricao') or ''}" if principal else "",
@@ -166,6 +213,7 @@ def carregar_contatos(caminho: Path = ARQ_CONTATOS, receita: Path | None = ARQ_R
     todos["whatsapp_provavel"] = [
         w or next((t for t in (a, b) if e_celular(t)), "")
         for w, a, b in zip(todos["whatsapp_provavel"], todos["telefone_1"], todos["telefone_2"])]
+    todos["whatsapp_provavel"] = todos["whatsapp_provavel"].map(normalizar_celular)
     return avaliar_qualidade(todos).astype(str).replace("nan", "")
 
 
@@ -174,7 +222,7 @@ def juntar_contatos(empresas: pd.DataFrame, contatos: pd.DataFrame,
     """Acrescenta as colunas de contato a qualquer tabela que tenha o CNPJ raiz."""
     cols = ["cnpj_basico", "telefone_1", "telefone_2", "whatsapp_provavel", "email",
             "decisor", "decisor_cargo", "cnaes_secundarios", "endereco", "confianca",
-            "contato_de_contador", "atualizado_em"]
+            "contato_de_contador", "atualizado_em", "site", "instagram", "email_site", "whatsapp_site"]
     if contatos.empty:
         return empresas.assign(**{c: "" for c in cols[1:]})
     ref = contatos[[c for c in cols if c in contatos.columns]].drop_duplicates("cnpj_basico")

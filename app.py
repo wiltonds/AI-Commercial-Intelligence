@@ -741,6 +741,10 @@ elif pagina == "🔎 Explorador de Empresas":
     tabela["Telefone"] = tabela["telefone_1"]
     tabela["WhatsApp"] = tabela.get("whatsapp_provavel", "")
     tabela["E-mail"] = tabela["email"]
+    tabela["E-mail (site)"] = tabela.get("email_site", "")
+    tabela["Instagram"] = tabela.get("instagram", "")
+    tabela["Site"] = tabela.get("site", "")
+    tabela["WhatsApp (site)"] = tabela.get("whatsapp_site", "")
     tabela["Responsável"] = (tabela["decisor"] + tabela.get("decisor_cargo", "").fillna("")
                              .map(lambda c: f" ({c})" if c else "")).str.strip()
     tabela["Confiança"] = tabela["confianca"]
@@ -757,6 +761,10 @@ elif pagina == "🔎 Explorador de Empresas":
             "Telefone",
             "WhatsApp",
             "E-mail",
+            "E-mail (site)",
+            "Instagram",
+            "Site",
+            "WhatsApp (site)",
             "Responsável",
             "Confiança",
             "Tipo",
@@ -776,8 +784,15 @@ elif pagina == "🔎 Explorador de Empresas":
         if c in tabela.columns
     ]
     tabela_final = tabela[colunas_finais]
+    vista = tabela_final.copy()
+    for c in ("Instagram", "Site"):
+        if c in vista:
+            vista[c] = vista[c].where(vista[c].astype(str).str.startswith("http"), None)
 
-    st.dataframe(tabela_final, use_container_width=True, height=600, hide_index=True)
+    st.dataframe(vista, use_container_width=True, height=600, hide_index=True, column_config={
+        "Instagram": st.column_config.LinkColumn("Instagram", display_text=r"instagram\.com/(.+)"),
+        "Site": st.column_config.LinkColumn("Site"),
+    })
 
     st.download_button(
         "⬇️ Baixar resultado",
