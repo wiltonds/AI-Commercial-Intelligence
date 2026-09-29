@@ -126,3 +126,35 @@ def test_universo_do_explorador(pasta, job, tmp_path):
     assert ind.iloc[0]["Colaboradores (faixa)"] == "500 ou mais" and ind.iloc[0]["Tipo"] == "Indústria"
     assert opcoes_faixa(pd.concat([nao, ind])["Colaboradores (faixa)"]) == ["50 a 99", "500 ou mais", "Sem informação"]
     assert carregar_ampliada(tmp_path / "nao_existe.csv").empty
+
+
+def test_filtro_de_venda_tira_entidades_e_mantem_hospital():
+    from src.tools.receita_cnpj import carregar_filtro, manter_para_venda
+    df = pd.DataFrame({
+        "Tipo": ["Não indústria"] * 7 + ["Indústria fora da Base Mestre"],
+        "natureza": ["Sociedade Empresária Limitada", "Condomínio Edilício", "Órgão de Direção Local de Partido Político",
+                     "Associação Privada", "Associação Privada", "Sociedade Empresária Limitada",
+                     "Sociedade Unipessoal de Advocacia", "Associação Privada"],
+        "cnae_principal": ["4711302", "8112500", "9492800", "8610101", "9430800", "6462000", "6911701", "2511000"],
+    })
+    manter = manter_para_venda(df, carregar_filtro())
+    assert list(manter) == [True, False, False, True, False, False, False, True]
+    assert manter_para_venda(df, {}).all()
+
+
+def test_refiltrar_arquivo_existente(tmp_path, monkeypatch):
+    from jobs import carregar_base_ampliada as j
+    amp = tmp_path / "amp.csv"
+    pd.DataFrame({"cnpj_basico": ["1", "2"], "Tipo": ["Não indústria"] * 2, "Porte": ["DEMAIS"] * 2,
+                  "natureza": ["Sociedade Empresária Limitada", "Condomínio Edilício"],
+                  "cnae_principal": ["4711302", "8112500"]}).to_csv(amp, index=False)
+    cont = tmp_path / "cont.csv"
+    pd.DataFrame({"cnpj_basico": ["1", "2", "77777777"], "email": ["a@x", "b@x", "c@x"]}).to_csv(cont, index=False)
+    mestre = tmp_path / "mestre.csv"
+    pd.DataFrame({"CNPJ_BASICO": ["77777777"]}).to_csv(mestre, index=False)
+    monkeypatch.setattr(j, "ARQ_SAIDA", amp)
+    monkeypatch.setattr(j, "ARQ_CONTATOS", cont)
+    monkeypatch.setattr(j, "BASE_PATH", mestre)
+    j.refiltrar()
+    assert list(pd.read_csv(amp, dtype=str)["cnpj_basico"]) == ["1"]
+    assert set(pd.read_csv(cont, dtype=str)["cnpj_basico"]) == {"1", "77777777"}

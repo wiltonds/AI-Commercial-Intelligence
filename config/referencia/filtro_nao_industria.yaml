@@ -1,0 +1,37 @@
+# ============================================================
+# Quem NÃO entra na base de não indústrias (recorte de venda direta)
+#
+# Porte "DEMAIS" na Receita não quer dizer empresa grande: quer dizer que
+# a empresa não se declarou ME/EPP. Entidades sem fins lucrativos, condomínios
+# e diretórios de partido caem aí por padrão e inflavam a base.
+#
+# Os textos são comparados sem acento e sem maiúsculas, por "contém".
+# Depois de editar, reaplique sem reprocessar a Receita:
+#     python jobs/carregar_base_ampliada.py --refiltrar
+# ============================================================
+
+excluir_naturezas:          # descrição da natureza jurídica (tabela Naturezas da Receita)
+  - partido politico
+  - condominio
+  - organizacao religiosa
+  - entidade sindical
+  - servico notarial
+  - unipessoal de advocacia
+  - conta de participacao
+  - associacao privada        # exceções abaixo
+
+excluir_cnaes:              # CNAE principal (7 dígitos), qualquer natureza
+  - "9492800"   # organizações políticas
+  - "9491000"   # organizações religiosas
+  - "8112500"   # condomínios prediais
+  - "8550301"   # caixas escolares
+  - "6461100"   # holdings de instituições financeiras
+  - "6462000"   # holdings de instituições não financeiras
+  - "6463800"   # outras sociedades de participação
+  - "9430800"   # associações de defesa de direitos sociais
+  - "9420100"   # organizações sindicais
+  - "6911701"   # cartórios
+
+# Associação privada entra só se atuar nestas divisões CNAE — contratam
+# gente e compram SST e qualificação (hospitais, escolas, assistência).
+associacao_mantida_se_divisao: [85, 86, 87, 88]

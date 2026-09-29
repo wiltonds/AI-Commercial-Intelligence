@@ -41,6 +41,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src.tools.company_data import BASE_PATH  # noqa: E402
 from src.tools.receita_cnpj import (  # noqa: E402
     PORTE,
+    carregar_filtro,
     carregar_porte_fiea,
     carregar_regua_industria,
     consolidar_por_raiz,
@@ -49,6 +50,7 @@ from src.tools.receita_cnpj import (  # noqa: E402
     ler_codigos,
     ler_empresas,
     ler_estabelecimentos,
+    manter_para_venda,
     tipo_empresa,
 )
 
@@ -121,6 +123,7 @@ def montar(pasta: Path, uf: str = "AL") -> tuple[pd.DataFrame, pd.DataFrame]:
     # contatos da Receita: indústrias da Base Mestre + não indústrias do recorte
     alvo = (~df["na_base_mestre"] & df["Porte"].isin(PORTES_ALVO)
             & df["natureza_juridica"].str[:1].isin(NATUREZAS_B2B))
+    alvo &= manter_para_venda(df, carregar_filtro())
     contatos = df[df["na_base_mestre"] | alvo].assign(
         telefone_1=lambda d: [formatar_tel(a, b) for a, b in zip(d["ddd_1"], d["telefone_1"])],
         telefone_2=lambda d: [formatar_tel(a, b) for a, b in zip(d["ddd_2"], d["telefone_2"])],
@@ -139,11 +142,31 @@ def montar(pasta: Path, uf: str = "AL") -> tuple[pd.DataFrame, pd.DataFrame]:
     return amp[colunas].sort_values(["Porte", "razao_social"]).reset_index(drop=True), contatos
 
 
+def refiltrar() -> None:
+    """Reaplica o filtro de venda no arquivo já gerado (sem reprocessar a Receita)."""
+    amp = pd.read_csv(ARQ_SAIDA, dtype=str, encoding="utf-8-sig").fillna("")
+    antes = len(amp)
+    amp = amp[manter_para_venda(amp, carregar_filtro())]
+    amp.to_csv(ARQ_SAIDA, index=False, encoding="utf-8-sig")
+    if ARQ_CONTATOS.exists():
+        mestre = pd.read_csv(BASE_PATH, dtype=str, usecols=["CNPJ_BASICO"], encoding="utf-8-sig")
+        manter = set(mestre["CNPJ_BASICO"].str.zfill(8)) | set(amp["cnpj_basico"])
+        cont = pd.read_csv(ARQ_CONTATOS, dtype=str, encoding="utf-8-sig").fillna("")
+        cont[cont["cnpj_basico"].isin(manter)].to_csv(ARQ_CONTATOS, index=False, encoding="utf-8-sig")
+    print(f"Refiltrado: {antes:,} -> {len(amp):,} empresas")
+    print(pd.crosstab(amp["Tipo"], amp["Porte"]).to_string())
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--pasta", help="pasta com os .zip da Receita")
     parser.add_argument("--mes", help="AAAA-MM para baixar os arquivos (ex.: 2026-09)")
+    parser.add_argument("--refiltrar", action="store_true",
+                        help="só reaplica config/referencia/filtro_nao_industria.yaml no arquivo já gerado")
     args = parser.parse_args()
+    if args.refiltrar:
+        refiltrar()
+        return
     if not (args.pasta or args.mes):
         parser.error("informe --pasta ou --mes")
     pasta = Path(args.pasta) if args.pasta else RAIZ / "data" / "raw" / "receita" / args.mes

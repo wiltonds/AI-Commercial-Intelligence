@@ -142,3 +142,41 @@ def carregar_porte_fiea(caminho: Path) -> pd.DataFrame:
     out["sesi"] = out["cob"].map(lambda c: "SESI" in c)
     out["senai"] = out["cob"].map(lambda c: "SENAI" in c)
     return out.drop(columns="cob").reset_index()
+
+
+ARQ_FILTRO = Path(__file__).resolve().parents[2] / "config" / "referencia" / "filtro_nao_industria.yaml"
+
+
+def _sem_acento(t: str) -> str:
+    import unicodedata
+    t = unicodedata.normalize("NFKD", str(t or ""))
+    return "".join(c for c in t if not unicodedata.combining(c)).lower()
+
+
+def carregar_filtro(caminho: Path = ARQ_FILTRO) -> dict:
+    import yaml
+    if not Path(caminho).exists():
+        return {}
+    return yaml.safe_load(open(caminho, encoding="utf-8")) or {}
+
+
+def manter_para_venda(df: pd.DataFrame, filtro: dict) -> pd.Series:
+    """True para as não indústrias que ficam na base (config/referencia/filtro_nao_industria.yaml).
+
+    Só se aplica ao Tipo "Não indústria"; indústrias fora da Base Mestre ficam sempre.
+    """
+    if df.empty or not filtro:
+        return pd.Series(True, index=df.index)
+    natureza = df["natureza"].map(_sem_acento)
+    cnae = df["cnae_principal"].map(_cnae7)
+    divisao = pd.to_numeric(cnae.str[:2], errors="coerce")
+    fora = pd.Series(False, index=df.index)
+    for termo in filtro.get("excluir_naturezas") or []:
+        t = _sem_acento(termo)
+        if t == "associacao privada":
+            mantidas = set(filtro.get("associacao_mantida_se_divisao") or [])
+            fora |= natureza.str.contains(t, regex=False) & ~divisao.isin(mantidas)
+        else:
+            fora |= natureza.str.contains(t, regex=False)
+    fora |= cnae.isin({_cnae7(c) for c in filtro.get("excluir_cnaes") or []})
+    return ~(fora & df["Tipo"].eq("Não indústria"))
