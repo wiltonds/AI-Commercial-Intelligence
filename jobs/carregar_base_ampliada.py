@@ -182,6 +182,8 @@ def main():
     print(f"\nSalvo: {ARQ_SAIDA.relative_to(RAIZ)}  ({len(amp):,} não indústrias)")
     print(pd.crosstab(amp["Tipo"], amp["Porte"]).to_string())
     print(f"Com faixa de colaboradores: {int((amp['Origem colaboradores'] != 'Sem informação').sum()):,}")
+    from src.tools.log_atualizacoes import registrar
+    registrar("receita_cnpj", f"{len(amp):,} fora da Base Mestre; pasta {pasta.name}")
     print(f"Salvo: {ARQ_CONTATOS.relative_to(RAIZ)}  ({len(contatos):,} empresas, "
           f"{int((contatos['email'] != '').sum()):,} com e-mail)")
 

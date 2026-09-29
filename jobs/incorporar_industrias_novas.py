@@ -183,6 +183,8 @@ def main():
     arq_lista = PASTA_LISTA / f"INDUSTRIAS_NOVAS_{args.competencia.replace('-', '')}.xlsx"
     salvar_excel(lista_comercial(novas, carregar_contatos()), arq_lista)
 
+    from src.tools.log_atualizacoes import registrar
+    registrar("base_mestre", f"+{len(linhas)} indústrias da Receita {args.competencia}")
     print(f"Incorporadas à Base Mestre: {len(linhas):,} empresas")
     print(f"Base Mestre: {base['CNPJ_BASICO'].nunique():,} -> {base_nova['CNPJ_BASICO'].nunique():,} empresas (CNPJ raiz)")
     print(f"Lista para o comercial: {arq_lista}")

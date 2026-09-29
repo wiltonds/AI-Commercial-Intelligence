@@ -1,0 +1,125 @@
+# ============================================================
+# ENTRADAS DE DADOS — o que precisa ser baixado/rodado para o painel ficar em dia
+#
+# Uma entrada por fonte. `python jobs/checar_entradas.py` lê esta lista e diz o
+# que está em dia, vencido ou faltando, olhando a data do arquivo de controle
+# registrada pelo próprio job no log de atualizações.
+#
+# Campos:
+#   nome            como aparece no relatório
+#   dono            quem fornece o dado
+#   como_obter      o que baixar / exportar, e de onde
+#   colunas         colunas que o job exige (se faltar alguma, ele não roda)
+#   onde_colocar    onde deixar o arquivo antes de rodar
+#   comando         o que rodar (na pasta do repositório)
+#   atualiza        o que muda no painel
+#   registro        nome no log data/processed/LOG_ATUALIZACOES.csv (gravado pelo job)
+#   frequencia_dias de quanto em quanto tempo deve ser atualizado
+#   confidencial    true = o dado bruto não vai para o Git (pasta data/privado ou data/contatos)
+#   ordem           ordem na rotina mensal (quem depende de quem)
+# ============================================================
+
+entradas:
+
+  receita_cnpj:
+    nome: Receita Federal — cadastro de CNPJ (dados abertos)
+    dono: Receita Federal (público)
+    como_obter: >
+      Estabelecimentos0..9.zip, Empresas0..9.zip, Municipios.zip, Cnaes.zip e Naturezas.zip
+      da competência mais recente em https://arquivos.receitafederal.gov.br/index.php/s/YggdBLfdninEJX9
+      (ou deixar o job baixar com --mes). O BI_Project já guarda os Estabelecimentos.
+    colunas: [layout oficial da Receita, sem cabeçalho]
+    onde_colocar: uma pasta local, ex. C:/Users/.../BI_Project/downloads_AAAAMM
+    comando: >
+      python jobs/carregar_base_ampliada.py --pasta <pasta> --mes AAAA-MM ;
+      python jobs/incorporar_industrias_novas.py --competencia AAAA-MM
+    atualiza: >
+      Não indústrias (médias e grandes); indústrias novas entram na Base Mestre;
+      e-mail e telefone cadastrais de todas as empresas; lista INDUSTRIAS_NOVAS para o comercial.
+    frequencia_dias: 35
+    confidencial: false
+    ordem: 1
+
+  propostas:
+    nome: Propostas SESI/SENAI (relacionamento com cliente)
+    dono: Sistema comercial (exportação "Export")
+    como_obter: >
+      Exportação completa de propostas, todos os status, de 2018 até hoje, em .xlsx
+      (a mesma do arquivo "Relacionamento SESI e SENAI").
+    colunas: [CNPJ, Razão Social, Entidade, Categoria, Porte, Porte Receita, Status,
+              Emissão, Aprovação, Valor total, Natureza Produto]
+    onde_colocar: data/privado/propostas.xlsx
+    comando: python jobs/atualizar_relacionamento.py --arquivo data/privado/propostas.xlsx
+    atualiza: >
+      Quem é cliente SESI/SENAI em TODAS as páginas; situação Ativo/Inativo; última compra;
+      página Share & Relacionamento (share, produtos mais vendidos, lista de reativação); Porte FIEA.
+      Rodar DEPOIS da Receita: se a Base Mestre mudar, o relacionamento precisa ser reaplicado.
+    frequencia_dias: 31
+    confidencial: true
+    ordem: 2
+
+  tabela_dn:
+    nome: Tabela DN da CNI (o que é indústria)
+    dono: CNI (guardada no BI_Project)
+    como_obter: >
+      BI_Project/dataset_AAAAMM_v4/CNAE/dim_cnae_AAAAMM.csv, só as linhas com
+      eh_cnae_industrial_dn = SIM (567 CNAEs em 07/2026).
+    colunas: [cnae, descricao, segmento_nivel_1, segmento_nivel_2, segmento_nivel_3]
+    onde_colocar: config/referencia/tabela_dn_cni.csv
+    comando: (não há job — copiar o arquivo e rodar de novo a entrada receita_cnpj)
+    atualiza: Separação entre Indústria, Indústria fora da Base Mestre e Não indústria.
+    frequencia_dias: 365
+    confidencial: false
+    ordem: 0
+
+  base_mestre:
+    nome: Base Mestre de indústrias (pipeline do BI_Project)
+    dono: BI_Project (construir_base_mestre.py)
+    como_obter: Nova versão do BASE_MESTRE_COMERCIAL.csv gerada pelo BI_Project, quando houver.
+    colunas: [cnpj, CNPJ_BASICO, razao_social, Municipio, Porte, SEBRAE_cnae_norm, SEBRAE_setor]
+    onde_colocar: data/processed/BASE_MESTRE_COMERCIAL.csv
+    comando: >
+      Substituir o arquivo e rodar de novo: incorporar_industrias_novas.py e
+      atualizar_relacionamento.py (a versão nova não traz as colunas de relacionamento das propostas).
+    atualiza: Universo industrial de todo o painel.
+    frequencia_dias: 35
+    confidencial: false
+    ordem: 1
+
+  contatos_robo:
+    nome: Contatos e responsável (robô BrasilAPI)
+    dono: Automático (BrasilAPI, sem upload)
+    como_obter: Nada a baixar. O robô consulta cada CNPJ e reconsulta a cada 90 dias.
+    colunas: []
+    onde_colocar: (gerado em data/contatos/CONTATOS_EMPRESAS.csv)
+    comando: >
+      python jobs/enriquecer_contatos.py --limite 14000 --delay 1.5 ;
+      python jobs/segunda_passada_contatos.py
+    atualiza: Responsável, telefones, WhatsApp e confiança do contato no Explorador.
+    frequencia_dias: 90
+    confidencial: true
+    ordem: 3
+
+  presenca_digital:
+    nome: Site, Instagram e e-mail do site (Serper)
+    dono: Automático (Google via Serper — precisa de SERPER_API_KEY e créditos)
+    como_obter: Nada a baixar. Rodar em lotes enquanto houver créditos.
+    colunas: []
+    onde_colocar: (gerado em data/contatos/CONTATOS_EMPRESAS.csv)
+    comando: python jobs/enriquecer_digital.py --limite 500
+    atualiza: Colunas Site, Instagram e E-mail (site) no Explorador.
+    frequencia_dias: 180
+    confidencial: true
+    ordem: 4
+
+  publicacao:
+    nome: Publicação no painel online
+    dono: Você
+    como_obter: Nada a baixar.
+    colunas: []
+    onde_colocar: "-"
+    comando: .\jobs\publicar_dados.ps1   (depois, Reboot app no Streamlit)
+    atualiza: Leva ao GitHub/Streamlit tudo o que os passos anteriores geraram (menos a pasta data/privado).
+    frequencia_dias: 35
+    confidencial: false
+    ordem: 9

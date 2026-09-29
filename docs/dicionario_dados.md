@@ -25,14 +25,21 @@ Complementa [arquitetura_dados.md](arquitetura_dados.md). Perfil real da base at
 
 ## Relacionamento SESI/SENAI
 
+Desde 09/2026 as colunas de cliente vêm da **exportação de propostas** (`jobs/atualizar_relacionamento.py`, regras em `config/referencia/relacionamento.yaml`): cliente = pelo menos uma proposta com status `Aceita` da entidade. As colunas valem para a **empresa** (CNPJ raiz): se qualquer unidade comprou, todas as linhas da raiz ficam marcadas — exceto `CNPJ_ATENDIDO`, que é da unidade.
+
 | Campo | Tipo | Descrição |
 | --- | --- | --- |
-| `SESI` | texto (CNPJ ou vazio) | CNPJ de match na base de relacionamento SESI, quando encontrado — não é booleano. ⚠️ idêntica a `SEBRAE_SESI` |
-| `SENAI` | texto (CNPJ ou vazio) | Mesma lógica, para SENAI. ⚠️ idêntica a `SEBRAE_SENAI` |
-| `TEM_SESI` | booleano | Flag real — `True` quando `SESI` está preenchido |
-| `TEM_SENAI` | booleano | Flag real — `True` quando `SENAI` está preenchido |
+| `TEM_SESI` / `TEM_SENAI` | booleano | A empresa tem ao menos uma proposta aceita da entidade (qualquer data desde 2018) |
 | `TEM_SESI_SENAI` | booleano | `TEM_SESI AND TEM_SENAI` |
 | `STATUS_RELACIONAMENTO` | texto | `SEM RELACIONAMENTO` / `SOMENTE SESI` / `SOMENTE SENAI` / `SESI + SENAI` |
+| `SITUACAO_CLIENTE` | texto | `Ativo` (última compra nos últimos 24 meses) / `Inativo` (comprou antes disso) / `Sem compra` |
+| `ULTIMA_COMPRA`, `ULTIMA_COMPRA_SESI`, `ULTIMA_COMPRA_SENAI` | data | Data da última proposta aceita (aprovação; emissão se não houver) |
+| `PRIMEIRA_COMPRA` | data | Primeira proposta aceita |
+| `CNPJ_ATENDIDO` | Sim/Não | **Esta unidade** (CNPJ de 14 dígitos) teve proposta aceita |
+| `SESI` / `SENAI` | texto | ⚠️ Legado das planilhas manuais (CNPJ de match) — não são mais atualizados; use `TEM_SESI`/`TEM_SENAI` |
+| `ORIGEM_REGISTRO` | texto | `Base Mestre (BI_Project)` ou `Receita AAAA-MM (incorporada)` para indústrias acrescentadas por `jobs/incorporar_industrias_novas.py` |
+
+⚠️ O histórico do SESI no sistema de propostas começa em 2024; compras SESI anteriores não aparecem.
 
 ## Enriquecimento SEBRAE
 
@@ -87,3 +94,18 @@ Complementa [arquitetura_dados.md](arquitetura_dados.md). Perfil real da base at
 - `SESI`/`SENAI` guardam um CNPJ de match, não um booleano — a flag real é `TEM_SESI`/`TEM_SENAI`.
 - Nenhuma coluna distingue CNPJ optante do MEI porque a exclusão já acontece antes desta base existir: raiz com `opcao_mei = S` (cruzado contra o arquivo Simples da Receita) sai do universo em `construir_base_mestre.py`, fora deste repositório. Não é uma lacuna — é uma regra já aplicada a montante.
 - 9 registros (de 14.903) não têm correspondência na base SEBRAE — todos os campos `SEBRAE_*` vêm nulos para eles.
+
+## Outros arquivos do painel
+
+| Arquivo | Uma linha por | Gerado por | Principais colunas |
+| --- | --- | --- | --- |
+| `data/processed/BASE_AMPLIADA_AL.csv` | Empresa (raiz) fora da Base Mestre, média/grande, ativa em AL | `carregar_base_ampliada.py` | `Tipo` (Não indústria / Indústria fora da Base Mestre), `Porte`, `porte_fiea`, `natureza`, `cnae_principal`, `POSSUI_SESI`, `POSSUI_SENAI`, `SITUACAO_CLIENTE`, `ULTIMA_COMPRA` |
+| `data/processed/PORTE_FIEA.csv` | Empresa (raiz) | `atualizar_relacionamento.py` | `porte_fiea` mais recente informado nas propostas |
+| `data/processed/PRODUTOS_RANKING.csv` | Produto × entidade × (na base industrial?) | `atualizar_relacionamento.py` | `empresas`, `empresas_recentes` (24 meses), `propostas`, `valor` — agregado |
+| `data/processed/ATENDIMENTO_POR_ANO.csv` | Ano × entidade | `atualizar_relacionamento.py` | `empresas` distintas atendidas — agregado |
+| `data/processed/LOG_ATUALIZACOES.csv` | Execução de job | todos os jobs | `entrada`, `data`, `resumo` — usado por `checar_entradas.py` |
+| `data/contatos/CONTATOS_EMPRESAS.csv` 🔒 | Empresa (raiz) | `enriquecer_contatos.py`, `segunda_passada_contatos.py`, `enriquecer_digital.py` | telefones, `whatsapp_provavel`, `email`, `decisor`, `confianca`, `site`, `instagram`, `email_site` |
+| `data/contatos/CONTATOS_RECEITA.csv` 🔒 | Empresa (raiz) | `carregar_base_ampliada.py` | telefone e e-mail cadastrais da Receita |
+| `data/privado/RELACIONAMENTO_POR_EMPRESA.csv` 🔒 | Empresa (raiz) que comprou | `atualizar_relacionamento.py` | `VALOR_ACEITO_TOTAL`, `QTD_PROPOSTAS_ACEITAS`, `LINHAS_COMPRADAS`, `QTD_CNPJS_ATENDIDOS` |
+
+🔒 = confidencial, fora do Git por padrão. O que atualiza cada arquivo e em que ordem: [manual_atualizacao.md](manual_atualizacao.md).

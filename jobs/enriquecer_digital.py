@@ -179,6 +179,8 @@ def main():
         sleep(0.5)
     salvar(contatos)
     feitos = contatos[contatos["digital_em"] != ""]
+    from src.tools.log_atualizacoes import registrar
+    registrar("presenca_digital", f"{len(feitos):,} empresas pesquisadas")
     print(f"\nPesquisadas até agora: {len(feitos):,} | com Instagram: {(feitos['instagram'] != '').sum():,} | "
           f"com site: {(feitos['site'] != '').sum():,} | com e-mail do site: {(feitos['email_site'] != '').sum():,}")
 

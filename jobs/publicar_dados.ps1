@@ -20,6 +20,7 @@ $arquivos = @(
     "data/processed/PRODUTOS_RANKING.csv",
     "data/processed/ATENDIMENTO_POR_ANO.csv",
     "data/processed/BASE_AMPLIADA_AL.csv",
+    "data/processed/LOG_ATUALIZACOES.csv",
     "data/contatos/CONTATOS_EMPRESAS.csv",
     "data/contatos/CONTATOS_RECEITA.csv"
 )

@@ -35,8 +35,16 @@ def carregar_config(caminho: Path = ARQ_CONFIG) -> dict:
     return padrao
 
 
+COLUNAS_OBRIGATORIAS = ["CNPJ", "Razão Social", "Entidade", "Categoria", "Porte", "Porte Receita", "Status",
+                       "Emissão", "Aprovação", "Valor total", "Natureza Produto"]
+
+
 def carregar_propostas(caminho: Path) -> pd.DataFrame:
     df = pd.read_excel(caminho, dtype=str).fillna("")
+    faltam = [c for c in COLUNAS_OBRIGATORIAS if c not in df.columns]
+    if faltam:
+        raise ValueError(f"A exportação de propostas não tem as colunas: {', '.join(faltam)}. "
+                         f"Colunas encontradas: {', '.join(df.columns)}. Ver docs/manual_atualizacao.md.")
     df["cnpj"] = df["CNPJ"].str.replace(r"\D", "", regex=True)
     df = df[df["cnpj"].str.len().between(11, 14)].copy()
     df["cnpj"] = df["cnpj"].str.zfill(14)

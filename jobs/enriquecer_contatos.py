@@ -143,6 +143,8 @@ def rodar(limite: int, delay: float, validade: int, so_sinais: bool) -> pd.DataF
     print(f"\nSalvo: {ARQ_CONTATOS.relative_to(RAIZ)}")
     print(f"Empresas com cadastro de contato: {len(final):,}")
     print(final["confianca"].value_counts().rename("confiança").to_string())
+    from src.tools.log_atualizacoes import registrar
+    registrar("contatos_robo", f"{len(final):,} empresas com cadastro de contato")
     return final
 
 

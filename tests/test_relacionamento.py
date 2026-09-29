@@ -62,3 +62,12 @@ def test_agregados_e_porte():
     assert set(anos["ano"]) == {2021, 2025, 2026}
     porte = porte_fiea_por_raiz(p).set_index("cnpj_basico")["porte_fiea"].to_dict()
     assert porte == {"11111111": "Média", "22222222": "Micro", "33333333": "Grande"}
+
+
+def test_exportacao_sem_coluna_da_erro_claro(tmp_path):
+    import pytest
+    from src.tools.relacionamento import carregar_propostas
+    arq = tmp_path / "p.xlsx"
+    pd.DataFrame({"CNPJ": ["11111111000110"], "Status": ["Aceita"]}).to_excel(arq, index=False)
+    with pytest.raises(ValueError, match="Entidade"):
+        carregar_propostas(arq)

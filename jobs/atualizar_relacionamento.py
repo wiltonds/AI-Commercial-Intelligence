@@ -121,6 +121,8 @@ def main():
     fora.join(info, on="cnpj_basico").to_csv(PRIVADO / "CLIENTES_FORA_DA_BASE.csv", index=False, encoding="utf-8-sig")
     print(f"Clientes fora de todas as bases: {len(fora):,} (data/privado/CLIENTES_FORA_DA_BASE.csv)")
     print(f"Porte FIEA conhecido: {len(porte):,} empresas")
+    from src.tools.log_atualizacoes import registrar
+    registrar("propostas", f"{len(prop):,} propostas; clientes na Base Mestre: {len(depois):,}")
 
 
 if __name__ == "__main__":
