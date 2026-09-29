@@ -692,12 +692,6 @@ elif pagina == "🔎 Explorador de Empresas":
         st.caption("Os filtros da barra lateral valem só para as indústrias.")
     else:
         resultado = pd.concat([industrias, nao_ind], ignore_index=True)
-    faixas = u2.multiselect("Colaboradores (faixa)", opcoes_faixa(resultado["Colaboradores (faixa)"]),
-                            help="Faixa equivalente ao Porte FIEA da base de relacionamento. "
-                                 "Não há fonte pública com nº de empregados por CNPJ.")
-    if faixas:
-        resultado = resultado[resultado["Colaboradores (faixa)"].isin(faixas)]
-
     busca = st.text_input(
         "Pesquisar por CNPJ ou razão social",
         placeholder="Digite parte do CNPJ ou nome da empresa",
@@ -788,8 +782,6 @@ elif pagina == "🔎 Explorador de Empresas":
             "Valor aceito (R$)",
             "Porte",
             "Porte FIEA",
-            "Colaboradores (faixa)",
-            "Origem colaboradores",
             "CNAE PRIMARIO",
             "CNAEs secundários",
             "Estabelecimentos",
