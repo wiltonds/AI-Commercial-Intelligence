@@ -1,0 +1,568 @@
+﻿cnae,descricao,segmento_nivel_1,segmento_nivel_2,segmento_nivel_3
+0210107,EXTRACAO DE MADEIRA EM FLORESTAS PLANTADAS,Indústria Extrativa,Produção Florestal,Produção Florestal
+0210108,PRODUCAO DE CARVAO VEGETAL - FLORESTAS PLANTADAS,Indústria Extrativa,Produção Florestal,Produção Florestal
+0220901,EXTRACAO DE MADEIRA EM FLORESTAS NATIVAS,Indústria Extrativa,Produção Florestal,Produção Florestal
+0220902,PRODUCAO DE CARVAO VEGETAL - FLORESTAS NATIVAS,Indústria Extrativa,Produção Florestal,Produção Florestal
+0220904,COLETA DE LATEX EM FLORESTAS NATIVAS,Indústria Extrativa,Produção Florestal,Atividades de Apoio à  Indústria
+0500301,EXTRACAO DE CARVAO MINERAL,Indústria Extrativa,"Extração de Petróleo, Carvão e Gás Natural",Extração de Carvão Mineral
+0500302,BENEFICIAMENTO DE CARVAO MINERAL,Indústria Extrativa,"Extração de Petróleo, Carvão e Gás Natural",Extração de Carvão Mineral
+0600001,EXTRACAO DE PETROLEO E GAS NATURAL,Indústria Extrativa,"Extração de Petróleo, Carvão e Gás Natural",Extração de Petróleo e Gás Natural
+0600002,EXTRACAO E BENEFICIAMENTO DE XISTO,Indústria Extrativa,"Extração de Petróleo, Carvão e Gás Natural",Extração de Petróleo e Gás Natural
+0600003,EXTRACAO E BENEFICIAMENTO DE AREIAS BETUMINOSAS,Indústria Extrativa,"Extração de Petróleo, Carvão e Gás Natural",Extração de Petróleo e Gás Natural
+0710301,EXTRACAO DE MINERIO DE FERRO,Indústria Extrativa,Extração de Minerais Metálicos,Extração de Minerais Metálicos
+0710302,"PELOTIZACAO, SINTERIZACAO E OUTROS BENEFICIAMENTOS DE MINERIO DE FERRO",Indústria Extrativa,Extração de Minerais Metálicos,Extração de Minerais Metálicos
+0721901,EXTRACAO DE MINERIO DE ALUMINIO,Indústria Extrativa,Extração de Minerais Metálicos,Extração de Minerais Metálicos
+0721902,BENEFICIAMENTO DE MINERIO DE ALUMINIO,Indústria Extrativa,Extração de Minerais Metálicos,Extração de Minerais Metálicos
+0722701,EXTRACAO DE MINERIO DE ESTANHO,Indústria Extrativa,Extração de Minerais Metálicos,Extração de Minerais Metálicos
+0722702,BENEFICIAMENTO DE MINERIO DE ESTANHO,Indústria Extrativa,Extração de Minerais Metálicos,Extração de Minerais Metálicos
+0723501,EXTRACAO DE MINERIO DE MANGANES,Indústria Extrativa,Extração de Minerais Metálicos,Extração de Minerais Metálicos
+0723502,BENEFICIAMENTO DE MINERIO DE MANGANES,Indústria Extrativa,Extração de Minerais Metálicos,Extração de Minerais Metálicos
+0724301,EXTRACAO DE MINERIO DE METAIS PRECIOSOS,Indústria Extrativa,Extração de Minerais Metálicos,Extração de Minerais Metálicos
+0724302,BENEFICIAMENTO DE MINERIO DE METAIS PRECIOSOS,Indústria Extrativa,Extração de Minerais Metálicos,Extração de Minerais Metálicos
+0725100,EXTRACAO DE MINERAIS RADIOATIVOS,Indústria Extrativa,Extração de Minerais Metálicos,Extração de Minerais Metálicos
+0729401,EXTRACAO DE MINERIOS DE NIOBIO E TITANIO,Indústria Extrativa,Extração de Minerais Metálicos,Extração de Minerais Metálicos
+0729402,EXTRACAO DE MINERIO DE TUNGSTENIO,Indústria Extrativa,Extração de Minerais Metálicos,Extração de Minerais Metálicos
+0729403,EXTRACAO DE MINERIO DE NIQUEL,Indústria Extrativa,Extração de Minerais Metálicos,Extração de Minerais Metálicos
+0729404,"EXTRACAO DE MINERIOS DE COBRE, CHUMBO, ZINCO E OUTROS MINERAIS METALICOS NAO-FERROSOS NAO ESPECIFICADOS ANTERIORMENTE",Indústria Extrativa,Extração de Minerais Metálicos,Extração de Minerais Metálicos
+0729405,"BENEFICIAMENTO DE MINERIOS DE COBRE, CHUMBO, ZINCO E OUTROS MINERAIS METALICOS NAO-FERROSOS NAO ESPECIFICADOS ANTERIORMENTE",Indústria Extrativa,Extração de Minerais Metálicos,Extração de Minerais Metálicos
+0810001,EXTRACAO DE ARDOSIA E BENEFICIAMENTO ASSOCIADO,Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+0810002,EXTRACAO DE GRANITO E BENEFICIAMENTO ASSOCIADO,Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+0810003,EXTRACAO DE MARMORE E BENEFICIAMENTO ASSOCIADO,Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+0810004,EXTRACAO DE CALCARIO E DOLOMITA E BENEFICIAMENTO ASSOCIADO,Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+0810005,EXTRACAO DE GESSO E CAULIM,Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+0810006,"EXTRACAO DE AREIA, CASCALHO OU PEDREGULHO E BENEFICIAMENTO ASSOCIADO",Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+0810007,EXTRACAO DE ARGILA E BENEFICIAMENTO ASSOCIADO,Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+0810008,EXTRACAO DE SAIBRO E BENEFICIAMENTO ASSOCIADO,Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+0810009,EXTRACAO DE BASALTO E BENEFICIAMENTO ASSOCIADO,Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+0810010,BENEFICIAMENTO DE GESSO E CAULIM ASSOCIADO A EXTRACAO,Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+0810099,EXTRACAO E BRITAMENTO DE PEDRAS E OUTROS MATERIAIS PARA CONSTRUCAO E BENEFICIAMENTO ASSOCIADO,Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+0891600,"EXTRACAO DE MINERAIS PARA FABRICACAO DE ADUBOS, FERTILIZANTES E OUTROS PRODUTOS QUIMICOS",Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+0892401,EXTRACAO DE SAL MARINHO,Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+0892402,EXTRACAO DE SAL-GEMA,Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+0892403,REFINO E OUTROS TRATAMENTOS DO SAL,Indústria Extrativa,Alimentos e Bebidas,Alimentos
+0893200,EXTRACAO DE GEMAS (PEDRAS PRECIOSAS E SEMIPRECIOSAS),Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+0899101,EXTRACAO DE GRAFITA,Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+0899102,EXTRACAO DE QUARTZO,Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+0899103,EXTRACAO DE AMIANTO,Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+0899199,EXTRACAO DE OUTROS MINERAIS NAO-METALICOS NAO ESPECIFICADOS ANTERIORMENTE,Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+0910600,ATIVIDADES DE APOIO A EXTRACAO DE PETROLEO E GAS NATURAL,Indústria Extrativa,"Extração de Petróleo, Carvão e Gás Natural",Extração de Petróleo e Gás Natural
+0990401,ATIVIDADES DE APOIO A EXTRACAO DE MINERIO DE FERRO,Indústria Extrativa,Extração de Minerais Metálicos,Extração de Minerais Metálicos
+0990402,ATIVIDADES DE APOIO A EXTRACAO DE MINERAIS METALICOS NAO-FERROSOS,Indústria Extrativa,Extração de Minerais Metálicos,Extração de Minerais Metálicos
+0990403,ATIVIDADES DE APOIO A EXTRACAO DE MINERAIS NAO-METALICOS,Indústria Extrativa,Extração de Minerais Não Metálicos,Extração de Minerais Não Metálicos
+1011201,FRIGORIFICO - ABATE DE BOVINOS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1011202,FRIGORIFICO - ABATE DE EQUINOS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1011203,FRIGORIFICO - ABATE DE OVINOS E CAPRINOS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1011204,FRIGORIFICO - ABATE DE BUFALINOS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1012101,ABATE DE AVES,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1012102,ABATE DE PEQUENOS ANIMAIS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1012103,FRIGORIFICO - ABATE DE SUINOS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1013901,FABRICACAO DE PRODUTOS DE CARNE,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1013902,PREPARACAO DE SUBPRODUTOS DO ABATE,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1020101,"PRESERVACAO DE PEIXES, CRUSTACEOS E MOLUSCOS",Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1020102,"FABRICACAO DE CONSERVAS DE PEIXES, CRUSTACEOS E MOLUSCOS",Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1031700,FABRICACAO DE CONSERVAS DE FRUTAS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1032501,FABRICACAO DE CONSERVAS DE PALMITO,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1032599,"FABRICACAO DE CONSERVAS DE LEGUMES E OUTROS VEGETAIS, EXCETO PALMITO",Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1033301,"FABRICACAO DE SUCOS CONCENTRADOS DE FRUTAS, HORTALICAS E LEGUMES",Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1033302,"FABRICACAO DE SUCOS DE FRUTAS, HORTALICAS E LEGUMES, EXCETO CONCENTRADOS",Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1041400,"FABRICACAO DE OLEOS VEGETAIS EM BRUTO, EXCETO OLEO DE MILHO",Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1042200,"FABRICACAO DE OLEOS VEGETAIS REFINADOS, EXCETO OLEO DE MILHO",Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1043100,FABRICACAO DE MARGARINA E OUTRAS GORDURAS VEGETAIS E DE OLEOS NAO-COMESTIVEIS DE ANIMAIS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1051100,PREPARACAO DO LEITE,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1052000,FABRICACAO DE LATICINIOS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1053800,FABRICACAO DE SORVETES E OUTROS GELADOS COMESTIVEIS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1061901,BENEFICIAMENTO DE ARROZ,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1061902,FABRICACAO DE PRODUTOS DO ARROZ,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1062700,MOAGEM DE TRIGO E FABRICACAO DE DERIVADOS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1063500,FABRICACAO DE FARINHA DE MANDIOCA E DERIVADOS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1064300,"FABRICACAO DE FARINHA DE MILHO E DERIVADOS, EXCETO OLEOS DE MILHO",Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1065101,FABRICACAO DE AMIDOS E FECULAS DE VEGETAIS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1065102,FABRICACAO DE OLEO DE MILHO EM BRUTO,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1065103,FABRICACAO DE OLEO DE MILHO REFINADO,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1066000,FABRICACAO DE ALIMENTOS PARA ANIMAIS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1069400,MOAGEM E FABRICACAO DE PRODUTOS DE ORIGEM VEGETAL NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1071600,FABRICACAO DE ACUCAR EM BRUTO,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1072402,FABRICACAO DE ACUCAR DE CEREAIS (DEXTROSE) E DE BETERRABA,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1081301,BENEFICIAMENTO DE CAFE,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1081302,TORREFACAO E MOAGEM DE CAFE,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1082100,FABRICACAO DE PRODUTOS A BASE DE CAFE,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1091101,FABRICACAO DE PRODUTOS DE PANIFICACAO INDUSTRIAL,Indústria de Transformação,Alimentos e Bebidas,Panificação
+1091102,FABRICACAO DE PRODUTOS DE PADARIA E CONFEITARIA COM PREDOMINANCIA DE PRODUCAO PROPRIA,Indústria de Transformação,Alimentos e Bebidas,Panificação
+1092900,FABRICACAO DE BISCOITOS E BOLACHAS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1093701,FABRICACAO DE PRODUTOS DERIVADOS DO CACAU E DE CHOCOLATES,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1093702,"FABRICACAO DE FRUTAS CRISTALIZADAS, BALAS E SEMELHANTES",Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1094500,FABRICACAO DE MASSAS ALIMENTICIAS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1095300,"FABRICACAO DE ESPECIARIAS, MOLHOS, TEMPEROS E CONDIMENTOS",Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1096100,FABRICACAO DE ALIMENTOS E PRATOS PRONTOS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1099601,FABRICACAO DE VINAGRES,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1099602,FABRICACAO DE POS ALIMENTICIOS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1099603,FABRICACAO DE FERMENTOS E LEVEDURAS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1099604,FABRICACAO DE GELO COMUM,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1099605,"FABRICACAO DE PRODUTOS PARA INFUSAO (CHA, MATE, ETC.)",Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1099606,FABRICACAO DE ADOCANTES NATURAIS E ARTIFICIAIS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1099607,FABRICACAO DE ALIMENTOS DIETETICOS E COMPLEMENTOS ALIMENTARES,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1099699,FABRICACAO DE OUTROS PRODUTOS ALIMENTICIOS NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+1111901,FABRICACAO DE AGUARDENTE DE CANA-DE-ACUCAR,Indústria de Transformação,Alimentos e Bebidas,Bebidas
+1111902,FABRICACAO DE OUTRAS AGUARDENTES E BEBIDAS DESTILADAS,Indústria de Transformação,Alimentos e Bebidas,Bebidas
+1112700,FABRICACAO DE VINHO,Indústria de Transformação,Alimentos e Bebidas,Bebidas
+1113501,"FABRICACAO DE MALTE, INCLUSIVE MALTE UISQUE",Indústria de Transformação,Alimentos e Bebidas,Bebidas
+1113502,FABRICACAO DE CERVEJAS E CHOPES,Indústria de Transformação,Alimentos e Bebidas,Bebidas
+1121600,FABRICACAO DE AGUAS ENVASADAS,Indústria de Transformação,Alimentos e Bebidas,Bebidas
+1122401,FABRICACAO DE REFRIGERANTES,Indústria de Transformação,Alimentos e Bebidas,Bebidas
+1122402,FABRICACAO DE CHA MATE E OUTROS CHAS PRONTOS PARA CONSUMO,Indústria de Transformação,Alimentos e Bebidas,Bebidas
+1122403,"FABRICACAO DE REFRESCOS, XAROPES E POS PARA REFRESCOS, EXCETO REFRESCOS DE FRUTAS",Indústria de Transformação,Alimentos e Bebidas,Bebidas
+1122404,FABRICACAO DE BEBIDAS ISOTONICAS,Indústria de Transformação,Alimentos e Bebidas,Bebidas
+1122499,FABRICACAO DE OUTRAS BEBIDAS NAO-ALCOOLICAS NAO ESPECIFICADAS ANTERIORMENTE,Indústria de Transformação,Alimentos e Bebidas,Bebidas
+1210700,PROCESSAMENTO INDUSTRIAL DO FUMO,Indústria de Transformação,Fumo,Fumo
+1220401,FABRICACAO DE CIGARROS,Indústria de Transformação,Fumo,Fumo
+1220402,FABRICACAO DE CIGARRILHAS E CHARUTOS,Indústria de Transformação,Fumo,Fumo
+1220403,FABRICACAO DE FILTROS PARA CIGARROS,Indústria de Transformação,Fumo,Fumo
+1220499,"FABRICACAO DE OUTROS PRODUTOS DO FUMO, EXCETO CIGARROS, CIGARRILHAS E CHARUTOS",Indústria de Transformação,Fumo,Fumo
+1311100,PREPARACAO E FIACAO DE FIBRAS DE ALGODAO,Indústria de Transformação,Têxtil e Vestuário,Têxtil
+1312000,"PREPARACAO E FIACAO DE FIBRAS TEXTEIS NATURAIS, EXCETO ALGODAO",Indústria de Transformação,Têxtil e Vestuário,Têxtil
+1313800,FIACAO DE FIBRAS ARTIFICIAIS E SINTETICAS,Indústria de Transformação,Têxtil e Vestuário,Têxtil
+1314600,FABRICACAO DE LINHAS PARA COSTURAR E BORDAR,Indústria de Transformação,Têxtil e Vestuário,Têxtil
+1321900,TECELAGEM DE FIOS DE ALGODAO,Indústria de Transformação,Têxtil e Vestuário,Têxtil
+1322700,"TECELAGEM DE FIOS DE FIBRAS TEXTEIS NATURAIS, EXCETO ALGODAO",Indústria de Transformação,Têxtil e Vestuário,Têxtil
+1323500,TECELAGEM DE FIOS DE FIBRAS ARTIFICIAIS E SINTETICAS,Indústria de Transformação,Têxtil e Vestuário,Têxtil
+1330800,FABRICACAO DE TECIDOS DE MALHA,Indústria de Transformação,Têxtil e Vestuário,Têxtil
+1340501,"ESTAMPARIA E TEXTURIZACAO EM FIOS, TECIDOS, ARTEFATOS TEXTEIS E PECAS DO VESTUARIO",Indústria de Transformação,Têxtil e Vestuário,Têxtil
+1340502,"ALVEJAMENTO, TINGIMENTO E TORCAO EM FIOS, TECIDOS, ARTEFATOS TEXTEIS E PECAS DO VESTUARIO",Indústria de Transformação,Têxtil e Vestuário,Têxtil
+1340599,"OUTROS SERVICOS DE ACABAMENTO EM FIOS, TECIDOS, ARTEFATOS TEXTEIS E PECAS DO VESTUARIO",Indústria de Transformação,Têxtil e Vestuário,Têxtil
+1351100,FABRICACAO DE ARTEFATOS TEXTEIS PARA USO DOMESTICO,Indústria de Transformação,Têxtil e Vestuário,Têxtil
+1352900,FABRICACAO DE ARTEFATOS DE TAPECARIA,Indústria de Transformação,Têxtil e Vestuário,Têxtil
+1353700,FABRICACAO DE ARTEFATOS DE CORDOARIA,Indústria de Transformação,Têxtil e Vestuário,Têxtil
+1354500,"FABRICACAO DE TECIDOS ESPECIAIS, INCLUSIVE ARTEFATOS",Indústria de Transformação,Têxtil e Vestuário,Têxtil
+1359600,FABRICACAO DE OUTROS PRODUTOS TEXTEIS NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Têxtil e Vestuário,Têxtil
+1411801,CONFECCAO DE ROUPAS INTIMAS,Indústria de Transformação,Têxtil e Vestuário,Vestuário
+1411802,FACCAO DE ROUPAS INTIMAS,Indústria de Transformação,Têxtil e Vestuário,Vestuário
+1412601,"CONFECCAO DE PECAS DO VESTUARIO, EXCETO ROUPAS INTIMAS E AS CONFECCIONADAS SOB MEDIDA",Indústria de Transformação,Têxtil e Vestuário,Vestuário
+1412602,"CONFECCAO, SOB MEDIDA, DE PECAS DO VESTUARIO, EXCETO ROUPAS INTIMAS",Indústria de Transformação,Têxtil e Vestuário,Vestuário
+1412603,"FACCAO DE PECAS DO VESTUARIO, EXCETO ROUPAS INTIMAS",Indústria de Transformação,Têxtil e Vestuário,Vestuário
+1413401,"CONFECCAO DE ROUPAS PROFISSIONAIS, EXCETO SOB MEDIDA",Indústria de Transformação,Têxtil e Vestuário,Vestuário
+1413402,"CONFECCAO, SOB MEDIDA, DE ROUPAS PROFISSIONAIS",Indústria de Transformação,Têxtil e Vestuário,Vestuário
+1413403,FACCAO DE ROUPAS PROFISSIONAIS,Indústria de Transformação,Têxtil e Vestuário,Vestuário
+1414200,"FABRICACAO DE ACESSORIOS DO VESTUARIO, EXCETO PARA SEGURANCA E PROTECAO",Indústria de Transformação,Têxtil e Vestuário,Vestuário
+1421500,FABRICACAO DE MEIAS,Indústria de Transformação,Têxtil e Vestuário,Vestuário
+1422300,"FABRICACAO DE ARTIGOS DO VESTUARIO, PRODUZIDOS EM MALHARIAS E TRICOTAGENS, EXCETO MEIAS",Indústria de Transformação,Têxtil e Vestuário,Vestuário
+1510600,CURTIMENTO E OUTRAS PREPARACOES DE COURO,Indústria de Transformação,Couro e Calçados,Preparação de Couros
+1521100,"FABRICACAO DE ARTIGOS PARA VIAGEM, BOLSAS E SEMELHANTES DE QUALQUER MATERIAL",Indústria de Transformação,Couro e Calçados,Artefatos de Couro e Artigos Para Viagens
+1529700,FABRICACAO DE ARTEFATOS DE COURO NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Couro e Calçados,Artefatos de Couro e Artigos Para Viagens
+1531901,FABRICACAO DE CALCADOS DE COURO,Indústria de Transformação,Couro e Calçados,Calçados
+1531902,ACABAMENTO DE CALCADOS DE COURO SOB CONTRATO,Indústria de Transformação,Couro e Calçados,Calçados
+1532700,FABRICACAO DE TENIS DE QUALQUER MATERIAL,Indústria de Transformação,Couro e Calçados,Calçados
+1533500,FABRICACAO DE CALCADOS DE MATERIAL SINTETICO,Indústria de Transformação,Couro e Calçados,Calçados
+1539400,FABRICACAO DE CALCADOS DE MATERIAIS NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Couro e Calçados,Calçados
+1540800,"FABRICACAO DE PARTES PARA CALCADOS, DE QUALQUER MATERIAL",Indústria de Transformação,Couro e Calçados,Calçados
+1610201,SERRARIAS COM DESDOBRAMENTO DE MADEIRA,Indústria de Transformação,Madeira e Móveis,Madeira
+1610202,SERRARIAS SEM DESDOBRAMENTO DE MADEIRA,Indústria de Transformação,Madeira e Móveis,Madeira
+1621800,"FABRICACAO DE MADEIRA LAMINADA E DE CHAPAS DE MADEIRA COMPENSADA, PRENSADA E AGLOMERADA",Indústria de Transformação,Madeira e Móveis,Madeira
+1622601,FABRICACAO DE CASAS DE MADEIRA PRE-FABRICADAS,Indústria de Transformação,Madeira e Móveis,Madeira
+1622602,FABRICACAO DE ESQUADRIAS DE MADEIRA E DE PECAS DE MADEIRA PARA INSTALACOES INDUSTRIAIS E COMERCIAIS,Indústria de Transformação,Madeira e Móveis,Madeira
+1622699,FABRICACAO DE OUTROS ARTIGOS DE CARPINTARIA PARA CONSTRUCAO,Indústria de Transformação,Madeira e Móveis,Madeira
+1623400,FABRICACAO DE ARTEFATOS DE TANOARIA E DE EMBALAGENS DE MADEIRA,Indústria de Transformação,Madeira e Móveis,Madeira
+1629301,"FABRICACAO DE ARTEFATOS DIVERSOS DE MADEIRA, EXCETO MOVEIS",Indústria de Transformação,Madeira e Móveis,Madeira
+1629302,"FABRICACAO DE ARTEFATOS DIVERSOS DE CORTICA, BAMBU, PALHA, VIME E OUTROS MATERIAIS TRANCADOS, EXCETO MOVEIS",Indústria de Transformação,Madeira e Móveis,Madeira
+1710900,FABRICACAO DE CELULOSE E OUTRAS PASTAS PARA A FABRICACAO DE PAPEL,Indústria de Transformação,Celulose e Papel,Celulose
+1721400,FABRICACAO DE PAPEL,Indústria de Transformação,Celulose e Papel,Papel
+1722200,FABRICACAO DE CARTOLINA E PAPEL-CARTAO,Indústria de Transformação,Celulose e Papel,Papel
+1731100,FABRICACAO DE EMBALAGENS DE PAPEL,Indústria de Transformação,Celulose e Papel,Papel
+1732000,FABRICACAO DE EMBALAGENS DE CARTOLINA E PAPEL-CARTAO,Indústria de Transformação,Celulose e Papel,Papel
+1733800,FABRICACAO DE CHAPAS E DE EMBALAGENS DE PAPELAO ONDULADO,Indústria de Transformação,Celulose e Papel,Papel
+1741901,FABRICACAO DE FORMULARIOS CONTINUOS,Indústria de Transformação,Celulose e Papel,Papel
+1741902,"FABRICACAO DE PRODUTOS DE PAPEL, CARTOLINA, PAPEL-CARTAO E PAPELAO ONDULADO PARA USO COMERCIAL E DE ESCRITORIO, EXCETO FORMULARIO CONTINUO",Indústria de Transformação,Celulose e Papel,Papel
+1742701,FABRICACAO DE FRALDAS DESCARTAVEIS,Indústria de Transformação,Celulose e Papel,Papel
+1742702,FABRICACAO DE ABSORVENTES HIGIENICOS,Indústria de Transformação,Celulose e Papel,Papel
+1742799,FABRICACAO DE PRODUTOS DE PAPEL PARA USO DOMESTICO E HIGIENICO-SANITARIO NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Celulose e Papel,Papel
+1749400,"FABRICACAO DE PRODUTOS DE PASTAS CELULOSICAS, PAPEL, CARTOLINA, PAPEL-CARTAO E PAPELAO ONDULADO NAO ESPECIFICADOS ANTERIORMENTE",Indústria de Transformação,Celulose e Papel,Papel
+1811301,IMPRESSAO DE JORNAIS,Indústria de Transformação,Gráfica e Editoração,Gráfica
+1811302,"IMPRESSAO DE LIVROS, REVISTAS E OUTRAS PUBLICACOES PERIODICAS",Indústria de Transformação,Gráfica e Editoração,Gráfica
+1812100,IMPRESSAO DE MATERIAL DE SEGURANCA,Indústria de Transformação,Gráfica e Editoração,Gráfica
+1813001,IMPRESSAO DE MATERIAL PARA USO PUBLICITARIO,Indústria de Transformação,Gráfica e Editoração,Gráfica
+1813099,IMPRESSAO DE MATERIAL PARA OUTROS USOS,Indústria de Transformação,Gráfica e Editoração,Gráfica
+1821100,SERVICOS DE PRE-IMPRESSAO,Indústria de Transformação,Gráfica e Editoração,Gráfica
+1822901,SERVICO DE ENCADERNACAO E PLASTIFICACAO,Indústria de Transformação,Gráfica e Editoração,Gráfica
+1822999,"SERVICOS DE ACABAMENTOS GRAFICOS, EXCETOENCADERNACAO E PLASTIFICACAO",Indústria de Transformação,Gráfica e Editoração,Gráfica
+1830001,REPRODUCAO DE SOM EM QUALQUER SUPORTE,Indústria de Transformação,Gráfica e Editoração,Gráfica
+1830002,REPRODUCAO DE VIDEO EM QUALQUER SUPORTE,Indústria de Transformação,Gráfica e Editoração,Gráfica
+1830003,REPRODUCAO DE SOFTWARE EM QUALQUER SUPORTE,Indústria de Transformação,Gráfica e Editoração,Gráfica
+1910100,COQUERIAS,Indústria de Transformação,"Petróleo, Gás e Combustíveis",Petróleo e Gás
+1921700,FABRICACAO DE PRODUTOS DO REFINO DE PETROLEO,Indústria de Transformação,"Petróleo, Gás e Combustíveis",Petróleo e Gás
+1922501,FORMULACAO DE COMBUSTIVEIS,Indústria de Transformação,"Petróleo, Gás e Combustíveis",Combustíveis
+1922502,RERREFINO DE OLEOS LUBRIFICANTES,Indústria de Transformação,"Petróleo, Gás e Combustíveis",Petróleo e Gás
+1922599,"FABRICACAO DE OUTROS PRODUTOS DERIVADOS DO PETROLEO, EXCETO PRODUTOS DO REFINO",Indústria de Transformação,"Petróleo, Gás e Combustíveis",Petróleo e Gás
+1931400,FABRICACAO DE ALCOOL,Indústria de Transformação,"Petróleo, Gás e Combustíveis",Combustíveis
+1932200,"FABRICACAO DE BIOCOMBUSTIVEIS, EXCETO ALCOOL",Indústria de Transformação,"Petróleo, Gás e Combustíveis",Combustíveis
+2011800,FABRICACAO DE CLORO E ALCALIS,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2012600,FABRICACAO DE INTERMEDIARIOS PARA FERTILIZANTES,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2013401,FABRICAÇÃO DE ADUBOS E FERTILIZANTES ORGANO-MINERAIS,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2013402,"FABRICAÇÃO DE ADUBOS E FERTILIZANTES, EXCETO ORGANO-MINERAIS",Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2014200,FABRICACAO DE GASES INDUSTRIAIS,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2019301,ELABORACAO DE COMBUSTIVEIS NUCLEARES,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2019399,FABRICACAO DE OUTROS PRODUTOS QUIMICOS INORGANICOS NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2021500,FABRICACAO DE PRODUTOS PETROQUIMICOS BASICOS,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Petroquímica
+2022300,"FABRICACAO DE INTERMEDIARIOS PARA PLASTIFICANTES, RESINAS E FIBRAS",Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Petroquímica
+2029100,FABRICACAO DE PRODUTOS QUIMICOS ORGANICOS NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2031200,FABRICACAO DE RESINAS TERMOPLASTICAS,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Petroquímica
+2032100,FABRICACAO DE RESINAS TERMOFIXAS,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Petroquímica
+2033900,FABRICACAO DE ELASTOMEROS,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Petroquímica
+2040100,FABRICACAO DE FIBRAS ARTIFICIAIS E SINTETICAS,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Petroquímica
+2051700,FABRICACAO DE DEFENSIVOS AGRICOLAS,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2052500,FABRICACAO DE DESINFESTANTES DOMISSANITARIOS,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2061400,FABRICACAO DE SABOES E DETERGENTES SINTETICOS,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Produtos de Limpeza e Cosméticos
+2062200,FABRICACAO DE PRODUTOS DE LIMPEZA E POLIMENTO,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Produtos de Limpeza e Cosméticos
+2063100,"FABRICACAO DE COSMETICOS, PRODUTOS DE PERFUMARIA E DE HIGIENE PESSOAL",Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Produtos de Limpeza e Cosméticos
+2071100,"FABRICACAO DE TINTAS, VERNIZES, ESMALTES E LACAS",Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2072000,FABRICACAO DE TINTAS DE IMPRESSAO,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2073800,"FABRICACAO DE IMPERMEABILIZANTES, SOLVENTES E PRODUTOS AFINS",Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2091600,FABRICACAO DE ADESIVOS E SELANTES,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2092401,"FABRICACAO DE POLVORAS, EXPLOSIVOS E DETONANTES",Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2092402,FABRICACAO DE ARTIGOS PIROTECNICOS,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2092403,FABRICACAO DE FOSFOROS DE SEGURANCA,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2093200,FABRICACAO DE ADITIVOS DE USO INDUSTRIAL,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2094100,FABRICACAO DE CATALISADORES,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2099101,"FABRICACAO DE CHAPAS, FILMES, PAPEIS E OUTROS MATERIAIS E PRODUTOS QUIMICOS PARA FOTOGRAFIA",Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2099199,FABRICACAO DE OUTROS PRODUTOS QUIMICOS NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Química
+2110600,FABRICACAO DE PRODUTOS FARMOQUIMICOS,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Farmacêutica
+2121101,FABRICACAO DE MEDICAMENTOS ALOPATICOS PARA USO HUMANO,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Farmacêutica
+2121102,FABRICACAO DE MEDICAMENTOS HOMEOPATICOS PARA USO HUMANO,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Farmacêutica
+2121103,FABRICACAO DE MEDICAMENTOS FITOTERAPICOS PARA USO HUMANO,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Farmacêutica
+2122000,FABRICACAO DE MEDICAMENTOS PARA USO VETERINARIO,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Farmacêutica
+2123800,FABRICACAO DE PREPARACOES FARMACEUTICAS,Indústria de Transformação,"Química, Petroquímica e Farmacêutica",Farmacêutica
+2211100,FABRICACAO DE PNEUMATICOS E DE CAMARAS-DE-AR,Indústria de Transformação,Plásticos e Borrachas,Borrachas
+2212900,REFORMA DE PNEUMATICOS USADOS,Indústria de Transformação,Plásticos e Borrachas,Borrachas
+2219600,FABRICACAO DE ARTEFATOS DE BORRACHA NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Plásticos e Borrachas,Borrachas
+2221800,FABRICACAO DE LAMINADOS PLANOS E TUBULARES DE MATERIAL PLASTICO,Indústria de Transformação,Plásticos e Borrachas,Plásticos
+2222600,FABRICACAO DE EMBALAGENS DE MATERIAL PLASTICO,Indústria de Transformação,Plásticos e Borrachas,Plásticos
+2223400,FABRICACAO DE TUBOS E ACESSORIOS DE MATERIAL PLASTICO PARA USO NA CONSTRUCAO,Indústria de Transformação,Plásticos e Borrachas,Plásticos
+2229301,FABRICACAO DE ARTEFATOS DE MATERIAL PLASTICO PARA USO PESSOAL E DOMESTICO,Indústria de Transformação,Plásticos e Borrachas,Plásticos
+2229302,FABRICACAO DE ARTEFATOS DE MATERIAL PLASTICO PARA USOS INDUSTRIAIS,Indústria de Transformação,Plásticos e Borrachas,Plásticos
+2229303,"FABRICACAO DE ARTEFATOS DE MATERIAL PLASTICO PARA USO NA CONSTRUCAO, EXCETO TUBOS E ACESSORIOS",Indústria de Transformação,Plásticos e Borrachas,Plásticos
+2229399,FABRICACAO DE ARTEFATOS DE MATERIAL PLASTICO PARA OUTROS USOS NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Plásticos e Borrachas,Plásticos
+2311700,FABRICACAO DE VIDRO PLANO E DE SEGURANCA,Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2312500,FABRICACAO DE EMBALAGENS DE VIDRO,Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2319200,FABRICACAO DE ARTIGOS DE VIDRO,Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2320600,FABRICACAO DE CIMENTO,Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2330301,"FABRICACAO DE ESTRUTURAS PRE-MOLDADAS DE CONCRETO ARMADO, EM SERIE E SOB ENCOMENDA",Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2330302,FABRICACAO DE ARTEFATOS DE CIMENTO PARA USO NA CONSTRUCAO,Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2330303,FABRICACAO DE ARTEFATOS DE FIBROCIMENTO PARA USO NA CONSTRUCAO,Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2330304,FABRICACAO DE CASAS PRE-MOLDADAS DE CONCRETO,Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2330305,PREPARACAO DE MASSA DE CONCRETO E ARGAMASSA PARA CONSTRUCAO,Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2330399,"FABRICACAO DE OUTROS ARTEFATOS E PRODUTOS DE CONCRETO, CIMENTO, FIBROCIMENTO, GESSO E MATERIAIS SEMELHANTES",Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2341900,FABRICACAO DE PRODUTOS CERAMICOS REFRATARIOS,Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2342701,FABRICACAO DE AZULEJOS E PISOS,Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2342702,"FABRICACAO DE ARTEFATOS DE CERAMICA E BARRO COZIDO PARA USO NA CONSTRUCAO, EXCETO AZULEJOS E PISOS",Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2349401,FABRICACAO DE MATERIAL SANITARIO DE CERAMICA,Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2349499,FABRICACAO DE PRODUTOS CERAMICOS NAO-REFRATARIOS NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2391501,"BRITAMENTO DE PEDRAS, EXCETO ASSOCIADO A EXTRACAO",Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2391502,"APARELHAMENTO DE PEDRAS PARA CONSTRUCAO, EXCETO ASSOCIADO A EXTRACAO",Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2391503,"APARELHAMENTO DE PLACAS E EXECUCAO DE TRABALHOS EM MARMORE, GRANITO, ARDOSIA E OUTRAS PEDRAS",Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2392300,FABRICACAO DE CAL E GESSO,Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2399101,"DECORACAO, LAPIDACAO, GRAVACAO, VITRIFICACAO E OUTROS TRABALHOS EM CERAMICA, LOUCA, VIDRO E CRISTAL",Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2399102,FABRICACAO DE ABRASIVOS,Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2399199,FABRICACAO DE OUTROS PRODUTOS DE MINERAIS NAO-METALICOS NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Minerais Não Metálicos,Minerais Não Metálicos
+2411300,PRODUCAO DE FERRO-GUSA,Indústria de Transformação,Metalmecânica,Metalurgia
+2412100,PRODUCAO DE FERROLIGAS,Indústria de Transformação,Metalmecânica,Metalurgia
+2421100,PRODUCAO DE SEMI-ACABADOS DE ACO,Indústria de Transformação,Metalmecânica,Metalurgia
+2422901,"PRODUCAO DE LAMINADOS PLANOS DE ACO AO CARBONO, REVESTIDOS OU NAO",Indústria de Transformação,Metalmecânica,Metalurgia
+2422902,PRODUCAO DE LAMINADOS PLANOS DE ACOS ESPECIAIS,Indústria de Transformação,Metalmecânica,Metalurgia
+2423701,PRODUCAO DE TUBOS DE ACO SEM COSTURA,Indústria de Transformação,Metalmecânica,Metalurgia
+2423702,"PRODUCAO DE LAMINADOS LONGOS DE ACO, EXCETO TUBOS",Indústria de Transformação,Metalmecânica,Metalurgia
+2424501,PRODUCAO DE ARAMES DE ACO,Indústria de Transformação,Metalmecânica,Metalurgia
+2424502,"PRODUCAO DE RELAMINADOS, TREFILADOS E PERFILADOS DE ACO, EXCETO ARAMES",Indústria de Transformação,Metalmecânica,Metalurgia
+2431800,PRODUCAO DE TUBOS DE ACO COM COSTURA,Indústria de Transformação,Metalmecânica,Metalurgia
+2439300,PRODUCAO DE OUTROS TUBOS DE FERRO E ACO,Indústria de Transformação,Metalmecânica,Metalurgia
+2441501,PRODUCAO DE ALUMINIO E SUAS LIGAS EM FORMAS PRIMARIAS,Indústria de Transformação,Metalmecânica,Metalurgia
+2441502,PRODUCAO DE LAMINADOS DE ALUMINIO,Indústria de Transformação,Metalmecânica,Metalurgia
+2442300,METALURGIA DOS METAIS PRECIOSOS,Indústria de Transformação,Metalmecânica,Metalurgia
+2443100,METALURGIA DO COBRE,Indústria de Transformação,Metalmecânica,Metalurgia
+2449101,PRODUCAO DE ZINCO EM FORMAS PRIMARIAS,Indústria de Transformação,Metalmecânica,Metalurgia
+2449102,PRODUCAO DE LAMINADOS DE ZINCO,Indústria de Transformação,Metalmecânica,Metalurgia
+2449103,FABRICAÇÃO DE ÂNODOS PARA GALVANOPLASTIA,Indústria de Transformação,Metalmecânica,Metalurgia
+2449199,METALURGIA DE OUTROS METAIS NAO-FERROSOS E SUAS LIGAS NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Metalmecânica,Metalurgia
+2451200,FUNDICAO DE FERRO E ACO,Indústria de Transformação,Metalmecânica,Metalurgia
+2452100,FUNDICAO DE METAIS NAO-FERROSOS E SUAS LIGAS,Indústria de Transformação,Metalmecânica,Metalurgia
+2511000,FABRICACAO DE ESTRUTURAS METALICAS,Indústria de Transformação,Metalmecânica,Metalurgia
+2512800,FABRICACAO DE ESQUADRIAS DE METAL,Indústria de Transformação,Metalmecânica,Metalurgia
+2513600,FABRICACAO DE OBRAS DE CALDEIRARIA PESADA,Indústria de Transformação,Metalmecânica,Metalurgia
+2521700,"FABRICACAO DE TANQUES, RESERVATORIOS METALICOS E CALDEIRAS PARA AQUECIMENTO CENTRAL",Indústria de Transformação,Metalmecânica,Metalurgia
+2522500,"FABRICACAO DE CALDEIRAS GERADORAS DE VAPOR, EXCETO PARA AQUECIMENTO CENTRAL E PARA VEICULOS",Indústria de Transformação,Metalmecânica,Metalurgia
+2531401,PRODUCAO DE FORJADOS DE ACO,Indústria de Transformação,Metalmecânica,Metalurgia
+2531402,PRODUCAO DE FORJADOS DE METAIS NAO-FERROSOS E SUAS LIGAS,Indústria de Transformação,Metalmecânica,Metalurgia
+2532201,PRODUCAO DE ARTEFATOS ESTAMPADOS DE METAL,Indústria de Transformação,Metalmecânica,Metalurgia
+2532202,METALURGIA DO PO,Indústria de Transformação,Metalmecânica,Metalurgia
+2539001,"SERVICOS DE USINAGEM, TORNEARIA E SOLDA",Indústria de Transformação,Metalmecânica,Metalurgia
+2539002,SERVICOS DE TRATAMENTO E REVESTIMENTO EMMETAIS,Indústria de Transformação,Metalmecânica,Metalurgia
+2541100,FABRICACAO DE ARTIGOS DE CUTELARIA,Indústria de Transformação,Metalmecânica,Metalurgia
+2542000,"FABRICACAO DE ARTIGOS DE SERRALHERIA, EXCETO ESQUADRIAS",Indústria de Transformação,Metalmecânica,Metalurgia
+2543800,FABRICACAO DE FERRAMENTAS,Indústria de Transformação,Metalmecânica,Metalurgia
+2550101,"FABRICACAO DE EQUIPAMENTO BELICO PESADO, EXCETO VEICULOS MILITARES DE COMBATE",Indústria de Transformação,Metalmecânica,Metalurgia
+2550102,"FABRICACAO DE ARMAS DE FOGO E MUNICOES, OUTRAS ARMAS E MUNICOES",Indústria de Transformação,Metalmecânica,Metalurgia
+2591800,FABRICACAO DE EMBALAGENS METALICAS,Indústria de Transformação,Metalmecânica,Metalurgia
+2592601,FABRICACAO DE PRODUTOS DE TREFILADOS DE METAL PADRONIZADOS,Indústria de Transformação,Metalmecânica,Mecânica
+2592602,"FABRICACAO DE PRODUTOS DE TREFILADOS DE METAL, EXCETO PADRONIZADOS",Indústria de Transformação,Metalmecânica,Mecânica
+2593400,FABRICACAO DE ARTIGOS DE METAL PARA USO DOMESTICO E PESSOAL,Indústria de Transformação,Metalmecânica,Metalurgia
+2599301,SERVICOS DE CONFECCAO DE ARMACOES METALICAS PARA A CONSTRUCAO,Indústria de Transformação,Metalmecânica,Mecânica
+2599302,SERVICO DE CORTE E DOBRA DE METAL,Indústria de Transformação,Metalmecânica,Mecânica
+2599399,FABRICACAO DE OUTROS PRODUTOS DE METAL NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Metalmecânica,Metalurgia
+2610800,FABRICACAO DE COMPONENTES ELETRONICOS,Indústria de Transformação,Eletroeletrônica,Eletrônica
+2621300,FABRICACAO DE EQUIPAMENTOS DE INFORMATICA,Comunicação e Informática,Informática,Hardware
+2622100,FABRICACAO DE PERIFERICOS PARA EQUIPAMENTOS DE INFORMATICA,Comunicação e Informática,Informática,Hardware
+2631100,"FABRICACAO DE EQUIPAMENTOS TRANSMISSORES DE COMUNICACAO, PECAS E ACESSORIOS",Indústria de Transformação,Eletroeletrônica,Eletrônica
+2632900,"FABRICACAO DE APARELHOS TELEFONICOS E DE OUTROS EQUIPAMENTOS DE COMUNICACAO, PECAS E ACESSORIOS",Indústria de Transformação,Eletroeletrônica,Eletrônica
+2640000,"FABRICACAO DE APARELHOS DE RECEPCAO, REPRODUCAO, GRAVACAO E AMPLIFICACAO DE AUDIO E VIDEO",Indústria de Transformação,Eletroeletrônica,Eletrônica
+2651500,"FABRICACAO DE APARELHOS E EQUIPAMENTOS DE MEDIDA, TESTE E CONTROLE",Indústria de Transformação,"Equipamentos Médicos, Hospitalares, Ópticos e de Precisão","Equipamentos Médicos, Hospitalares, Ópticos e de Precisão"
+2652300,FABRICACAO DE CRONOMETROS E RELOGIOS,Indústria de Transformação,"Equipamentos Médicos, Hospitalares, Ópticos e de Precisão","Equipamentos Médicos, Hospitalares, Ópticos e de Precisão"
+2660400,FABRICACAO DE APARELHOS ELETROMEDICOS E ELETROTERAPEUTICOS E EQUIPAMENTOS DE IRRADIACAO,Indústria de Transformação,"Equipamentos Médicos, Hospitalares, Ópticos e de Precisão","Equipamentos Médicos, Hospitalares, Ópticos e de Precisão"
+2670101,"FABRICACAO DE EQUIPAMENTOS E INSTRUMENTOS OPTICOS, PECAS E ACESSORIOS",Indústria de Transformação,"Equipamentos Médicos, Hospitalares, Ópticos e de Precisão","Equipamentos Médicos, Hospitalares, Ópticos e de Precisão"
+2670102,"FABRICACAO DE APARELHOS FOTOGRAFICOS E CINEMATOGRAFICOS, PECAS E ACESSORIOS",Indústria de Transformação,Eletroeletrônica,Eletrônica
+2680900,"FABRICACAO DE MIDIAS VIRGENS, MAGNETICAS E OPTICAS",Indústria de Transformação,Eletroeletrônica,Eletrônica
+2710401,"FABRICACAO DE GERADORES DE CORRENTE CONTINUA E ALTERNADA, PECAS E ACESSORIOS",Indústria de Transformação,Eletroeletrônica,Elétrica
+2710402,"FABRICACAO DE TRANSFORMADORES, INDUTORES, CONVERSORES, SINCRONIZADORES E SEMELHANTES, PECAS E ACESSORIOS",Indústria de Transformação,Eletroeletrônica,Elétrica
+2710403,"FABRICACAO DE MOTORES ELETRICOS, PECAS E ACESSORIOS",Indústria de Transformação,Eletroeletrônica,Elétrica
+2721000,"FABRICACAO DE PILHAS, BATERIAS E ACUMULADORES ELETRICOS, EXCETO PARA VEICULOS AUTOMOTORES",Indústria de Transformação,Eletroeletrônica,Elétrica
+2722801,FABRICACAO DE BATERIAS E ACUMULADORES PARA VEICULOS AUTOMOTORES,Indústria de Transformação,Eletroeletrônica,Elétrica
+2722802,RECONDICIONAMENTO DE BATERIAS E ACUMULADORES PARA VEICULOS AUTOMOTORES,Indústria de Transformação,Eletroeletrônica,Elétrica
+2731700,FABRICACAO DE APARELHOS E EQUIPAMENTOS PARA DISTRIBUICAO E CONTROLE DE ENERGIA ELETRICA,Indústria de Transformação,Eletroeletrônica,Elétrica
+2732500,FABRICACAO DE MATERIAL ELETRICO PARA INSTALACOES EM CIRCUITO DE CONSUMO,Indústria de Transformação,Eletroeletrônica,Elétrica
+2733300,"FABRICACAO DE FIOS, CABOS E CONDUTORES ELETRICOS ISOLADOS",Indústria de Transformação,Eletroeletrônica,Elétrica
+2740601,FABRICACAO DE LAMPADAS,Indústria de Transformação,Eletroeletrônica,Elétrica
+2740602,FABRICACAO DE LUMINARIAS E OUTROS EQUIPAMENTOS DE ILUMINACAO,Indústria de Transformação,Eletroeletrônica,Elétrica
+2751100,"FABRICACAO DE FOGOES, REFRIGERADORES E MAQUINAS DE LAVAR E SECAR PARA USO DOMESTICO, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2759701,"FABRICACAO DE APARELHOS ELETRICOS DE USO PESSOAL, PECAS E ACESSORIOS",Indústria de Transformação,Eletroeletrônica,Elétrica
+2759799,"FABRICACAO DE OUTROS APARELHOS ELETRODOMESTICOS NAO ESPECIFICADOS ANTERIORMENTE, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2790201,"FABRICACAO DE ELETRODOS, CONTATOS E OUTROS ARTIGOS DE CARVAO E GRAFITA PARA USO ELETRICO, ELETROIMAS E ISOLADORES",Indústria de Transformação,Eletroeletrônica,Elétrica
+2790202,FABRICACAO DE EQUIPAMENTOS PARA SINALIZACAO E ALARME,Indústria de Transformação,Eletroeletrônica,Elétrica
+2790299,FABRICACAO DE OUTROS EQUIPAMENTOS E APARELHOS ELETRICOS NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Metalmecânica,Mecânica
+2811900,"FABRICACAO DE MOTORES E TURBINAS, PECAS E ACESSORIOS, EXCETO PARA AVIOES E VEICULOS RODOVIARIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2812700,"FABRICACAO DE EQUIPAMENTOS HIDRAULICOS E PNEUMATICOS, PECAS E ACESSORIOS, EXCETO VALVULAS",Indústria de Transformação,Metalmecânica,Mecânica
+2813500,"FABRICACAO DE VALVULAS, REGISTROS E DISPOSITIVOS SEMELHANTES, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2814301,"FABRICACAO DE COMPRESSORES PARA USO INDUSTRIAL, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2814302,"FABRICACAO DE COMPRESSORES PARA USO NAO-INDUSTRIAL, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2815101,FABRICACAO DE ROLAMENTOS PARA FINS INDUSTRIAIS,Indústria de Transformação,Metalmecânica,Mecânica
+2815102,"FABRICACAO DE EQUIPAMENTOS DE TRANSMISSAO PARA FINS INDUSTRIAIS, EXCETO ROLAMENTOS",Indústria de Transformação,Metalmecânica,Mecânica
+2821601,"FABRICACAO DE FORNOS INDUSTRIAIS, APARELHOS E EQUIPAMENTOS NAO-ELETRICOS PARA INSTALACOES TERMICAS, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2821602,"FABRICACAO DE ESTUFAS E FORNOS ELETRICOS PARA FINS INDUSTRIAIS, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2822401,"FABRICACAO DE MAQUINAS, EQUIPAMENTOS E APARELHOS PARA TRANSPORTE E ELEVACAO DE PESSOAS, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2822402,"FABRICACAO DE MAQUINAS, EQUIPAMENTOS E APARELHOS PARA TRANSPORTE E ELEVACAO DE CARGAS, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2823200,"FABRICACAO DE MAQUINAS E APARELHOS DE REFRIGERACAO E VENTILACAO PARA USO INDUSTRIAL E COMERCIAL, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2824101,FABRICACAO DE APARELHOS E EQUIPAMENTOS DE AR CONDICIONADO PARA USO INDUSTRIAL,Indústria de Transformação,Metalmecânica,Mecânica
+2824102,FABRICACAO DE APARELHOS E EQUIPAMENTOS DE AR CONDICIONADO PARA USO NAO-INDUSTRIAL,Indústria de Transformação,Metalmecânica,Mecânica
+2825900,"FABRICACAO DE MAQUINAS E EQUIPAMENTOS PARA SANEAMENTO BASICO E AMBIENTAL, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2829101,"FABRICACAO DE MAQUINAS DE ESCREVER, CALCULAR E OUTROS EQUIPAMENTOS NAO-ELETRONICOS PARA ESCRITORIO, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2829199,"FABRICACAO DE OUTRAS MAQUINAS E EQUIPAMENTOS DE USO GERAL NAO ESPECIFICADOS ANTERIORMENTE, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2831300,"FABRICACAO DE TRATORES AGRICOLAS, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2832100,"FABRICACAO DE EQUIPAMENTOS PARA IRRIGACAO AGRICOLA, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2833000,"FABRICACAO DE MAQUINAS E EQUIPAMENTOS PARA A AGRICULTURA E PECUARIA, PECAS E ACESSORIOS, EXCETO PARA IRRIGACAO",Indústria de Transformação,Metalmecânica,Mecânica
+2840200,"FABRICACAO DE MAQUINAS-FERRAMENTA, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2851800,"FABRICACAO DE MAQUINAS E EQUIPAMENTOS PARA A PROSPECCAO E EXTRACAO DE PETROLEO, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2852600,"FABRICACAO DE OUTRAS MAQUINAS E EQUIPAMENTOS PARA USO NA EXTRACAO MINERAL, PECAS E ACESSORIOS, EXCETO NA EXTRACAO DE PETROLEO",Indústria de Transformação,Metalmecânica,Mecânica
+2853400,"FABRICACAO DE TRATORES, PECAS E ACESSORIOS, EXCETO AGRICOLAS",Indústria de Transformação,Metalmecânica,Mecânica
+2854200,"FABRICACAO DE MAQUINAS E EQUIPAMENTOS PARA TERRAPLENAGEM, PAVIMENTACAO E CONSTRUCAO, PECAS E ACESSORIOS, EXCETO TRATORES",Indústria de Transformação,Metalmecânica,Mecânica
+2861500,"FABRICACAO DE MAQUINAS PARA A INDUSTRIA METALURGICA, PECAS E ACESSORIOS, EXCETO MAQUINAS-FERRAMENTA",Indústria de Transformação,Metalmecânica,Mecânica
+2862300,"FABRICACAO DE MAQUINAS E EQUIPAMENTOS PARA AS INDUSTRIAS DE ALIMENTOS, BEBIDAS E FUMO, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2863100,"FABRICACAO DE MAQUINAS E EQUIPAMENTOS PARA A INDUSTRIA TEXTIL, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2864000,"FABRICACAO DE MAQUINAS E EQUIPAMENTOS PARA AS INDUSTRIAS DO VESTUARIO, DO COURO E DE CALCADOS, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2865800,"FABRICACAO DE MAQUINAS E EQUIPAMENTOS PARA AS INDUSTRIAS DE CELULOSE, PAPEL E PAPELAO E ARTEFATOS, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2866600,"FABRICACAO DE MAQUINAS E EQUIPAMENTOS PARA A INDUSTRIA DO PLASTICO, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2869100,"FABRICACAO DE MAQUINAS E EQUIPAMENTOS PARA USO INDUSTRIAL ESPECIFICO NAO ESPECIFICADOS ANTERIORMENTE, PECAS E ACESSORIOS",Indústria de Transformação,Metalmecânica,Mecânica
+2910701,"FABRICACAO DE AUTOMOVEIS, CAMIONETAS E UTILITARIOS",Indústria de Transformação,Veículos Automotores,Automóveis
+2910702,"FABRICACAO DE CHASSIS COM MOTOR PARA AUTOMOVEIS, CAMIONETAS E UTILITARIOS",Indústria de Transformação,Veículos Automotores,Automóveis
+2910703,"FABRICACAO DE MOTORES PARA AUTOMOVEIS, CAMIONETAS E UTILITARIOS",Indústria de Transformação,Veículos Automotores,Automóveis
+2920401,FABRICACAO DE CAMINHOES E ONIBUS,Indústria de Transformação,Veículos Automotores,Automóveis
+2920402,FABRICACAO DE MOTORES PARA CAMINHOES E ONIBUS,Indústria de Transformação,Veículos Automotores,Automóveis
+2930101,"FABRICACAO DE CABINES, CARROCERIAS E REBOQUES PARA CAMINHOES",Indústria de Transformação,Veículos Automotores,Automóveis
+2930102,FABRICACAO DE CARROCERIAS PARA ONIBUS,Indústria de Transformação,Veículos Automotores,Automóveis
+2930103,"FABRICACAO DE CABINES, CARROCERIAS E REBOQUES PARA OUTROS VEICULOS AUTOMOTORES, EXCETO CAMINHOES E ONIBUS",Indústria de Transformação,Veículos Automotores,Automóveis
+2941700,FABRICACAO DE PECAS E ACESSORIOS PARA O SISTEMA MOTOR DE VEICULOS AUTOMOTORES,Indústria de Transformação,Veículos Automotores,Automóveis
+2942500,FABRICACAO DE PECAS E ACESSORIOS PARA OS SISTEMAS DE MARCHA E TRANSMISSAO DE VEICULOS AUTOMOTORES,Indústria de Transformação,Veículos Automotores,Automóveis
+2943300,FABRICACAO DE PECAS E ACESSORIOS PARA O SISTEMA DE FREIOS DE VEICULOS AUTOMOTORES,Indústria de Transformação,Veículos Automotores,Automóveis
+2944100,FABRICACAO DE PECAS E ACESSORIOS PARA O SISTEMA DE DIRECAO E SUSPENSAO DE VEICULOS AUTOMOTORES,Indústria de Transformação,Veículos Automotores,Automóveis
+2945000,"FABRICACAO DE MATERIAL ELETRICO E ELETRONICO PARA VEICULOS AUTOMOTORES, EXCETO BATERIAS",Indústria de Transformação,Veículos Automotores,Automóveis
+2949201,FABRICACAO DE BANCOS E ESTOFADOS PARA VEICULOS AUTOMOTORES,Indústria de Transformação,Veículos Automotores,Automóveis
+2949299,FABRICACAO DE OUTRAS PECAS E ACESSORIOS PARA VEICULOS AUTOMOTORES NAO ESPECIFICADAS ANTERIORMENTE,Indústria de Transformação,Veículos Automotores,Automóveis
+2950600,RECONDICIONAMENTO E RECUPERACAO DE MOTORES PARA VEICULOS AUTOMOTORES,Indústria de Transformação,Veículos Automotores,Automóveis
+3011301,CONSTRUCAO DE EMBARCACOES DE GRANDE PORTE,Indústria de Transformação,Outros Equipamentos de Transporte,Embarcações
+3011302,"CONSTRUCAO DE EMBARCACOES PARA USO COMERCIAL E PARA USOS ESPECIAIS, EXCETO DE GRANDE PORTE",Indústria de Transformação,Outros Equipamentos de Transporte,Embarcações
+3012100,CONSTRUCAO DE EMBARCACOES PARA ESPORTE E LAZER,Indústria de Transformação,Outros Equipamentos de Transporte,Embarcações
+3031800,"FABRICACAO DE LOCOMOTIVAS, VAGOES E OUTROS MATERIAIS RODANTES",Indústria de Transformação,Outros Equipamentos de Transporte,Veículos Ferroviários
+3032600,FABRICACAO DE PECAS E ACESSORIOS PARA VEICULOS FERROVIARIOS,Indústria de Transformação,Outros Equipamentos de Transporte,Veículos Ferroviários
+3041500,FABRICACAO DE AERONAVES,Indústria de Transformação,Outros Equipamentos de Transporte,Aeronaves
+3042300,"FABRICACAO DE TURBINAS, MOTORES E OUTROS COMPONENTES E PECAS PARA AERONAVES",Indústria de Transformação,Outros Equipamentos de Transporte,Aeronaves
+3050400,FABRICACAO DE VEICULOS MILITARES DE COMBATE,Indústria de Transformação,Outros Equipamentos de Transporte,Veículos Militares
+3091101,FABRICACAO DE MOTOCICLETAS,Indústria de Transformação,Veículos Automotores,Motocicletas
+3091102,FABRICACAO DE PECAS E ACESSORIOS PARA MOTOCICLETAS,Indústria de Transformação,Veículos Automotores,Motocicletas
+3092000,"FABRICACAO DE BICICLETAS E TRICICLOS NAO-MOTORIZADOS, PECAS E ACESSORIOS",Indústria de Transformação,Outros Equipamentos de Transporte,Outros
+3099700,FABRICACAO DE EQUIPAMENTOS DE TRANSPORTE NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Outros Equipamentos de Transporte,Outros
+3101200,FABRICACAO DE MOVEIS COM PREDOMINANCIA DE MADEIRA,Indústria de Transformação,Madeira e Móveis,Móveis
+3102100,FABRICACAO DE MOVEIS COM PREDOMINANCIA DE METAL,Indústria de Transformação,Madeira e Móveis,Móveis
+3103900,"FABRICACAO DE MOVEIS DE OUTROS MATERIAIS, EXCETO MADEIRA E METAL",Indústria de Transformação,Madeira e Móveis,Móveis
+3104700,FABRICACAO DE COLCHOES,Indústria de Transformação,Madeira e Móveis,Móveis
+3211601,LAPIDACAO DE GEMAS,Indústria de Transformação,Joalheria e Gemologia,Joalheria e Gemologia
+3211602,FABRICACAO DE ARTEFATOS DE JOALHERIA E OURIVESARIA,Indústria de Transformação,Joalheria e Gemologia,Joalheria e Gemologia
+3211603,CUNHAGEM DE MOEDAS E MEDALHAS,Indústria de Transformação,Joalheria e Gemologia,Joalheria e Gemologia
+3212400,FABRICACAO DE BIJUTERIAS E ARTEFATOS SEMELHANTES,Indústria de Transformação,Joalheria e Gemologia,Joalheria e Gemologia
+3220500,"FABRICACAO DE INSTRUMENTOS MUSICAIS, PECAS E ACESSORIOS",Indústria de Transformação,Produtos Diversos,Produtos Diversos
+3230200,FABRICACAO DE ARTEFATOS PARA PESCA E ESPORTE,Indústria de Transformação,Produtos Diversos,Produtos Diversos
+3240001,FABRICACAO DE JOGOS ELETRONICOS,Indústria de Transformação,Produtos Diversos,Produtos Diversos
+3240002,"FABRICACAO DE MESAS DE BILHAR, DE SINUCA E ACESSORIOS NAO ASSOCIADA A LOCACAO",Indústria de Transformação,Produtos Diversos,Produtos Diversos
+3240003,"FABRICACAO DE MESAS DE BILHAR, DE SINUCA E ACESSORIOS ASSOCIADA A LOCACAO",Indústria de Transformação,Produtos Diversos,Produtos Diversos
+3240099,FABRICACAO DE OUTROS BRINQUEDOS E JOGOS RECREATIVOS NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Produtos Diversos,Produtos Diversos
+3250701,"FABRICACAO DE INSTRUMENTOS NAO-ELETRONICOS E UTENSILIOS PARA USO MEDICO, CIRURGICO, ODONTOLOGICO E DE LABORATORIO",Indústria de Transformação,"Equipamentos Médicos, Hospitalares, Ópticos e de Precisão","Equipamentos Médicos, Hospitalares, Ópticos e de Precisão"
+3250702,"FABRICACAO DE MOBILIARIO PARA USO MEDICO, CIRURGICO, ODONTOLOGICO E DE LABORATORIO",Indústria de Transformação,"Equipamentos Médicos, Hospitalares, Ópticos e de Precisão","Equipamentos Médicos, Hospitalares, Ópticos e de Precisão"
+3250703,FABRICACAO DE APARELHOS E UTENSILIOS PARA CORRECAO DE DEFEITOS FISICOS E APARELHOS ORTOPEDICOS EM GERAL SOB ENCOMENDA,Indústria de Transformação,"Equipamentos Médicos, Hospitalares, Ópticos e de Precisão","Equipamentos Médicos, Hospitalares, Ópticos e de Precisão"
+3250704,"FABRICACAO DE APARELHOS E UTENSILIOS PARA CORRECAO DE DEFEITOS FISICOS E APARELHOS ORTOPEDICOS EM GERAL, EXCETO SOB ENCOMENDA",Indústria de Transformação,"Equipamentos Médicos, Hospitalares, Ópticos e de Precisão","Equipamentos Médicos, Hospitalares, Ópticos e de Precisão"
+3250705,FABRICACAO DE MATERIAIS PARA MEDICINA E ODONTOLOGIA,Indústria de Transformação,"Equipamentos Médicos, Hospitalares, Ópticos e de Precisão","Equipamentos Médicos, Hospitalares, Ópticos e de Precisão"
+3250707,FABRICACAO DE ARTIGOS OPTICOS,Indústria de Transformação,"Equipamentos Médicos, Hospitalares, Ópticos e de Precisão","Equipamentos Médicos, Hospitalares, Ópticos e de Precisão"
+3250709,SERVICO DE LABORATORIO OPTICO,Indústria de Transformação,"Equipamentos Médicos, Hospitalares, Ópticos e de Precisão","Equipamentos Médicos, Hospitalares, Ópticos e de Precisão"
+3291400,"FABRICACAO DE ESCOVAS, PINCEIS E VASSOURAS",Indústria de Transformação,Produtos Diversos,Produtos Diversos
+3292201,FABRICACAO DE ROUPAS DE PROTECAO E SEGURANCA E RESISTENTES A FOGO,Indústria de Transformação,Produtos Diversos,Produtos Diversos
+3292202,FABRICACAO DE EQUIPAMENTOS E ACESSORIOS PARA SEGURANCA PESSOAL E PROFISSIONAL,Indústria de Transformação,Produtos Diversos,Produtos Diversos
+3299001,FABRICACAO DE GUARDA-CHUVAS E SIMILARES,Indústria de Transformação,Produtos Diversos,Produtos Diversos
+3299002,"FABRICACAO DE CANETAS, LAPIS E OUTROS ARTIGOS PARA ESCRITORIO",Indústria de Transformação,Produtos Diversos,Produtos Diversos
+3299003,"FABRICACAO DE LETRAS, LETREIROS E PLACAS DE QUALQUER MATERIAL, EXCETO LUMINOSOS",Indústria de Transformação,Produtos Diversos,Produtos Diversos
+3299004,FABRICACAO DE PAINEIS E LETREIROS LUMINOSOS,Indústria de Transformação,Produtos Diversos,Produtos Diversos
+3299005,FABRICACAO DE AVIAMENTOS PARA COSTURA,Indústria de Transformação,Produtos Diversos,Produtos Diversos
+3299006,"FABRICACAO DE VELAS, INCLUSIVE DECORATIVAS",Indústria de Transformação,Produtos Diversos,Produtos Diversos
+3299099,FABRICACAO DE PRODUTOS DIVERSOS NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Produtos Diversos,Produtos Diversos
+3311200,"MANUTENCAO E REPARACAO DE TANQUES, RESERVATORIOS METALICOS E CALDEIRAS, EXCETO PARA VEICULOS",Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3312102,"MANUTENCAO E REPARACAO DE APARELHOS E INSTRUMENTOS DE MEDIDA, TESTE E CONTROLE",Indústria de Transformação,"Equipamentos Médicos, Hospitalares, Ópticos e de Precisão","Equipamentos Médicos, Hospitalares, Ópticos e de Precisão"
+3312103,MANUTENCAO E REPARACAO DE APARELHOS ELETROMEDICOS E ELETROTERAPEUTICOS E EQUIPAMENTOS DE IRRADIACAO,Indústria de Transformação,"Equipamentos Médicos, Hospitalares, Ópticos e de Precisão","Equipamentos Médicos, Hospitalares, Ópticos e de Precisão"
+3312104,MANUTENCAO E REPARACAO DE EQUIPAMENTOS E INSTRUMENTOS OPTICOS,Indústria de Transformação,"Equipamentos Médicos, Hospitalares, Ópticos e de Precisão","Equipamentos Médicos, Hospitalares, Ópticos e de Precisão"
+3313901,"MANUTENCAO E REPARACAO DE GERADORES, TRANSFORMADORES E MOTORES ELETRICOS",Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3313902,"MANUTENCAO E REPARACAO DE BATERIAS E ACUMULADORES ELETRICOS, EXCETO PARA VEICULOS",Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3313999,"MANUTENCAO E REPARACAO DE MAQUINAS, APARELHOS E MATERIAIS ELETRICOS NAO ESPECIFICADOS ANTERIORMENTE",Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314701,MANUTENCAO E REPARACAO DE MAQUINAS MOTRIZES NAO-ELETRICAS,Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314702,"MANUTENCAO E REPARACAO DE EQUIPAMENTOS HIDRAULICOS E PNEUMATICOS, EXCETO VALVULAS",Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314703,MANUTENCAO E REPARACAO DE VALVULAS INDUSTRIAIS,Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314704,MANUTENCAO E REPARACAO DE COMPRESSORES,Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314705,MANUTENCAO E REPARACAO DE EQUIPAMENTOS DE TRANSMISSAO PARA FINS INDUSTRIAIS,Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314706,"MANUTENCAO E REPARACAO DE MAQUINAS, APARELHOS E EQUIPAMENTOS PARA INSTALACOES TERMICAS",Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314707,MANUTENCAO E REPARACAO DE MAQUINAS E APARELHOS DE REFRIGERACAO E VENTILACAO PARA USO INDUSTRIAL E COMERCIAL,Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314708,"MANUTENCAO E REPARACAO DE MAQUINAS, EQUIPAMENTOS E APARELHOS PARA TRANSPORTE E ELEVACAO DE CARGAS",Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314709,"MANUTENCAO E REPARACAO DE MAQUINAS DE ESCREVER, CALCULAR E DE OUTROS EQUIPAMENTOS NAO-ELETRONICOS PARA ESCRITORIO",Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314710,MANUTENCAO E REPARACAO DE MAQUINAS E EQUIPAMENTOS PARA USO GERAL NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314711,MANUTENCAO E REPARACAO DE MAQUINAS E EQUIPAMENTOS PARA AGRICULTURA E PECUARIA,Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314712,MANUTENCAO E REPARACAO DE TRATORES AGRICOLAS,Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314713,MANUTENCAO E REPARACAO DE MAQUINAS-FERRAMENTA,Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314714,MANUTENCAO E REPARACAO DE MAQUINAS E EQUIPAMENTOS PARA A PROSPECCAO E EXTRACAO DE PETROLEO,Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314715,"MANUTENCAO E REPARACAO DE MAQUINAS E EQUIPAMENTOS PARA USO NA EXTRACAO MINERAL, EXCETO NA EXTRACAO DE PETROLEO",Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314716,"MANUTENCAO E REPARACAO DE TRATORES, EXCETO AGRICOLAS",Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314717,"MANUTENCAO E REPARACAO DE MAQUINAS E EQUIPAMENTOS DE TERRAPLENAGEM, PAVIMENTACAO E CONSTRUCAO, EXCETO TRATORES",Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314718,"MANUTENCAO E REPARACAO DE MAQUINAS PARA A INDUSTRIA METALURGICA, EXCETO MAQUINAS-FERRAMENTA",Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314719,"MANUTENCAO E REPARACAO DE MAQUINAS E EQUIPAMENTOS PARA AS INDUSTRIAS DE ALIMENTOS, BEBIDAS E FUMO",Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314720,"MANUTENCAO E REPARACAO DE MAQUINAS E EQUIPAMENTOS PARA A INDUSTRIA TEXTIL, DO VESTUARIO, DO COURO E CALCADOS",Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314721,"MANUTENCAO E REPARACAO DE MAQUINAS E APARELHOS PARA A INDUSTRIA DE CELULOSE, PAPEL E PAPELAO E ARTEFATOS",Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314722,MANUTENCAO E REPARACAO DE MAQUINAS E APARELHOS PARA A INDUSTRIA DO PLASTICO,Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3314799,MANUTENCAO E REPARACAO DE OUTRAS MAQUINAS E EQUIPAMENTOS PARA USOS INDUSTRIAIS NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3315500,MANUTENCAO E REPARACAO DE VEICULOS FERROVIARIOS,Indústria de Transformação,Outros Equipamentos de Transporte,Veículos Ferroviários
+3316301,"MANUTENCAO E REPARACAO DE AERONAVES, EXCETO A MANUTENCAO NA PISTA",Indústria de Transformação,Outros Equipamentos de Transporte,Aeronaves
+3316302,MANUTENCAO DE AERONAVES NA PISTA,Indústria de Transformação,Outros Equipamentos de Transporte,Aeronaves
+3317101,MANUTENCAO E REPARACAO DE EMBARCACOES E ESTRUTURAS FLUTUANTES,Indústria de Transformação,Outros Equipamentos de Transporte,Embarcações
+3317102,MANUTENCAO E REPARACAO DE EMBARCACOES PARA ESPORTE E LAZER,Indústria de Transformação,Outros Equipamentos de Transporte,Embarcações
+3319800,MANUTENCAO E REPARACAO DE EQUIPAMENTOS E PRODUTOS NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3321000,INSTALACAO DE MAQUINAS E EQUIPAMENTOS INDUSTRIAIS,Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3329501,SERVICOS DE MONTAGEM DE MOVEIS DE QUALQUER MATERIAL,Indústria de Transformação,Madeira e Móveis,Móveis
+3329599,INSTALACAO DE OUTROS EQUIPAMENTOS NAO ESPECIFICADOS ANTERIORMENTE,Indústria de Transformação,Metalmecânica,Manutenção Mecânica
+3511501,GERACAO DE ENERGIA ELETRICA,Serviços de Utilidade Pública,Eletricidade e Gás,Eletricidade
+3511502,ATIVIDADE DE COORDENACAO E CONTROLE DA  OPERACAO DA GERACAO E TRANSMISSAO DE ENERGIA ELETRICA,Serviços de Utilidade Pública,Eletricidade e Gás,Eletricidade
+3512300,TRANSMISSAO DE ENERGIA ELETRICA,Serviços de Utilidade Pública,Eletricidade e Gás,Eletricidade
+3513100,COMERCIO ATACADISTA DE ENERGIA ELETRICA,Serviços de Utilidade Pública,Eletricidade e Gás,Eletricidade
+3514000,DISTRIBUICAO DE ENERGIA ELETRICA,Serviços de Utilidade Pública,Eletricidade e Gás,Eletricidade
+3520401,PRODUCAO DE GAS; PROCESSAMENTO DE GAS NATURAL,Serviços de Utilidade Pública,Eletricidade e Gás,Gás
+3520402,DISTRIBUICAO DE COMBUSTIVEIS GASOSOS POR REDES URBANAS,Serviços de Utilidade Pública,Eletricidade e Gás,Gás
+3530100,"PRODUCAO E DISTRIBUICAO DE VAPOR, AGUA QUENTE E AR CONDICIONADO",Serviços de Utilidade Pública,Eletricidade e Gás,Outras Utilidades
+3600601,"CAPTACAO, TRATAMENTO E DISTRIBUICAO DE AGUA",Serviços de Utilidade Pública,Água e Esgoto,Água
+3701100,GESTAO DE REDES DE ESGOTO,Serviços de Utilidade Pública,Água e Esgoto,Esgoto
+3702900,"ATIVIDADES RELACIONADAS A ESGOTO, EXCETO A GESTAO DE REDES",Serviços de Utilidade Pública,Água e Esgoto,Esgoto
+3811400,COLETA DE RESIDUOS NAO-PERIGOSOS,Serviços de Utilidade Pública,Água e Esgoto,Coleta e Tratamento de Resíduos
+3812200,COLETA DE RESIDUOS PERIGOSOS,Serviços de Utilidade Pública,Água e Esgoto,Coleta e Tratamento de Resíduos
+3821100,TRATAMENTO E DISPOSICAO DE RESIDUOS NAO-PERIGOSOS,Serviços de Utilidade Pública,Água e Esgoto,Coleta e Tratamento de Resíduos
+3822000,TRATAMENTO E DISPOSICAO DE RESIDUOS PERIGOSOS,Serviços de Utilidade Pública,Água e Esgoto,Coleta e Tratamento de Resíduos
+3831901,RECUPERACAO DE SUCATAS DE ALUMINIO,Serviços de Utilidade Pública,Água e Esgoto,Coleta e Tratamento de Resíduos
+3831999,"RECUPERACAO DE MATERIAIS METALICOS, EXCETO ALUMINIO",Serviços de Utilidade Pública,Água e Esgoto,Coleta e Tratamento de Resíduos
+3832700,RECUPERACAO DE MATERIAIS PLASTICOS,Serviços de Utilidade Pública,Água e Esgoto,Coleta e Tratamento de Resíduos
+3839401,USINAS DE COMPOSTAGEM,Serviços de Utilidade Pública,Água e Esgoto,Coleta e Tratamento de Resíduos
+3839499,RECUPERACAO DE MATERIAIS NAO ESPECIFICADOS ANTERIORMENTE,Serviços de Utilidade Pública,Água e Esgoto,Coleta e Tratamento de Resíduos
+3900500,DESCONTAMINACAO E OUTROS SERVICOS DE GESTAO DE RESIDUOS,Serviços de Utilidade Pública,Água e Esgoto,Coleta e Tratamento de Resíduos
+4110700,INCORPORACAO DE EMPREENDIMENTOS IMOBILIARIOS,Construção Civil,Edificações,Edificações
+4120400,CONSTRUCAO DE EDIFICIOS,Construção Civil,Edificações,Edificações
+4211101,CONSTRUCAO DE RODOVIAS E FERROVIAS,Construção Civil,Obras de Infraestrutura,Obras de Infraestrutura
+4211102,PINTURA PARA SINALIZACAO EM PISTAS RODOVIARIAS E AEROPORTOS,Construção Civil,Obras de Infraestrutura,Obras de Infraestrutura
+4212000,CONSTRUCAO DE OBRAS-DE-ARTE ESPECIAIS,Construção Civil,Obras de Infraestrutura,Obras de Infraestrutura
+4213800,"OBRAS DE URBANIZACAO - RUAS, PRACAS E CALCADAS",Construção Civil,Obras de Infraestrutura,Obras de Infraestrutura
+4221901,CONSTRUCAO DE BARRAGENS E REPRESAS PARA GERACAO DE ENERGIA ELETRICA,Construção Civil,Obras de Infraestrutura,Obras de Infraestrutura
+4221902,CONSTRUCAO DE ESTACOES E REDES DE DISTRIBUICAO DE ENERGIA ELETRICA,Construção Civil,Obras de Infraestrutura,Obras de Infraestrutura
+4221903,MANUTENCAO DE REDES DE DISTRIBUICAO DE ENERGIA ELETRICA,Construção Civil,Obras de Infraestrutura,Obras de Infraestrutura
+4221904,CONSTRUCAO DE ESTACOES E REDES DE TELECOMUNICACOES,Construção Civil,Obras de Infraestrutura,Obras de Infraestrutura
+4221905,MANUTENCAO DE ESTACOES E REDES DE TELECOMUNICACOES,Construção Civil,Obras de Infraestrutura,Obras de Infraestrutura
+4222701,"CONSTRUCAO DE REDES DE ABASTECIMENTO DE AGUA, COLETA DE ESGOTO E CONSTRUCOES CORRELATAS, EXCETO OBRAS DE IRRIGACAO",Construção Civil,Obras de Infraestrutura,Obras de Infraestrutura
+4222702,OBRAS DE IRRIGACAO,Construção Civil,Obras de Infraestrutura,Obras de Infraestrutura
+4223500,"CONSTRUCAO DE REDES DE TRANSPORTES POR DUTOS, EXCETO PARA AGUA E ESGOTO",Construção Civil,Obras de Infraestrutura,Obras de Infraestrutura
+4291000,"OBRAS PORTUARIAS, MARITIMAS E FLUVIAIS",Construção Civil,Obras de Infraestrutura,Obras de Infraestrutura
+4292801,MONTAGEM DE ESTRUTURAS METALICAS,Construção Civil,Obras de Infraestrutura,Obras de Infraestrutura
+4292802,OBRAS DE MONTAGEM INDUSTRIAL,Construção Civil,Obras de Infraestrutura,Obras de Infraestrutura
+4299501,CONSTRUCAO DE INSTALACOES ESPORTIVAS E RECREATIVAS,Construção Civil,Obras de Infraestrutura,Obras de Infraestrutura
+4299599,OUTRAS OBRAS DE ENGENHARIA CIVIL NAO ESPECIFICADAS ANTERIORMENTE,Construção Civil,Obras de Infraestrutura,Obras de Infraestrutura
+4311801,DEMOLICAO DE EDIFICIOS E OUTRAS ESTRUTURAS,Construção Civil,Serviços Especializados,Demolição e Preparação do  Terreno
+4311802,PREPARACAO DE CANTEIRO E LIMPEZA DE TERRENO,Construção Civil,Serviços Especializados,Demolição e Preparação do  Terreno
+4312600,PERFURACOES E SONDAGENS,Construção Civil,Serviços Especializados,Demolição e Preparação do  Terreno
+4313400,OBRAS DE TERRAPLENAGEM,Construção Civil,Serviços Especializados,Demolição e Preparação do  Terreno
+4319300,SERVICOS DE PREPARACAO DO TERRENO NAO ESPECIFICADOS ANTERIORMENTE,Construção Civil,Serviços Especializados,Demolição e Preparação do  Terreno
+4321500,INSTALACAO E MANUTENCAO ELETRICA,Construção Civil,Serviços Especializados,"Instalações Elétricas, Hidráulicas e Outras"
+4322301,"INSTALACOES HIDRAULICAS, SANITARIAS E DE GAS",Construção Civil,Serviços Especializados,"Instalações Elétricas, Hidráulicas e Outras"
+4322302,"INSTALACAO E MANUTENCAO DE SISTEMAS CENTRAIS DE AR CONDICIONADO, DE VENTILACAO E REFRIGERACAO",Construção Civil,Serviços Especializados,"Instalações Elétricas, Hidráulicas e Outras"
+4322303,INSTALACOES DE SISTEMA DE PREVENCAO CONTRA INCENDIO,Construção Civil,Serviços Especializados,"Instalações Elétricas, Hidráulicas e Outras"
+4329101,INSTALACAO DE PAINEIS PUBLICITARIOS,Construção Civil,Serviços Especializados,"Instalações Elétricas, Hidráulicas e Outras"
+4329102,"INSTALACAO DE EQUIPAMENTOS PARA ORIENTACAO A NAVEGACAO MARITIMA, FLUVIAL E LACUSTRE",Construção Civil,Serviços Especializados,"Instalações Elétricas, Hidráulicas e Outras"
+4329103,"INSTALACAO, MANUTENCAO E REPARACAO DE ELEVADORES, ESCADAS E ESTEIRAS ROLANTES, EXCETO DE FABRICACAO PROPRIA",Construção Civil,Serviços Especializados,"Instalações Elétricas, Hidráulicas e Outras"
+4329104,"MONTAGEM E INSTALACAO DE SISTEMAS E EQUIPAMENTOS DE ILUMINACAO E SINALIZACAO EM VIAS PUBLICAS, PORTOS E AEROPORTOS",Construção Civil,Serviços Especializados,"Instalações Elétricas, Hidráulicas e Outras"
+4329105,"TRATAMENTOS TERMICOS, ACUSTICOS OU DE VIBRACAO",Construção Civil,Serviços Especializados,"Instalações Elétricas, Hidráulicas e Outras"
+4329199,OUTRAS OBRAS DE INSTALACOES EM CONSTRUCOES NAO ESPECIFICADAS ANTERIORMENTE,Construção Civil,Serviços Especializados,"Instalações Elétricas, Hidráulicas e Outras"
+4330401,IMPERMEABILIZACAO EM OBRAS DE ENGENHARIA CIVIL,Construção Civil,Serviços Especializados,Obras de Acabamento
+4330402,"INSTALACAO DE PORTAS, JANELAS, TETOS, DIVISORIAS E ARMARIOS EMBUTIDOS DE QUALQUER MATERIAL",Construção Civil,Serviços Especializados,Obras de Acabamento
+4330403,OBRAS DE ACABAMENTO EM GESSO E ESTUQUE,Construção Civil,Serviços Especializados,Obras de Acabamento
+4330404,SERVICOS DE PINTURA DE EDIFICIOS EM GERAL,Construção Civil,Serviços Especializados,Obras de Acabamento
+4330405,APLICACAO DE REVESTIMENTOS E DE RESINAS EM INTERIORES E EXTERIORES,Construção Civil,Serviços Especializados,Obras de Acabamento
+4330499,OUTRAS OBRAS DE ACABAMENTO DA CONSTRUCAO,Construção Civil,Serviços Especializados,Obras de Acabamento
+4391600,OBRAS DE FUNDACOES,Construção Civil,Serviços Especializados,Outros Serviços Especializados
+4399101,ADMINISTRACAO DE OBRAS,Construção Civil,Serviços Especializados,Outros Serviços Especializados
+4399102,MONTAGEM E DESMONTAGEM DE ANDAIMES E OUTRAS ESTRUTURAS TEMPORARIAS,Construção Civil,Serviços Especializados,Outros Serviços Especializados
+4399103,OBRAS DE ALVENARIA,Construção Civil,Serviços Especializados,Outros Serviços Especializados
+4399104,SERVICOS DE OPERACAO E FORNECIMENTO DE EQUIPAMENTOS PARA TRANSPORTE E ELEVACAO DE CARGAS E PESSOAS PARA USO EM OBRAS,Construção Civil,Serviços Especializados,Outros Serviços Especializados
+4399105,PERFURACAO E CONSTRUCAO DE POCOS DE AGUA,Construção Civil,Serviços Especializados,Outros Serviços Especializados
+4399199,SERVICOS ESPECIALIZADOS PARA CONSTRUCAO NAO ESPECIFICADOS ANTERIORMENTE,Construção Civil,Serviços Especializados,Outros Serviços Especializados
+4520001,SERVICOS DE MANUTENCAO E REPARACAO MECANICA DE VEICULOS AUTOMOTORES,Indústria de Transformação,Veículos Automotores,Manutenção Automotiva
+4520002,SERVICOS DE LANTERNAGEM OU FUNILARIA E PINTURA DE VEICULOS AUTOMOTORES,Indústria de Transformação,Veículos Automotores,Manutenção Automotiva
+4520003,SERVICOS DE MANUTENCAO E REPARACAO ELETRICA DE VEICULOS AUTOMOTORES,Indústria de Transformação,Veículos Automotores,Manutenção Automotiva
+4520004,SERVICOS DE ALINHAMENTO E BALANCEAMENTO DE VEICULOS AUTOMOTORES,Indústria de Transformação,Veículos Automotores,Manutenção Automotiva
+4520006,SERVICOS DE BORRACHARIA PARA VEICULOS AUTOMOTORES,Indústria de Transformação,Veículos Automotores,Manutenção Automotiva
+4520007,"SERVICOS DE INSTALACAO, MANUTENCAO E REPARACAO DE ACESSORIOS PARA VEICULOS AUTOMOTORES",Indústria de Transformação,Veículos Automotores,Manutenção Automotiva
+4520008,SERVICOS DE CAPOTARIA,Indústria de Transformação,Veículos Automotores,Manutenção Automotiva
+4543900,MANUTENCAO E REPARACAO DE MOTOCICLETAS E MOTONETAS,Indústria de Transformação,Veículos Automotores,Motocicletas
+4911600,TRANSPORTE FERROVIARIO DE CARGA,Indústria de Transporte Ferroviário e Dutoviário,Transporte Ferroviário,Transporte Ferroviário
+4912401,TRANSPORTE FERROVIARIO DE PASSAGEIROS INTERMUNICIPAL E INTERESTADUAL,Indústria de Transporte Ferroviário e Dutoviário,Transporte Ferroviário,Transporte Ferroviário
+4912402,TRANSPORTE FERROVIARIO DE PASSAGEIROS MUNICIPAL E EM REGIAO METROPOLITANA,Indústria de Transporte Ferroviário e Dutoviário,Transporte Ferroviário,Transporte Ferroviário
+4912403,TRANSPORTE METROVIARIO,Indústria de Transporte Ferroviário e Dutoviário,Transporte Ferroviário,Transporte Ferroviário
+4940000,TRANSPORTE DUTOVIARIO,Indústria de Transporte Ferroviário e Dutoviário,Transporte Dutoviário,Transporte Dutoviário
+4950700,"TRENS TURISTICOS, TELEFERICOS E SIMILARES",Indústria de Transporte Ferroviário e Dutoviário,Transporte Ferroviário,Transporte Ferroviário
+5221400,"CONCESSIONARIAS DE RODOVIAS, PONTES, TUNEIS E SERVICOS RELACIONADOS",Construção Civil,Serviços Especializados,Outros Serviços Especializados
+5310501,ATIVIDADES DO CORREIO NACIONAL,Comunicação e Informática,Comunicação,Correios
+5310502,ATIVIDADES DE FRANQUEADAS E PERMISSIONARIAS DO CORREIO NACIONAL,Comunicação e Informática,Comunicação,Correios
+5620101,FORNECIMENTO DE ALIMENTOS PREPARADOS PREPONDERANTEMENTE PARA EMPRESAS,Indústria de Transformação,Alimentos e Bebidas,Alimentos
+5911101,ESTUDIOS CINEMATOGRAFICOS,Comunicação e Informática,Comunicação,Cinematográfica
+6110801,SERVICOS DE TELEFONIA FIXA COMUTADA - STFC,Comunicação e Informática,Comunicação,Telecomunicações Por Fio
+6110802,SERVICOS DE REDES DE TRANSPORTE DE TELECOMUNICACOES - SRTT,Comunicação e Informática,Comunicação,Telecomunicações Por Fio
+6110803,SERVICOS DE COMUNICACAO MULTIMIDIA - SCM,Comunicação e Informática,Comunicação,Telecomunicações Por Fio
+6110899,SERVICOS DE TELECOMUNICACOES POR FIO NAO ESPECIFICADOS ANTERIORMENTE,Comunicação e Informática,Comunicação,Telecomunicações Por Fio
+6120501,TELEFONIA MOVEL CELULAR,Comunicação e Informática,Comunicação,Telecomunicações Sem Fio
+6120502,SERVICO MOVEL ESPECIALIZADO - SME,Comunicação e Informática,Comunicação,Telecomunicações Sem Fio
+6120599,SERVICOS DE TELECOMUNICACOES SEM FIO NAO ESPECIFICADOS ANTERIORMENTE,Comunicação e Informática,Comunicação,Telecomunicações Sem Fio
+6130200,TELECOMUNICACOES POR SATELITE,Comunicação e Informática,Comunicação,Transmissão de Dados
+6190601,PROVEDORES DE ACESSO AS REDES DE COMUNICACOES,Comunicação e Informática,Comunicação,Transmissão de Dados
+6190602,PROVEDORES DE VOZ SOBRE PROTOCOLO INTERNET - VOIP,Comunicação e Informática,Comunicação,Transmissão de Dados
+6190699,OUTRAS ATIVIDADES DE TELECOMUNICACOES NAO ESPECIFICADAS ANTERIORMENTE,Comunicação e Informática,Comunicação,Transmissão de Dados
+6203100,DESENVOLVIMENTO E LICENCIAMENTO DE PROGRAMAS DE COMPUTADOR NAO-CUSTOMIZAVEIS,Comunicação e Informática,Informática,Software
+7112000,SERVICOS DE ENGENHARIA,Construção Civil,Serviços Especializados,Outros Serviços Especializados
+7732202,ALUGUEL DE ANDAIMES,Construção Civil,Serviços Especializados,Outros Serviços Especializados
+9102302,RESTAURACAO E CONSERVACAO DE LUGARES E PREDIOS HISTORICOS,Construção Civil,Serviços Especializados,Outros Serviços Especializados
