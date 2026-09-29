@@ -258,39 +258,53 @@ pipeline = carregar_pipeline()
 # ============================================================
 
 st.sidebar.title("Navegação")
+# Páginas do time comercial x páginas técnicas (auditoria, arquitetura, visões
+# antigas). As técnicas continuam no código e testadas: só ficam atrás do
+# "Modo técnico" para o menu do consultor ficar enxuto.
+PAGINAS_COMERCIAIS = [
+    "📊 Visão Geral",
+    "📈 Share & Relacionamento",
+    "🔎 Explorador de Empresas",
+    "🎯 Base Qualificada (CRM)",
+]
+PAGINAS_TECNICAS = [
+    "🏢 Empresas (CNPJ raiz)",
+    "🏭 Mercado",
+    "🔵 Visão SESI",
+    "🟠 Visão SENAI",
+    "🟢 Visão SEBRAE",
+    "🔥 Visão Integrada",
+    "🔄 Matriz Cross-sell",
+    "🎯 Diagnóstico & Recomendação IA",
+    "✅ Auditoria de Cobertura",
+    "🏗️ Arquitetura & Fluxo",
+]
+modo_tecnico = st.sidebar.toggle(
+    "Modo técnico",
+    value=False,
+    help="Mostra também as páginas de auditoria, arquitetura e as visões detalhadas por entidade.",
+)
 pagina = st.sidebar.radio(
     "Visões Disponíveis",
-    [
-        "📊 Visão Geral",
-        "🏢 Empresas (CNPJ raiz)",
-        "🏭 Mercado",
-        "📈 Share & Relacionamento",
-        "🔵 Visão SESI",
-        "🟠 Visão SENAI",
-        "🟢 Visão SEBRAE",
-        "🔥 Visão Integrada",
-        "🔄 Matriz Cross-sell",
-        "🔎 Explorador de Empresas",
-        "🎯 Base Qualificada (CRM)",
-        "🎯 Diagnóstico & Recomendação IA",
-        "✅ Auditoria de Cobertura",
-        "🏗️ Arquitetura & Fluxo",
-    ],
+    PAGINAS_COMERCIAIS + (PAGINAS_TECNICAS if modo_tecnico else []),
 )
 
 st.sidebar.divider()
-st.sidebar.subheader("Visão")
-visao_estabelecimento = st.sidebar.toggle(
-    "Ver por estabelecimento (matriz + filiais)",
-    value=False,
-    help=(
-        "Por padrão, cada empresa conta uma única vez pelo CNPJ raiz "
-        "(matriz e filiais consolidadas). Ative esta opção para ver "
-        "cada estabelecimento separadamente — útil para auditoria, "
-        "mas não reflete o tamanho real do mercado (uma empresa com "
-        "5 filiais apareceria como 6 empresas)."
-    ),
-)
+if modo_tecnico:
+    st.sidebar.subheader("Visão")
+    visao_estabelecimento = st.sidebar.toggle(
+        "Ver por estabelecimento (matriz + filiais)",
+        value=False,
+        help=(
+            "Por padrão, cada empresa conta uma única vez pelo CNPJ raiz "
+            "(matriz e filiais consolidadas). Ative esta opção para ver "
+            "cada estabelecimento separadamente — útil para auditoria, "
+            "mas não reflete o tamanho real do mercado (uma empresa com "
+            "5 filiais apareceria como 6 empresas)."
+        ),
+    )
+else:
+    visao_estabelecimento = False
 base_ativa = df if visao_estabelecimento else df_empresas
 
 st.sidebar.divider()
@@ -813,7 +827,7 @@ elif pagina == "🔎 Explorador de Empresas":
 
     st.caption(
         "Quer a recomendação de produtos por IA para uma dessas empresas? "
-        "Vá em \"🎯 Diagnóstico & Recomendação IA\" no menu à esquerda e "
+        "Ative o \"Modo técnico\" na barra lateral e vá em \"🎯 Diagnóstico & Recomendação IA\" "
         "busque pelo mesmo CNPJ ou razão social."
     )
 
