@@ -14,6 +14,9 @@ Em laço, a cada 5 minutos, enquanto os jobs rodam:
 #>
 param([string]$Destino = "")
 
+# backup dos dados confidenciais no Teams (só na publicação principal, não na cópia para outra pasta)
+if (-not $Destino) { & (Join-Path $PSScriptRoot "backup_teams.ps1") }
+
 $arquivos = @(
     "data/processed/BASE_MESTRE_COMERCIAL.csv",
     "data/processed/PORTE_FIEA.csv",

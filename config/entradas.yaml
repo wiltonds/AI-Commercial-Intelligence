@@ -119,7 +119,9 @@ entradas:
     colunas: []
     onde_colocar: "-"
     comando: .\jobs\publicar_dados.ps1   (depois, Reboot app no Streamlit)
-    atualiza: Leva ao GitHub/Streamlit tudo o que os passos anteriores geraram (menos a pasta data/privado).
+    atualiza: >
+      Leva ao GitHub/Streamlit tudo o que os passos anteriores geraram (menos data/privado e data/contatos),
+      e faz backup desses dois no Teams (INTELIGÊNCIA COMERCIAL - 2026\Backup), via jobs/backup_teams.ps1.
     frequencia_dias: 35
     confidencial: false
     ordem: 9
