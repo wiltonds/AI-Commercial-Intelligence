@@ -758,6 +758,14 @@ elif pagina == "🔎 Explorador de Empresas":
     if "QTD_ESTABELECIMENTOS" in tabela.columns:
         tabela["Estabelecimentos"] = tabela["QTD_ESTABELECIMENTOS"]
 
+    from src.paginas.visao360 import carregar_360
+    _v360 = carregar_360()
+    if not _v360.empty:
+        _raiz360 = tabela["cnpj"].astype(str).str.replace(r"\D", "", regex=True).str.zfill(14).str[:8]
+        _i = _v360.set_index("cnpj_basico")
+        tabela["Linhas ativas"] = _raiz360.map(_i["linhas_ativas"]).fillna("")
+        tabela["Oportunidades 360"] = _raiz360.map(_i["oportunidades_360"]).fillna("")
+        tabela["Retomar"] = _raiz360.map(_i["retomar_360"]).fillna("")
     tabela["Situação cliente"] = tabela.get("SITUACAO_CLIENTE", pd.Series("", index=tabela.index)).fillna("")
     tabela["Última compra"] = tabela.get("ULTIMA_COMPRA", pd.Series("", index=tabela.index)).fillna("")
     _priv = Path(__file__).resolve().parent / "data" / "privado" / "RELACIONAMENTO_POR_EMPRESA.csv"
@@ -798,6 +806,9 @@ elif pagina == "🔎 Explorador de Empresas":
             "Tipo",
             "Situação cliente",
             "Última compra",
+            "Linhas ativas",
+            "Oportunidades 360",
+            "Retomar",
             "Linhas compradas",
             "Valor aceito (R$)",
             "Porte",
@@ -819,6 +830,18 @@ elif pagina == "🔎 Explorador de Empresas":
         if c in vista:
             vista[c] = vista[c].where(vista[c].astype(str).str.startswith("http"), None)
 
+    st.subheader("🎯 Visão 360")
+    if len(tabela_final):
+        _ops = tabela_final.head(3000)
+        _rot = (_ops["razao_social"].astype(str) + " · " + _ops["cnpj"].astype(str)).tolist()
+        _esc = st.selectbox("Escolha uma empresa (use a busca acima para filtrar a lista)", range(len(_rot)),
+                            format_func=lambda i: _rot[i])
+        _lin = _ops.iloc[_esc]
+        from src.paginas.visao360 import cartao
+        cartao(str(_lin["cnpj"]).replace(".", "").replace("/", "").replace("-", "").zfill(14)[:8],
+               str(_lin["razao_social"]),
+               " · ".join(str(_lin.get(c, "")) for c in ("Municipio", "Porte", "CNAE PRIMARIO") if str(_lin.get(c, ""))))
+    st.subheader("Lista de empresas")
     st.dataframe(vista, use_container_width=True, height=600, hide_index=True, column_config={
         "Instagram": st.column_config.LinkColumn("Instagram", display_text=r"instagram\.com/(.+)"),
         "Site": st.column_config.LinkColumn("Site"),

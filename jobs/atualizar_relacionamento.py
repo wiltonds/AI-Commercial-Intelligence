@@ -102,6 +102,20 @@ def main():
     print("  situação:", emp["SITUACAO_CLIENTE"].value_counts().to_dict())
     print(f"  CNPJs (unidades) que compraram: {int((nova['CNPJ_ATENDIDO'] == 'Sim').sum()):,}")
 
+    # Visão 360: linha por linha (SSI, EB, STI, EP) — compra / parou / oportunidade
+    from src.tools.cnpj_raiz import consolidar_por_cnpj_raiz
+    from src.tools.visao360 import ARQ_360, calcular, carregar_linhas, marcar_linhas, preparar_universo
+    cfg360 = carregar_linhas()
+    vl = marcar_linhas(v, cfg360)
+    b360 = nova.copy()
+    b360["cnpj"] = b360["cnpj"].astype(str).str.replace(r"\D", "", regex=True).str.zfill(14)
+    for c in ("SESI", "SENAI", "SEBRAE"):
+        b360[f"POSSUI_{c}"] = False
+    v360 = calcular(preparar_universo(consolidar_por_cnpj_raiz(b360)), vl, cfg360, hoje)
+    v360.to_csv(ARQ_360, index=False, encoding="utf-8-sig")
+    print(f"\nVisão 360: {int((v360['oportunidades_360'] != '').sum()):,} empresas com oportunidade | "
+          f"{int((v360['retomar_360'] != '').sum()):,} com linha para retomar | propostas sem linha: {int(vl['linha'].isna().sum()):,}")
+
     n_amp = atualizar_ampliada(por_raiz, porte)
     print(f"\nBase ampliada: {n_amp:,} não indústrias clientes")
 

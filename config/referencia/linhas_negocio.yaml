@@ -1,0 +1,57 @@
+# ============================================================
+# Linhas de negócio do foco comercial — de qual linha é cada produto das propostas
+# (coluna "Natureza Produto" da exportação). Usado pela Visão 360.
+#
+# ⚠️ Pontos a validar com o comercial estão marcados com VALIDAR.
+# Produto que não aparecer em nenhuma lista fica fora da Visão 360
+# (e o job avisa quantas propostas ficaram sem linha).
+# ============================================================
+
+meses_ativo: 24               # compra nos últimos N meses = linha "ativa"; antes disso = "parou"
+oportunidade_min_pct: 10      # % mínimo de empresas parecidas que compram a linha para virar "oportunidade"
+suavizacao: 15                # peso da média geral para grupos pequenos (evita 1 de 1 = 100%)
+
+linhas:
+  SSI:
+    entidade: SESI
+    nome: Saúde e Segurança na Indústria
+    produtos:
+      - Saúde
+      - Segurança Do Trabalho
+      - Promoção À Saúde
+      - Promoção À Saúde - Assti
+      - Promoção À Saúde - Coração Da Indústria
+      - Núcleo De Prevenção E Performance
+
+  EB:
+    entidade: SESI
+    nome: Educação (SESI)
+    produtos:
+      - Educação Corporativa                # VALIDAR: é EB ou uma linha própria?
+      - Programas E Parcerias Educacionais
+
+  STI:
+    entidade: SENAI
+    nome: Serviços de Tecnologia e Inovação
+    produtos:
+      - Consultoria
+      - Metrologia
+      - Inovação
+      - Inovação E Empreendedorismo
+      - Soluções Digitais
+      - Segurança Do Trabalho              # VALIDAR: serviço de SST vendido pelo SENAI entra em STI?
+
+  EP:
+    entidade: SENAI
+    nome: Educação Profissional
+    produtos:
+      - Educação Profissional
+      - Aprendizagem Industrial Básica
+      - Qualificação Profissional
+      - Aperfeiçoamento Profissional
+      - Habilitação Técnica De Nível Médio
+      - Iniciação Profissional
+      - Demais Ações Educacionais (Ep)
+
+# Fora do foco: Locação De Espaços, Observatório Da Indústria e propostas sem produto
+# informado (VALIDAR: 261 propostas SENAI de 177 empresas vêm sem "Natureza Produto").
