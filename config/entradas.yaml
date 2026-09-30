@@ -112,6 +112,20 @@ entradas:
     confidencial: true
     ordem: 4
 
+  hubs:
+    nome: Canais e grupos (escritórios de contabilidade, sócios em comum)
+    dono: Automático (usa os contatos já coletados)
+    como_obter: Nada a baixar. Rodar depois de atualizar contatos ou a Receita.
+    colunas: []
+    onde_colocar: (gerado em data/privado/HUBS_CANAIS.xlsx)
+    comando: python jobs/mapear_hubs.py
+    atualiza: >
+      Lista de hubs para o comercial: quem conecta muitas empresas de uma vez (escritório que atende N
+      empresas, sócio com vários CNPJs), com quantas já compram e quantas estão sem compra.
+    frequencia_dias: 90
+    confidencial: true
+    ordem: 5
+
   publicacao:
     nome: Publicação no painel online
     dono: Você
