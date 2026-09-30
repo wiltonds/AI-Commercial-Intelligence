@@ -21,6 +21,8 @@ $arquivos = @(
     "data/processed/BASE_MESTRE_COMERCIAL.csv",
     "data/processed/PORTE_FIEA.csv",
     "data/processed/VISAO_360.csv",
+    "data/processed/HUBS_CANAIS_PUBLICO.csv",
+    "data/processed/HUBS_MEMBROS_PUBLICO.csv",
     "data/processed/ADESAO_NATUREZA_MUNICIPIO.csv",
     "data/processed/PRODUTOS_RANKING.csv",
     "data/processed/ATENDIMENTO_POR_ANO.csv",

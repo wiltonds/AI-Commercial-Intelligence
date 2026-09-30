@@ -265,6 +265,7 @@ PAGINAS_COMERCIAIS = [
     "📊 Visão Geral",
     "📈 Share & Relacionamento",
     "🏛️ SESI | SENAI",
+    "🔗 Canais e Conexões",
     "🔎 Explorador de Empresas",
     "🎯 Base Qualificada (CRM)",
 ]
@@ -491,6 +492,11 @@ elif pagina == "🏭 Mercado":
 # ------------------------------------------------------------
 # 2. VISÃO SESI
 # ------------------------------------------------------------
+elif pagina == "🔗 Canais e Conexões":
+    from src.paginas.canais import render as render_canais
+    render_canais()
+
+
 elif pagina == "🏛️ SESI | SENAI":
     from src.paginas.casas import render as render_casas
     render_casas(df_view)

@@ -34,3 +34,20 @@ def test_grupo_por_socio_em_comum():
                                  "ANA LIMA (Administrador)", "Pedro Souza (Sócio)"]})
     g = mapear_grupos(c, _univ(), minimo=3)
     assert list(g["hub"]) == ["Ana Lima"] and g.iloc[0]["empresas"] == 3
+
+
+def test_classifica_tipos_de_canal():
+    from src.tools.hubs import classificar_canal
+    assert classificar_canal("@contabilalagoas.com.br", []) == "Contabilidade"
+    assert classificar_canal("@alagoassst.com.br", []) == "Consultoria de SST"
+    assert classificar_canal("@medicinadotrabalhoal.com.br", []) == "Consultoria de SST"
+    assert classificar_canal("@legalizamais.com.br", []) == "Assessoria / despachante"
+    assert classificar_canal("@grupoalfa.com.br", ["ALFA ALIMENTOS LTDA", "ALFA BEBIDAS LTDA", "ALFA LOG"]) == "Grupo empresarial"
+    assert classificar_canal("(82) 3326-0000", []) == "Telefone compartilhado"
+    assert classificar_canal("@xyz.com.br", ["EMPRESA A", "EMPRESA B"]) == "Outro"
+
+
+def test_publico_so_dominio_de_empresa():
+    from src.tools.hubs import publico
+    c = pd.DataFrame({"hub": ["@contabil.com.br", "joao@gmail.com", "(82) 3326-0000"], "empresas": [9, 7, 6]})
+    assert list(publico(c)["hub"]) == ["@contabil.com.br"]
