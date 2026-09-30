@@ -1,0 +1,449 @@
+﻿linha,produto,municipio,empresas,propostas,empresas_24m
+EB,Educação Corporativa,Fora da base industrial,131,224,128
+EB,Educação Corporativa,Maceió,100,204,99
+EB,Educação Corporativa,Arapiraca,61,103,61
+EB,Educação Corporativa,Marechal Deodoro,9,34,9
+EB,Educação Corporativa,Matriz de Camaragibe,5,39,5
+EB,Educação Corporativa,Rio Largo,5,10,5
+EB,Educação Corporativa,Craíbas,4,8,4
+EB,Educação Corporativa,Limoeiro de Anadia,4,4,4
+EB,Programas E Parcerias Educacionais,Fora da base industrial,4,6,4
+EB,Educação Corporativa,Lagoa da Canoa,3,4,3
+EB,Educação Corporativa,Major Isidoro,3,6,3
+EB,Educação Corporativa,Palmeira dos Índios,3,4,3
+EB,Educação Corporativa,Porto de Pedras,3,9,3
+EB,Educação Corporativa,São José da Tapera,3,5,3
+EB,Educação Corporativa,Girau do Ponciano,2,2,2
+EB,Educação Corporativa,Murici,2,16,2
+EB,Educação Corporativa,Penedo,2,3,2
+EB,Educação Corporativa,Quebrangulo,2,3,2
+EB,Educação Corporativa,Santa Luzia do Norte,2,4,2
+EB,Educação Corporativa,Santana do Ipanema,2,3,2
+EB,Educação Corporativa,São Miguel dos Campos,2,5,2
+EB,Educação Corporativa,São Miguel dos Milagres,2,5,2
+EB,Educação Corporativa,Teotônio Vilela,2,4,2
+EB,Educação Corporativa,Anadia,1,1,1
+EB,Educação Corporativa,Atalaia,1,2,1
+EB,Educação Corporativa,Barra de São Miguel,1,1,1
+EB,Educação Corporativa,Batalha,1,1,1
+EB,Educação Corporativa,Campo Alegre,1,2,1
+EB,Educação Corporativa,Coqueiro Seco,1,3,1
+EB,Educação Corporativa,Coruripe,1,2,1
+EB,Educação Corporativa,Delmiro Gouveia,1,2,1
+EB,Educação Corporativa,Feliz Deserto,1,3,1
+EB,Educação Corporativa,Flexeiras,1,23,1
+EB,Educação Corporativa,Igaci,1,2,1
+EB,Educação Corporativa,Igreja Nova,1,2,1
+EB,Educação Corporativa,Japaratinga,1,14,1
+EB,Educação Corporativa,Junqueiro,1,1,1
+EB,Educação Corporativa,Olho d'Água das Flores,1,2,1
+EB,Educação Corporativa,Olivença,1,1,1
+EB,Educação Corporativa,Passo de Camaragibe,1,1,1
+EB,Educação Corporativa,Pilar,1,2,1
+EB,Programas E Parcerias Educacionais,Craíbas,1,1,1
+EP,Educação Profissional,Fora da base industrial,214,380,0
+EP,Educação Profissional,Maceió,171,438,0
+EP,Aprendizagem Industrial Básica,Maceió,152,362,152
+EP,Aperfeiçoamento Profissional,Fora da base industrial,47,63,47
+EP,Qualificação Profissional,Fora da base industrial,37,46,35
+EP,Aprendizagem Industrial Básica,Fora da base industrial,36,64,36
+EP,Qualificação Profissional,Maceió,25,28,25
+EP,Aperfeiçoamento Profissional,Maceió,24,41,23
+EP,Educação Profissional,Arapiraca,23,88,0
+EP,Iniciação Profissional,Fora da base industrial,23,26,23
+EP,Habilitação Técnica De Nível Médio,Maceió,19,20,19
+EP,Aprendizagem Industrial Básica,Marechal Deodoro,17,46,17
+EP,Educação Profissional,Marechal Deodoro,11,40,2
+EP,Aprendizagem Industrial Básica,Arapiraca,10,24,10
+EP,Educação Profissional,Rio Largo,10,39,0
+EP,Habilitação Técnica De Nível Médio,Arapiraca,10,10,10
+EP,Qualificação Profissional,Marechal Deodoro,10,10,10
+EP,Habilitação Técnica De Nível Médio,Fora da base industrial,9,16,9
+EP,Aprendizagem Industrial Básica,Rio Largo,8,21,8
+EP,Qualificação Profissional,Arapiraca,8,10,8
+EP,Aperfeiçoamento Profissional,Arapiraca,7,17,7
+EP,Aprendizagem Industrial Básica,Craíbas,6,15,5
+EP,Educação Profissional,Craíbas,5,28,0
+EP,Iniciação Profissional,Maceió,5,5,5
+EP,Aprendizagem Industrial Básica,São Miguel dos Milagres,4,7,4
+EP,Educação Profissional,Murici,4,14,0
+EP,Educação Profissional,Pilar,4,6,0
+EP,Aperfeiçoamento Profissional,Marechal Deodoro,3,3,3
+EP,Aprendizagem Industrial Básica,Murici,3,11,3
+EP,Aprendizagem Industrial Básica,Pilar,3,5,3
+EP,Aprendizagem Industrial Básica,Porto de Pedras,3,7,3
+EP,Aprendizagem Industrial Básica,São José da Tapera,3,7,3
+EP,Educação Profissional,São Miguel dos Campos,3,6,0
+EP,Aperfeiçoamento Profissional,Matriz de Camaragibe,2,39,2
+EP,Aperfeiçoamento Profissional,Murici,2,12,2
+EP,Aperfeiçoamento Profissional,Rio Largo,2,2,2
+EP,Aprendizagem Industrial Básica,Atalaia,2,5,2
+EP,Aprendizagem Industrial Básica,Mar Vermelho,2,4,2
+EP,Aprendizagem Industrial Básica,Matriz de Camaragibe,2,14,2
+EP,Aprendizagem Industrial Básica,Palmeira dos Índios,2,4,2
+EP,Educação Profissional,Atalaia,2,9,0
+EP,Educação Profissional,Campo Alegre,2,7,0
+EP,Educação Profissional,Coqueiro Seco,2,14,0
+EP,Educação Profissional,Igreja Nova,2,10,0
+EP,Educação Profissional,Lagoa da Canoa,2,8,0
+EP,Educação Profissional,Mar Vermelho,2,4,0
+EP,Educação Profissional,Matriz de Camaragibe,2,43,0
+EP,Educação Profissional,Palmeira dos Índios,2,6,0
+EP,Educação Profissional,São José da Tapera,2,7,0
+EP,Educação Profissional,São Miguel dos Milagres,2,11,0
+EP,Habilitação Técnica De Nível Médio,Feira Grande,2,2,2
+EP,Qualificação Profissional,Matriz de Camaragibe,2,2,2
+EP,Qualificação Profissional,Murici,2,2,2
+EP,Qualificação Profissional,Pilar,2,2,2
+EP,Aperfeiçoamento Profissional,Craíbas,1,1,1
+EP,Aperfeiçoamento Profissional,Flexeiras,1,30,1
+EP,Aperfeiçoamento Profissional,Igreja Nova,1,2,1
+EP,Aperfeiçoamento Profissional,Japaratinga,1,7,1
+EP,Aperfeiçoamento Profissional,Porto de Pedras,1,1,1
+EP,Aperfeiçoamento Profissional,São Miguel dos Milagres,1,5,1
+EP,Aprendizagem Industrial Básica,Belo Monte,1,4,1
+EP,Aprendizagem Industrial Básica,Campo Alegre,1,2,1
+EP,Aprendizagem Industrial Básica,Coqueiro Seco,1,5,1
+EP,Aprendizagem Industrial Básica,Coruripe,1,1,1
+EP,Aprendizagem Industrial Básica,Igreja Nova,1,4,1
+EP,Aprendizagem Industrial Básica,Japaratinga,1,5,1
+EP,Aprendizagem Industrial Básica,Lagoa da Canoa,1,2,1
+EP,Aprendizagem Industrial Básica,Limoeiro de Anadia,1,1,1
+EP,Aprendizagem Industrial Básica,Messias,1,1,1
+EP,Aprendizagem Industrial Básica,Olho d'Água das Flores,1,1,1
+EP,Aprendizagem Industrial Básica,Penedo,1,4,1
+EP,Aprendizagem Industrial Básica,Santa Luzia do Norte,1,2,1
+EP,Aprendizagem Industrial Básica,Santana do Ipanema,1,5,1
+EP,Aprendizagem Industrial Básica,São Miguel dos Campos,1,2,1
+EP,Demais Ações Educacionais (Ep),Flexeiras,1,8,1
+EP,Demais Ações Educacionais (Ep),Fora da base industrial,1,2,1
+EP,Demais Ações Educacionais (Ep),Maceió,1,1,1
+EP,Educação Profissional,Anadia,1,2,0
+EP,Educação Profissional,Barra de São Miguel,1,1,0
+EP,Educação Profissional,Belo Monte,1,4,0
+EP,Educação Profissional,Boca da Mata,1,3,0
+EP,Educação Profissional,Cajueiro,1,1,0
+EP,Educação Profissional,Colônia Leopoldina,1,4,0
+EP,Educação Profissional,Coruripe,1,22,0
+EP,Educação Profissional,Flexeiras,1,46,0
+EP,Educação Profissional,Japaratinga,1,11,0
+EP,Educação Profissional,Limoeiro de Anadia,1,2,0
+EP,Educação Profissional,Penedo,1,1,0
+EP,Educação Profissional,Porto de Pedras,1,1,0
+EP,Educação Profissional,Santa Luzia do Norte,1,1,0
+EP,Educação Profissional,Santana do Ipanema,1,1,0
+EP,Habilitação Técnica De Nível Médio,Campo Alegre,1,1,1
+EP,Habilitação Técnica De Nível Médio,Craíbas,1,1,1
+EP,Habilitação Técnica De Nível Médio,Flexeiras,1,1,1
+EP,Habilitação Técnica De Nível Médio,Girau do Ponciano,1,3,1
+EP,Habilitação Técnica De Nível Médio,Igaci,1,1,1
+EP,Habilitação Técnica De Nível Médio,Marechal Deodoro,1,1,1
+EP,Habilitação Técnica De Nível Médio,Matriz de Camaragibe,1,1,1
+EP,Habilitação Técnica De Nível Médio,Pilar,1,1,1
+EP,Habilitação Técnica De Nível Médio,Porto de Pedras,1,1,1
+EP,Habilitação Técnica De Nível Médio,Rio Largo,1,1,1
+EP,Iniciação Profissional,Arapiraca,1,3,1
+EP,Iniciação Profissional,Coqueiro Seco,1,1,1
+EP,Iniciação Profissional,Craíbas,1,2,1
+EP,Iniciação Profissional,Flexeiras,1,2,1
+EP,Iniciação Profissional,Limoeiro de Anadia,1,1,1
+EP,Iniciação Profissional,São Miguel dos Milagres,1,1,1
+EP,Qualificação Profissional,Boca da Mata,1,1,1
+EP,Qualificação Profissional,Campo Alegre,1,1,1
+EP,Qualificação Profissional,Coqueiro Seco,1,1,1
+EP,Qualificação Profissional,Craíbas,1,1,1
+EP,Qualificação Profissional,Flexeiras,1,4,1
+EP,Qualificação Profissional,Igreja Nova,1,1,1
+EP,Qualificação Profissional,Rio Largo,1,1,1
+EP,Qualificação Profissional,São Miguel dos Milagres,1,2,1
+SSI,Saúde,Fora da base industrial,492,744,489
+SSI,Segurança Do Trabalho,Fora da base industrial,461,659,461
+SSI,Saúde,Maceió,340,665,339
+SSI,Segurança Do Trabalho,Maceió,297,675,296
+SSI,Saúde,Arapiraca,90,179,90
+SSI,Segurança Do Trabalho,Arapiraca,88,177,88
+SSI,Promoção À Saúde,Maceió,75,117,74
+SSI,Promoção À Saúde,Fora da base industrial,39,71,39
+SSI,Promoção À Saúde - Assti,Maceió,28,31,28
+SSI,Núcleo De Prevenção E Performance,Fora da base industrial,21,29,21
+SSI,Núcleo De Prevenção E Performance,Maceió,21,28,21
+SSI,Saúde,Marechal Deodoro,20,46,20
+SSI,Saúde,Rio Largo,17,31,17
+SSI,Segurança Do Trabalho,Marechal Deodoro,16,45,16
+SSI,Segurança Do Trabalho,Rio Largo,15,31,15
+SSI,Saúde,Palmeira dos Índios,12,20,12
+SSI,Segurança Do Trabalho,Murici,12,29,12
+SSI,Segurança Do Trabalho,Palmeira dos Índios,12,20,12
+SSI,Segurança Do Trabalho,São Miguel dos Campos,10,17,8
+SSI,Saúde,Murici,9,19,9
+SSI,Promoção À Saúde,Arapiraca,8,20,8
+SSI,Saúde,São Miguel dos Campos,8,20,7
+SSI,Promoção À Saúde - Assti,Fora da base industrial,7,7,7
+SSI,Saúde,Craíbas,7,12,7
+SSI,Saúde,Major Isidoro,7,16,7
+SSI,Saúde,Pilar,7,34,7
+SSI,Segurança Do Trabalho,Major Isidoro,7,13,7
+SSI,Segurança Do Trabalho,Craíbas,6,25,6
+SSI,Segurança Do Trabalho,Pilar,6,15,6
+SSI,Saúde,Matriz de Camaragibe,5,16,5
+SSI,Saúde,Santana do Ipanema,5,9,5
+SSI,Promoção À Saúde,Craíbas,4,9,4
+SSI,Promoção À Saúde - Assti,Arapiraca,4,4,4
+SSI,Saúde,Limoeiro de Anadia,4,6,4
+SSI,Saúde,Penedo,4,7,4
+SSI,Segurança Do Trabalho,Matriz de Camaragibe,4,8,4
+SSI,Segurança Do Trabalho,Penedo,4,6,4
+SSI,Núcleo De Prevenção E Performance,Marechal Deodoro,3,8,3
+SSI,Promoção À Saúde,Limoeiro de Anadia,3,5,3
+SSI,Promoção À Saúde,Marechal Deodoro,3,11,3
+SSI,Promoção À Saúde,Murici,3,6,3
+SSI,Promoção À Saúde - Assti,Marechal Deodoro,3,3,3
+SSI,Saúde,Coruripe,3,8,3
+SSI,Saúde,Delmiro Gouveia,3,6,3
+SSI,Saúde,Lagoa da Canoa,3,6,3
+SSI,Saúde,MACEIO,3,6,3
+SSI,Saúde,Passo de Camaragibe,3,4,3
+SSI,Saúde,Piranhas,3,3,3
+SSI,Saúde,São José da Tapera,3,4,3
+SSI,Segurança Do Trabalho,Atalaia,3,6,3
+SSI,Segurança Do Trabalho,Barra de São Miguel,3,5,3
+SSI,Segurança Do Trabalho,Capela,3,4,3
+SSI,Segurança Do Trabalho,Coruripe,3,6,3
+SSI,Segurança Do Trabalho,Delmiro Gouveia,3,8,3
+SSI,Segurança Do Trabalho,Limoeiro de Anadia,3,6,3
+SSI,Segurança Do Trabalho,MACEIO,3,6,3
+SSI,Segurança Do Trabalho,Piranhas,3,3,3
+SSI,Segurança Do Trabalho,Santana do Ipanema,3,5,3
+SSI,Segurança Do Trabalho,São José da Tapera,3,6,3
+SSI,Segurança Do Trabalho,São Miguel dos Milagres,3,10,3
+SSI,Núcleo De Prevenção E Performance,Arapiraca,2,2,2
+SSI,Núcleo De Prevenção E Performance,Craíbas,2,2,2
+SSI,Promoção À Saúde,Igreja Nova,2,2,2
+SSI,Promoção À Saúde,Matriz de Camaragibe,2,8,2
+SSI,Promoção À Saúde,Pilar,2,3,2
+SSI,Promoção À Saúde,Porto de Pedras,2,2,2
+SSI,Promoção À Saúde,Santa Luzia do Norte,2,4,2
+SSI,Promoção À Saúde - Assti,Limoeiro de Anadia,2,2,2
+SSI,Promoção À Saúde - Assti,Matriz de Camaragibe,2,3,2
+SSI,Promoção À Saúde - Assti,Murici,2,2,2
+SSI,Saúde,Anadia,2,7,2
+SSI,Saúde,Atalaia,2,5,2
+SSI,Saúde,Barra de Santo Antônio,2,4,2
+SSI,Saúde,Barra de São Miguel,2,4,2
+SSI,Saúde,Batalha,2,2,2
+SSI,Saúde,Boca da Mata,2,3,2
+SSI,Saúde,Cacimbinhas,2,5,2
+SSI,Saúde,Campo Alegre,2,4,2
+SSI,Saúde,Capela,2,3,2
+SSI,Saúde,Girau do Ponciano,2,3,2
+SSI,Saúde,Maragogi,2,4,2
+SSI,Saúde,Paripueira,2,5,2
+SSI,Saúde,Piaçabuçu,2,3,2
+SSI,Saúde,Quebrangulo,2,7,2
+SSI,Saúde,Santa Luzia do Norte,2,6,2
+SSI,Saúde,São Miguel dos Milagres,2,10,2
+SSI,Saúde,Teotônio Vilela,2,5,2
+SSI,Segurança Do Trabalho,Anadia,2,7,2
+SSI,Segurança Do Trabalho,Barra de Santo Antônio,2,4,2
+SSI,Segurança Do Trabalho,Batalha,2,2,2
+SSI,Segurança Do Trabalho,Lagoa da Canoa,2,6,2
+SSI,Segurança Do Trabalho,Maragogi,2,6,2
+SSI,Segurança Do Trabalho,Paripueira,2,4,2
+SSI,Segurança Do Trabalho,Passo de Camaragibe,2,3,2
+SSI,Segurança Do Trabalho,Piaçabuçu,2,3,2
+SSI,Segurança Do Trabalho,Porto de Pedras,2,13,2
+SSI,Segurança Do Trabalho,Quebrangulo,2,8,2
+SSI,Segurança Do Trabalho,Teotônio Vilela,2,4,2
+SSI,Núcleo De Prevenção E Performance,Flexeiras,1,2,1
+SSI,Núcleo De Prevenção E Performance,Japaratinga,1,4,1
+SSI,Núcleo De Prevenção E Performance,Pilar,1,1,1
+SSI,Núcleo De Prevenção E Performance,Santa Luzia do Norte,1,1,1
+SSI,Núcleo De Prevenção E Performance,São Miguel dos Campos,1,2,1
+SSI,Promoção À Saúde,Boca da Mata,1,4,1
+SSI,Promoção À Saúde,Campo Alegre,1,3,1
+SSI,Promoção À Saúde,Chã Preta,1,1,1
+SSI,Promoção À Saúde,Coqueiro Seco,1,1,1
+SSI,Promoção À Saúde,Coruripe,1,5,1
+SSI,Promoção À Saúde,Flexeiras,1,4,1
+SSI,Promoção À Saúde,Japaratinga,1,9,1
+SSI,Promoção À Saúde,Mar Vermelho,1,1,1
+SSI,Promoção À Saúde,Messias,1,1,1
+SSI,Promoção À Saúde,Palmeira dos Índios,1,1,1
+SSI,Promoção À Saúde,Penedo,1,1,1
+SSI,Promoção À Saúde,Rio Largo,1,1,1
+SSI,Promoção À Saúde,São Miguel dos Campos,1,1,1
+SSI,Promoção À Saúde - Assti,Atalaia,1,1,1
+SSI,Promoção À Saúde - Assti,Boca da Mata,1,1,1
+SSI,Promoção À Saúde - Assti,Cacimbinhas,1,1,1
+SSI,Promoção À Saúde - Assti,Campo Alegre,1,2,1
+SSI,Promoção À Saúde - Assti,Chã Preta,1,1,1
+SSI,Promoção À Saúde - Assti,Coruripe,1,1,1
+SSI,Promoção À Saúde - Assti,Craíbas,1,1,1
+SSI,Promoção À Saúde - Assti,Igreja Nova,1,1,1
+SSI,Promoção À Saúde - Assti,Palmeira dos Índios,1,1,1
+SSI,Promoção À Saúde - Assti,Passo de Camaragibe,1,1,1
+SSI,Promoção À Saúde - Assti,Penedo,1,1,1
+SSI,Promoção À Saúde - Assti,Rio Largo,1,1,1
+SSI,Promoção À Saúde - Assti,Santana do Ipanema,1,1,1
+SSI,Promoção À Saúde - Coração Da Indústria,Arapiraca,1,1,1
+SSI,Promoção À Saúde - Coração Da Indústria,Maceió,1,1,1
+SSI,Promoção À Saúde - Coração Da Indústria,Marechal Deodoro,1,1,0
+SSI,Promoção À Saúde - Coração Da Indústria,Rio Largo,1,1,1
+SSI,Saúde,ARAPIRACA,1,3,1
+SSI,Saúde,Belo Monte,1,3,1
+SSI,Saúde,Cajueiro,1,3,1
+SSI,Saúde,Chã Preta,1,1,1
+SSI,Saúde,Coité do Nóia,1,2,1
+SSI,Saúde,Coqueiro Seco,1,2,1
+SSI,Saúde,Feliz Deserto,1,2,1
+SSI,Saúde,Flexeiras,1,20,1
+SSI,Saúde,Igaci,1,3,1
+SSI,Saúde,Japaratinga,1,4,1
+SSI,Saúde,Joaquim Gomes,1,2,1
+SSI,Saúde,Mar Vermelho,1,2,1
+SSI,Saúde,Maribondo,1,1,1
+SSI,Saúde,Messias,1,1,1
+SSI,Saúde,Olivença,1,2,1
+SSI,Saúde,Porto Calvo,1,2,1
+SSI,Saúde,Pão de Açúcar,1,2,1
+SSI,Saúde,SANTA LUZIA DO NORTE,1,1,1
+SSI,Saúde,SAO MIGUEL DOS CAMPOS,1,2,1
+SSI,Saúde,Senador Rui Palmeira,1,1,1
+SSI,Saúde,São Sebastião,1,1,1
+SSI,Saúde,Tanque d'Arca,1,1,1
+SSI,Saúde,Taquarana,1,1,1
+SSI,Saúde,Água Branca,1,2,1
+SSI,Segurança Do Trabalho,ARAPIRACA,1,2,1
+SSI,Segurança Do Trabalho,Belo Monte,1,4,1
+SSI,Segurança Do Trabalho,Boca da Mata,1,2,1
+SSI,Segurança Do Trabalho,Cacimbinhas,1,1,1
+SSI,Segurança Do Trabalho,Cajueiro,1,4,1
+SSI,Segurança Do Trabalho,Campo Alegre,1,2,1
+SSI,Segurança Do Trabalho,Coité do Nóia,1,2,1
+SSI,Segurança Do Trabalho,Coqueiro Seco,1,6,1
+SSI,Segurança Do Trabalho,Feliz Deserto,1,2,1
+SSI,Segurança Do Trabalho,Flexeiras,1,3,1
+SSI,Segurança Do Trabalho,Girau do Ponciano,1,1,1
+SSI,Segurança Do Trabalho,Igaci,1,2,1
+SSI,Segurança Do Trabalho,Igreja Nova,1,3,1
+SSI,Segurança Do Trabalho,Japaratinga,1,2,1
+SSI,Segurança Do Trabalho,Joaquim Gomes,1,2,1
+SSI,Segurança Do Trabalho,Maribondo,1,1,1
+SSI,Segurança Do Trabalho,Messias,1,1,1
+SSI,Segurança Do Trabalho,Olho d'Água das Flores,1,1,1
+SSI,Segurança Do Trabalho,Olivença,1,2,1
+SSI,Segurança Do Trabalho,Porto Calvo,1,2,1
+SSI,Segurança Do Trabalho,Pão de Açúcar,1,3,1
+SSI,Segurança Do Trabalho,SAO MIGUEL DOS CAMPOS,1,2,1
+SSI,Segurança Do Trabalho,Santa Luzia do Norte,1,5,1
+SSI,Segurança Do Trabalho,Senador Rui Palmeira,1,1,1
+SSI,Segurança Do Trabalho,Tanque d'Arca,1,1,1
+SSI,Segurança Do Trabalho,Taquarana,1,1,1
+SSI,Segurança Do Trabalho,Água Branca,1,2,1
+STI,Consultoria,Maceió,343,926,178
+STI,Consultoria,Fora da base industrial,312,562,61
+STI,Metrologia,Fora da base industrial,230,875,100
+STI,Metrologia,Maceió,180,894,107
+STI,Consultoria,Arapiraca,108,253,61
+STI,Inovação,Fora da base industrial,36,49,4
+STI,Metrologia,Marechal Deodoro,20,270,14
+STI,Consultoria,Rio Largo,19,48,8
+STI,Soluções Digitais,Fora da base industrial,17,71,10
+STI,Metrologia,Arapiraca,15,73,9
+STI,Consultoria,Palmeira dos Índios,14,38,6
+STI,Inovação,Maceió,14,16,3
+STI,Consultoria,Murici,10,40,5
+STI,Consultoria,Marechal Deodoro,9,23,6
+STI,Inovação E Empreendedorismo,Maceió,9,18,9
+STI,Consultoria,São Miguel dos Campos,8,24,6
+STI,Consultoria,Major Isidoro,7,18,5
+STI,Inovação E Empreendedorismo,Fora da base industrial,7,17,7
+STI,Metrologia,Pilar,7,33,4
+STI,Consultoria,Limoeiro de Anadia,6,16,3
+STI,Consultoria,Santana do Ipanema,6,12,5
+STI,Segurança Do Trabalho,Fora da base industrial,6,8,0
+STI,Consultoria,Matriz de Camaragibe,5,18,5
+STI,Consultoria,Atalaia,4,6,2
+STI,Consultoria,Capela,4,17,4
+STI,Consultoria,Delmiro Gouveia,4,12,4
+STI,Consultoria,Junqueiro,4,5,2
+STI,Consultoria,Maragogi,4,13,4
+STI,Consultoria,Penedo,4,11,2
+STI,Metrologia,São Miguel dos Campos,4,10,4
+STI,Consultoria,Barra de São Miguel,3,8,3
+STI,Consultoria,Batalha,3,7,1
+STI,Consultoria,Cacimbinhas,3,11,2
+STI,Consultoria,Campo Alegre,3,12,2
+STI,Consultoria,Coruripe,3,7,2
+STI,Consultoria,Igaci,3,4,3
+STI,Consultoria,Pilar,3,13,2
+STI,Consultoria,Quebrangulo,3,11,2
+STI,Consultoria,São Miguel dos Milagres,3,7,2
+STI,Metrologia,Barra de São Miguel,3,3,2
+STI,Metrologia,Porto de Pedras,3,3,3
+STI,Consultoria,Anadia,2,11,1
+STI,Consultoria,Barra de Santo Antônio,2,4,1
+STI,Consultoria,Cajueiro,2,7,2
+STI,Consultoria,Chã Preta,2,5,1
+STI,Consultoria,Craíbas,2,5,0
+STI,Consultoria,Igreja Nova,2,4,1
+STI,Consultoria,Lagoa da Canoa,2,7,2
+STI,Consultoria,Olivença,2,10,2
+STI,Consultoria,Paripueira,2,5,2
+STI,Consultoria,Piaçabuçu,2,3,1
+STI,Consultoria,Santa Luzia do Norte,2,3,1
+STI,Consultoria,Satuba,2,3,0
+STI,Consultoria,São José da Tapera,2,3,2
+STI,Consultoria,Taquarana,2,2,1
+STI,Inovação E Empreendedorismo,Arapiraca,2,4,2
+STI,Inovação E Empreendedorismo,Maragogi,2,4,2
+STI,Inovação E Empreendedorismo,Murici,2,4,2
+STI,Inovação E Empreendedorismo,Rio Largo,2,4,2
+STI,Metrologia,Coruripe,2,2,2
+STI,Metrologia,Craíbas,2,3,0
+STI,Metrologia,Igreja Nova,2,5,2
+STI,Metrologia,Limoeiro de Anadia,2,2,1
+STI,Metrologia,Messias,2,2,2
+STI,Metrologia,Passo de Camaragibe,2,3,2
+STI,Metrologia,Rio Largo,2,3,0
+STI,Segurança Do Trabalho,Maceió,2,2,0
+STI,Consultoria,Boca da Mata,1,6,1
+STI,Consultoria,Feira Grande,1,2,1
+STI,Consultoria,Girau do Ponciano,1,1,0
+STI,Consultoria,Japaratinga,1,4,1
+STI,Consultoria,Maribondo,1,8,1
+STI,Consultoria,Messias,1,1,0
+STI,Consultoria,Monteirópolis,1,3,1
+STI,Consultoria,Passo de Camaragibe,1,7,1
+STI,Consultoria,Porto Calvo,1,8,1
+STI,Consultoria,Porto de Pedras,1,1,1
+STI,Consultoria,Pão de Açúcar,1,4,1
+STI,Consultoria,São Luís do Quitunde,1,2,1
+STI,Consultoria,Tanque d'Arca,1,3,1
+STI,Consultoria,Teotônio Vilela,1,2,1
+STI,Consultoria,Viçosa,1,2,1
+STI,Inovação,Arapiraca,1,1,1
+STI,Inovação,Igreja Nova,1,1,0
+STI,Inovação,Marechal Deodoro,1,1,1
+STI,Inovação,Murici,1,1,0
+STI,Inovação E Empreendedorismo,Anadia,1,4,1
+STI,Inovação E Empreendedorismo,Capela,1,2,1
+STI,Inovação E Empreendedorismo,Igaci,1,6,1
+STI,Inovação E Empreendedorismo,Maribondo,1,2,1
+STI,Inovação E Empreendedorismo,Olivença,1,2,1
+STI,Inovação E Empreendedorismo,Quebrangulo,1,2,1
+STI,Inovação E Empreendedorismo,Santana do Ipanema,1,2,1
+STI,Metrologia,Cajueiro,1,1,0
+STI,Metrologia,Capela,1,2,0
+STI,Metrologia,Chã Preta,1,1,0
+STI,Metrologia,Coqueiro Seco,1,2,0
+STI,Metrologia,Maragogi,1,5,0
+STI,Metrologia,Matriz de Camaragibe,1,1,0
+STI,Metrologia,Murici,1,27,1
+STI,Metrologia,Santa Luzia do Norte,1,1,1
+STI,Metrologia,Santana do Ipanema,1,3,1
+STI,Metrologia,São Miguel dos Milagres,1,94,1
+STI,Segurança Do Trabalho,Marechal Deodoro,1,1,0
+STI,Segurança Do Trabalho,São Miguel dos Milagres,1,3,0
+STI,Soluções Digitais,Igreja Nova,1,1,1
+STI,Soluções Digitais,Maceió,1,1,0
