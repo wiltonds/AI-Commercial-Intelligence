@@ -264,6 +264,7 @@ st.sidebar.title("Navegação")
 PAGINAS_COMERCIAIS = [
     "📊 Visão Geral",
     "📈 Share & Relacionamento",
+    "🏛️ SESI | SENAI",
     "🔎 Explorador de Empresas",
     "🎯 Base Qualificada (CRM)",
 ]
@@ -490,6 +491,11 @@ elif pagina == "🏭 Mercado":
 # ------------------------------------------------------------
 # 2. VISÃO SESI
 # ------------------------------------------------------------
+elif pagina == "🏛️ SESI | SENAI":
+    from src.paginas.casas import render as render_casas
+    render_casas(df_view)
+
+
 elif pagina == "🗓️ Rotina de Dados":
     from src.paginas.rotina_dados import render as render_rotina
     render_rotina()

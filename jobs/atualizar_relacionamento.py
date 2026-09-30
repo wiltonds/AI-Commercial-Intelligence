@@ -111,8 +111,22 @@ def main():
     b360["cnpj"] = b360["cnpj"].astype(str).str.replace(r"\D", "", regex=True).str.zfill(14)
     for c in ("SESI", "SENAI", "SEBRAE"):
         b360[f"POSSUI_{c}"] = False
-    v360 = calcular(preparar_universo(consolidar_por_cnpj_raiz(b360)), vl, cfg360, hoje)
+    from src.tools.visao360 import universo_nao_industrias
+    u_ind = preparar_universo(consolidar_por_cnpj_raiz(b360)).assign(tipo="Indústria")
+    partes = [u_ind]
+    if ARQ_AMPLIADA.exists():                       # não indústrias entram no mesmo cálculo (visão global)
+        amp = pd.read_csv(ARQ_AMPLIADA, dtype=str, encoding="utf-8-sig").fillna("")
+        amp = amp[~amp["cnpj_basico"].isin(u_ind["cnpj_basico"])]
+        partes.append(universo_nao_industrias(amp).assign(tipo=amp.set_index("cnpj_basico")["Tipo"].reindex(
+            amp["cnpj_basico"].drop_duplicates()).values))
+    universo = pd.concat(partes, ignore_index=True)
+    v360 = calcular(universo, vl, cfg360, hoje)
+    v360["tipo"] = universo["tipo"].values
+    print(f"Universo da Visão 360: {len(universo):,} empresas ({universo['tipo'].value_counts().to_dict()})")
     v360.to_csv(ARQ_360, index=False, encoding="utf-8-sig")
+    from src.tools.visao360 import ARQ_NAT_MUN, adesao_natureza_municipio
+    adesao_natureza_municipio(vl, nova, hoje, int(cfg360.get("meses_ativo", 24))).to_csv(
+        ARQ_NAT_MUN, index=False, encoding="utf-8-sig")
     print(f"\nVisão 360: {int((v360['oportunidades_360'] != '').sum()):,} empresas com oportunidade | "
           f"{int((v360['retomar_360'] != '').sum()):,} com linha para retomar | propostas sem linha: {int(vl['linha'].isna().sum()):,}")
 

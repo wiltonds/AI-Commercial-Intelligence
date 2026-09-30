@@ -94,3 +94,29 @@ def preparar_universo(base_empresas: pd.DataFrame) -> pd.DataFrame:
     d["div"] = div.astype(str).str.split(".").str[0].values
     d["porte"] = base_empresas.get("Porte", pd.Series("", index=base_empresas.index)).fillna("").values
     return d.drop_duplicates("cnpj_basico").reset_index(drop=True)
+
+
+ARQ_NAT_MUN = RAIZ / "data" / "processed" / "ADESAO_NATUREZA_MUNICIPIO.csv"
+
+
+def adesao_natureza_municipio(vendas_linha: pd.DataFrame, base_empresas: pd.DataFrame, hoje, meses: int = 24) -> pd.DataFrame:
+    """Quantas empresas aderiram a cada natureza de produto, por linha e município — agregado,
+    sem identificar empresa. Município vem da Base Mestre; quem não está nela fica como
+    "Fora da base industrial"."""
+    mun = (base_empresas.assign(r=base_empresas["CNPJ_BASICO"].astype(str).str.zfill(8))
+           .drop_duplicates("r").set_index("r")["Municipio"])
+    v = vendas_linha.dropna(subset=["linha"]).copy()
+    v["municipio"] = v["cnpj_basico"].map(mun).fillna("Fora da base industrial")
+    v["recente"] = v["data"] >= pd.Timestamp(hoje) - pd.DateOffset(months=meses)
+    g = v.groupby(["linha", "produto", "municipio"])
+    out = g.agg(empresas=("cnpj_basico", "nunique"), propostas=("cnpj", "size")).reset_index()
+    rec = v[v["recente"]].groupby(["linha", "produto", "municipio"])["cnpj_basico"].nunique()
+    out["empresas_24m"] = out.set_index(["linha", "produto", "municipio"]).index.map(rec).fillna(0).astype(int)
+    return out.sort_values(["linha", "empresas"], ascending=[True, False])
+
+
+def universo_nao_industrias(ampliada: pd.DataFrame) -> pd.DataFrame:
+    """Base ampliada (não indústrias) -> mesmas colunas de preparar_universo."""
+    cnae = ampliada["cnae_principal"].astype(str).str.replace(r"\D", "", regex=True).str.zfill(7)
+    return pd.DataFrame({"cnpj_basico": ampliada["cnpj_basico"].astype(str).str.zfill(8), "classe": cnae.str[:4],
+                         "div": cnae.str[:2].str.lstrip("0"), "porte": ampliada["Porte"].fillna("")}).drop_duplicates("cnpj_basico")
