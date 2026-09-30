@@ -35,6 +35,7 @@ PUB_MEMBROS = RAIZ / "data" / "processed" / "HUBS_MEMBROS_PUBLICO.csv"
 def carregar_universo() -> pd.DataFrame:
     b = pd.read_csv(BASE_PATH, dtype=str, low_memory=False, encoding="utf-8-sig")
     ind = pd.DataFrame({"cnpj_basico": b["CNPJ_BASICO"].str.zfill(8), "razao_social": b["razao_social"],
+                        "municipio": b.get("Municipio", pd.Series("", index=b.index)).fillna(""),
                         "segmento": b.get("SEBRAE_setor", pd.Series("", index=b.index)).fillna("Indústria"),
                         "situacao": b.get("SITUACAO_CLIENTE", pd.Series("Sem compra", index=b.index)).fillna("Sem compra"),
                         "tipo_empresa": "Indústria"})
@@ -42,6 +43,7 @@ def carregar_universo() -> pd.DataFrame:
     if ARQ_AMPLIADA.exists():
         a = pd.read_csv(ARQ_AMPLIADA, dtype=str, encoding="utf-8-sig").fillna("")
         partes.append(pd.DataFrame({"cnpj_basico": a["cnpj_basico"], "razao_social": a["razao_social"],
+                                    "municipio": a.get("Municipio", ""),
                                     "segmento": a.get("CNAE PRIMARIO", ""), "tipo_empresa": a["Tipo"],
                                     "situacao": a.get("SITUACAO_CLIENTE", pd.Series("Sem compra", index=a.index)).replace("", "Sem compra")}))
     return pd.concat(partes, ignore_index=True).drop_duplicates("cnpj_basico")
@@ -87,7 +89,7 @@ def main():
     PUB_CANAIS.parent.mkdir(parents=True, exist_ok=True)
     pub.to_csv(PUB_CANAIS, index=False, encoding="utf-8-sig")
     mem = todos_membros[todos_membros["hub"].isin(set(pub["hub"]))] if not pub.empty and not todos_membros.empty else todos_membros.head(0)
-    mem[[c for c in ["hub", "cnpj_basico", "razao_social", "segmento", "situacao", "tipo_empresa"] if c in mem.columns]] \
+    mem[[c for c in ["hub", "cnpj_basico", "razao_social", "municipio", "segmento", "situacao", "tipo_empresa"] if c in mem.columns]] \
         .to_csv(PUB_MEMBROS, index=False, encoding="utf-8-sig")
     if not canais.empty:
         print("Tipos de canal:", canais["tipo_canal"].value_counts().to_dict())

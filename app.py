@@ -776,8 +776,8 @@ elif pagina == "🔎 Explorador de Empresas":
         _raiz360 = tabela["cnpj"].astype(str).str.replace(r"\D", "", regex=True).str.zfill(14).str[:8]
         _i = _v360.set_index("cnpj_basico")
         tabela["Linhas ativas"] = _raiz360.map(_i["linhas_ativas"]).fillna("")
-        tabela["Oportunidades 360"] = _raiz360.map(_i["oportunidades_360"]).fillna("")
-        tabela["Retomar"] = _raiz360.map(_i["retomar_360"]).fillna("")
+        tabela["Para prospectar"] = _raiz360.map(_i["oportunidades_360"]).fillna("")
+        tabela["Para reativar"] = _raiz360.map(_i["retomar_360"]).fillna("")
     tabela["Situação cliente"] = tabela.get("SITUACAO_CLIENTE", pd.Series("", index=tabela.index)).fillna("")
     tabela["Última compra"] = tabela.get("ULTIMA_COMPRA", pd.Series("", index=tabela.index)).fillna("")
     _priv = Path(__file__).resolve().parent / "data" / "privado" / "RELACIONAMENTO_POR_EMPRESA.csv"
@@ -819,8 +819,8 @@ elif pagina == "🔎 Explorador de Empresas":
             "Situação cliente",
             "Última compra",
             "Linhas ativas",
-            "Oportunidades 360",
-            "Retomar",
+            "Para reativar",
+            "Para prospectar",
             "Linhas compradas",
             "Valor aceito (R$)",
             "Porte",

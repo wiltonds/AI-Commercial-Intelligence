@@ -11,7 +11,7 @@ from src.tools.visao360 import ARQ_360, carregar_linhas
 RAIZ = Path(__file__).resolve().parents[2]
 ARQ_HUBS = RAIZ / "data" / "privado" / "HUBS_CANAIS.xlsx"
 ICONE = {"compra": "✅", "parou": "⏸️", "oportunidade": "🎯", "baixa": "—"}
-TEXTO = {"compra": "compra", "parou": "comprou e parou", "oportunidade": "oportunidade", "baixa": "pouca aderência"}
+TEXTO = {"compra": "cliente ativo", "parou": "para reativar", "oportunidade": "para prospectar", "baixa": "pouco comum nesse perfil"}
 
 
 @st.cache_data(show_spinner=False)
@@ -26,6 +26,11 @@ def carregar_hubs() -> pd.DataFrame:
     if not ARQ_HUBS.exists():
         return pd.DataFrame()
     return pd.read_excel(ARQ_HUBS, sheet_name="Empresas", dtype=str).fillna("")
+
+
+def _um_em(pct) -> str:
+    from src.paginas.casas import um_em
+    return um_em(float(pct or 0) / 100)
 
 
 def cartao(raiz: str, razao: str, detalhe: str) -> None:
@@ -51,8 +56,8 @@ def cartao(raiz: str, razao: str, detalhe: str) -> None:
                         continue
                     s = r[f"{cod}_status"]
                     extra = {"compra": f"última em {r[f'{cod}_ultima']}", "parou": f"última em {r[f'{cod}_ultima']}",
-                             "oportunidade": f"{r[f'{cod}_pct']}% das parecidas compram",
-                             "baixa": f"{r[f'{cod}_pct']}% das parecidas compram"}[s]
+                             "oportunidade": _um_em(r[f'{cod}_pct']) + " empresas parecidas compram",
+                             "baixa": _um_em(r[f'{cod}_pct']) + " empresas parecidas compram"}[s]
                     st.markdown(f"{ICONE[s]} **{cod}** · {l['nome']}  \n<span style='color:gray'>{TEXTO[s]} · {extra}</span>",
                                 unsafe_allow_html=True)
         h = carregar_hubs()
@@ -62,5 +67,5 @@ def cartao(raiz: str, razao: str, detalhe: str) -> None:
                 n = h.loc[h["hub"] == hub, "cnpj_basico"].nunique() - 1
                 quem = "Mesmo sócio" if tipo == "grupo" else "Mesmo contato (provável escritório)"
                 st.caption(f"🔗 {quem}: {hub} — conecta mais {n} empresa(s)")
-        st.caption("✅ compra (24 meses) · ⏸️ comprou e parou · 🎯 oportunidade: empresas do mesmo CNAE e porte "
-                   "compram · — pouca aderência. Linhas e produtos em config/referencia/linhas_negocio.yaml.")
+        st.caption("✅ cliente ativo (comprou em 24 meses) · ⏸️ para reativar (comprou antes) · "
+                   "🎯 para prospectar (empresas do mesmo ramo e porte compram) · — pouco comum nesse perfil.")
