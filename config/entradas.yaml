@@ -112,6 +112,22 @@ entradas:
     confidencial: true
     ordem: 4
 
+  colaboradores:
+    nome: Número de colaboradores (Solução 360)
+    dono: Solução 360 (exportação de empresas)
+    como_obter: >
+      Exportação de empresas da Solução 360 com CNPJ e quantidade de colaboradores
+      (a aba "CNPJ / Contagem" da planilha empresas_AAAA.xlsx).
+    colunas: [CNPJ, Contagem]
+    onde_colocar: data/privado/colaboradores.xlsx
+    comando: python jobs/importar_colaboradores.py --arquivo data/privado/colaboradores.xlsx
+    atualiza: >
+      Coluna Colaboradores no Explorador, nas listas SESI | SENAI e no cartão da Visão 360:
+      número real quando existe; senão, intervalo estimado (acerta 7 em cada 10).
+    frequencia_dias: 90
+    confidencial: true
+    ordem: 3
+
   hubs:
     nome: Canais e grupos (escritórios de contabilidade, sócios em comum)
     dono: Automático (usa os contatos já coletados)

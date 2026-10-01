@@ -747,6 +747,13 @@ elif pagina == "🔎 Explorador de Empresas":
     if "QTD_ESTABELECIMENTOS" in tabela.columns:
         tabela["Estabelecimentos"] = tabela["QTD_ESTABELECIMENTOS"]
 
+    from src.tools.colaboradores import carregar_para_painel
+    _col = carregar_para_painel()
+    if not _col.empty:
+        _rc = tabela["cnpj"].astype(str).str.replace(r"\D", "", regex=True).str.zfill(14).str[:8]
+        _ic = _col.set_index("cnpj_basico")
+        tabela["Colaboradores"] = _rc.map(_ic["Colaboradores"]).fillna("")
+        tabela["Origem colaboradores"] = _rc.map(_ic["Origem colaboradores"]).fillna("")
     from src.paginas.visao360 import carregar_360
     _v360 = carregar_360()
     if not _v360.empty:
@@ -793,6 +800,8 @@ elif pagina == "🔎 Explorador de Empresas":
             "Responsável",
             "Confiança",
             "Tipo",
+            "Colaboradores",
+            "Origem colaboradores",
             "Situação cliente",
             "Última compra",
             "Linhas ativas",

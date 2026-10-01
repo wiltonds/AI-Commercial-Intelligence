@@ -49,6 +49,11 @@ def cartao(raiz: str, razao: str, detalhe: str) -> None:
         a, b = st.columns([3, 1])
         a.markdown(f"**{razao}**  \n{detalhe}")
         b.metric("Linhas ativas", f"{r['linhas_ativas']} de {len(cfg['linhas'])}")
+        from src.tools.colaboradores import carregar_para_painel
+        col = carregar_para_painel()
+        c_ = col[col["cnpj_basico"] == raiz]
+        if not c_.empty and c_.iloc[0]["Colaboradores"]:
+            a.caption(f"👥 Colaboradores: **{c_.iloc[0]['Colaboradores']}** · {c_.iloc[0]['Origem colaboradores']}")
         for entidade, col in zip(("SESI", "SENAI"), st.columns(2)):
             with col:
                 st.markdown(f"**{entidade}**")

@@ -132,6 +132,11 @@ def render(df_empresas: pd.DataFrame) -> None:
         amp = amp.assign(**{col_seg: amp["CNAE PRIMARIO"].replace("", "Não classificado")})
         partes.append(amp[["cnpj_basico", "razao_social", "Municipio", "Porte", col_seg]])
     df = pd.concat(partes, ignore_index=True).drop_duplicates("cnpj_basico").merge(v, on="cnpj_basico", how="inner")
+    from src.tools.colaboradores import carregar_para_painel
+    col = carregar_para_painel()
+    df = df.merge(col[["cnpj_basico", "Colaboradores"]], on="cnpj_basico", how="left") if not col.empty \
+        else df.assign(Colaboradores="")
+    df["Colaboradores"] = df["Colaboradores"].fillna("")
     df[col_seg] = df[col_seg].map(acentuar)
     if "tipo" not in df:
         df["tipo"] = "Indústria"
@@ -208,7 +213,8 @@ def render(df_empresas: pd.DataFrame) -> None:
             # 6. Me dá a lista
             st.subheader("Listas prontas")
             base_lista = df.assign(pct=pd.to_numeric(df[f"{cod}_pct"], errors="coerce").fillna(0))
-            colunas = {"razao_social": "Empresa", "Municipio": "Município", "Porte": "Porte", col_seg: "Segmento"}
+            colunas = {"razao_social": "Empresa", "Municipio": "Município", "Porte": "Porte",
+                       "Colaboradores": "Colaboradores", col_seg: "Segmento"}
             t1, t2, t3 = st.tabs([f"⏸️ Para reativar ({_n((s == 'parou').sum())})",
                                   f"🔄 Cross-sell ({_n((s == 'cross').sum())})",
                                   f"🎯 Para prospectar ({_n((s == 'prospectar').sum())})"])
