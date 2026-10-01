@@ -1,5 +1,5 @@
 ﻿linha,produto,municipio,empresas,propostas,empresas_24m
-EB,Educação Corporativa,Fora da base industrial,131,224,128
+EB,Educação Corporativa,Fora da base industrial,131,224,127
 EB,Educação Corporativa,Maceió,100,204,99
 EB,Educação Corporativa,Arapiraca,61,103,61
 EB,Educação Corporativa,Marechal Deodoro,9,34,9
@@ -93,7 +93,7 @@ EP,Educação Profissional,São José da Tapera,2,7,0
 EP,Educação Profissional,São Miguel dos Milagres,2,11,0
 EP,Habilitação Técnica De Nível Médio,Feira Grande,2,2,2
 EP,Qualificação Profissional,Matriz de Camaragibe,2,2,2
-EP,Qualificação Profissional,Murici,2,2,2
+EP,Qualificação Profissional,Murici,2,2,1
 EP,Qualificação Profissional,Pilar,2,2,2
 EP,Aperfeiçoamento Profissional,Craíbas,1,1,1
 EP,Aperfeiçoamento Profissional,Flexeiras,1,30,1
@@ -157,7 +157,7 @@ EP,Qualificação Profissional,Igreja Nova,1,1,1
 EP,Qualificação Profissional,Rio Largo,1,1,1
 EP,Qualificação Profissional,São Miguel dos Milagres,1,2,1
 SSI,Saúde,Fora da base industrial,492,744,489
-SSI,Segurança Do Trabalho,Fora da base industrial,461,659,461
+SSI,Segurança Do Trabalho,Fora da base industrial,461,659,460
 SSI,Saúde,Maceió,340,665,339
 SSI,Segurança Do Trabalho,Maceió,297,675,296
 SSI,Saúde,Arapiraca,90,179,90
@@ -341,7 +341,7 @@ SSI,Segurança Do Trabalho,Tanque d'Arca,1,1,1
 SSI,Segurança Do Trabalho,Taquarana,1,1,1
 SSI,Segurança Do Trabalho,Água Branca,1,2,1
 STI,Consultoria,Maceió,343,926,178
-STI,Consultoria,Fora da base industrial,312,562,61
+STI,Consultoria,Fora da base industrial,312,562,60
 STI,Metrologia,Fora da base industrial,230,875,100
 STI,Metrologia,Maceió,180,894,107
 STI,Consultoria,Arapiraca,108,253,61
