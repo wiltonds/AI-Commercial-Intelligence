@@ -11,10 +11,20 @@ meses_ativo: 24               # compra nos últimos N meses = linha "ativa"; ant
 oportunidade_min_pct: 10      # % mínimo de empresas parecidas que compram a linha para virar "oportunidade"
 suavizacao: 15                # peso da média geral para grupos pequenos (evita 1 de 1 = 100%)
 
+# Regra de quem é alvo de cada linha (empresa que não compra a linha):
+#   obrigatoria  todas — a linha atende uma obrigação legal de qualquer empresa com empregados
+#   cota         empresas de porte DEMAIS (médias e grandes: sujeitas à cota de aprendizagem)
+#                + as de perfil parecido
+#   parecido     só as de perfil parecido (pelo menos oportunidade_min_pct das parecidas compram)
+# Alvo SEM nenhum relacionamento com SESI/SENAI = "Para prospectar"; alvo que já compra
+# outra linha = "Cross-sell".
+
 linhas:
   SSI:
     entidade: SESI
     nome: Saúde e Segurança na Indústria
+    regra: obrigatoria
+    motivo: Obrigação legal (NR-1 e NR-7)
     produtos:
       - Saúde
       - Segurança Do Trabalho
@@ -26,6 +36,7 @@ linhas:
   EB:
     entidade: SESI
     nome: Educação (SESI)
+    regra: parecido
     produtos:
       - Educação Corporativa                # VALIDAR: é EB ou uma linha própria?
       - Programas E Parcerias Educacionais
@@ -33,6 +44,7 @@ linhas:
   STI:
     entidade: SENAI
     nome: Serviços de Tecnologia e Inovação
+    regra: parecido
     produtos:
       - Consultoria
       - Metrologia
@@ -44,6 +56,8 @@ linhas:
   EP:
     entidade: SENAI
     nome: Educação Profissional
+    regra: cota
+    motivo: Cota de aprendizagem (Lei 10.097/2000)
     produtos:
       - Educação Profissional
       - Aprendizagem Industrial Básica

@@ -3,8 +3,12 @@
 Para cada empresa (CNPJ raiz) e cada linha (SSI, EB, STI, EP):
   * compra      comprou a linha nos últimos N meses
   * parou       já comprou a linha, mas antes disso
-  * oportunidade  não compra, e pelo menos X% das empresas PARECIDAS compram
-  * baixa       não compra, e poucas parecidas compram
+  * cross       não compra a linha, mas já compra outra coisa do SESI/SENAI
+  * prospectar  não compra nada do SESI/SENAI
+  * baixa       não compra e não é alvo da linha
+Quem é alvo depende da regra da linha (linhas_negocio.yaml): obrigatória
+(SSI: todas), cota (EP: médias e grandes + perfil parecido) ou perfil parecido
+(STI, EB: pelo menos X% das empresas parecidas compram).
 
 "Parecidas" = mesma classe CNAE e mesmo porte; se o grupo for pequeno, o
 percentual é puxado para o do segmento (divisão CNAE) e depois para o geral
@@ -64,22 +68,40 @@ def calcular(univ: pd.DataFrame, vendas_linha: pd.DataFrame, cfg: dict, hoje) ->
     k, minimo = float(cfg.get("suavizacao", 15)), float(cfg.get("oportunidade_min_pct", 10)) / 100
     out = univ[["cnpj_basico"]].copy()
     ult = vendas_linha.dropna(subset=["linha"]).groupby(["cnpj_basico", "linha"])["data"].max().unstack()
-    for cod in cfg["linhas"]:
+    relacionado = univ["cnpj_basico"].isin(set(vendas_linha["cnpj_basico"]))   # já comprou qualquer coisa
+    medio_grande = univ["porte"].astype(str).str.upper().eq("DEMAIS")
+    for cod, l in cfg["linhas"].items():
         u = univ["cnpj_basico"].map(ult[cod]) if cod in ult else pd.Series(pd.NaT, index=univ.index)
         u = pd.to_datetime(u)
         pct = _penetracao(univ, u.notna(), k)
+        regra = l.get("regra", "parecido")
+        parecido = pct >= minimo
+        if regra == "obrigatoria":
+            alvo = pd.Series(True, index=univ.index)
+        elif regra == "cota":
+            alvo = medio_grande | parecido
+        else:
+            alvo = parecido
+        motivo = pd.Series("", index=univ.index)
+        motivo[alvo & parecido] = "Perfil parecido com quem compra"
+        if regra in ("obrigatoria", "cota"):
+            legal = alvo if regra == "obrigatoria" else medio_grande
+            motivo[legal] = l.get("motivo", "Obrigação legal")
         status = pd.Series("baixa", index=univ.index)
-        status[pct >= minimo] = "oportunidade"
+        status[alvo & relacionado.values] = "cross"
+        status[alvo & ~relacionado.values] = "prospectar"
         status[u.notna()] = "parou"
         status[u >= corte] = "compra"
+        motivo[status.isin(["compra", "parou", "baixa"])] = ""
         out[f"{cod}_status"] = status.values
         out[f"{cod}_pct"] = (pct * 100).round(0).astype(int).values
+        out[f"{cod}_motivo"] = motivo.values
         out[f"{cod}_ultima"] = u.dt.date.astype("object").where(u.notna(), "").values
     cods = list(cfg["linhas"])
     out["linhas_ativas"] = sum((out[f"{c}_status"] == "compra").astype(int) for c in cods)
-    out["oportunidades_360"] = [
+    out["oportunidades_360"] = [          # cross-sell + prospectar, das linhas mais aderentes primeiro
         "; ".join(f"{c} ({int(r[f'{c}_pct'])}%)" for c in sorted(cods, key=lambda c: -r[f"{c}_pct"])
-                  if r[f"{c}_status"] == "oportunidade")
+                  if r[f"{c}_status"] in ("cross", "prospectar"))
         for r in out.to_dict("records")]
     out["retomar_360"] = ["; ".join(c for c in cods if r[f"{c}_status"] == "parou") for r in out.to_dict("records")]
     return out

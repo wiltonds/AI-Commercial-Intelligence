@@ -10,8 +10,9 @@ from src.tools.visao360 import ARQ_360, carregar_linhas
 
 RAIZ = Path(__file__).resolve().parents[2]
 ARQ_HUBS = RAIZ / "data" / "privado" / "HUBS_CANAIS.xlsx"
-ICONE = {"compra": "✅", "parou": "⏸️", "oportunidade": "🎯", "baixa": "—"}
-TEXTO = {"compra": "cliente ativo", "parou": "para reativar", "oportunidade": "para prospectar", "baixa": "pouco comum nesse perfil"}
+ICONE = {"compra": "✅", "parou": "⏸️", "cross": "🔄", "prospectar": "🎯", "baixa": "—"}
+TEXTO = {"compra": "cliente ativo", "parou": "para reativar", "cross": "cross-sell", "prospectar": "para prospectar",
+         "baixa": "pouco comum nesse perfil"}
 
 
 @st.cache_data(show_spinner=False)
@@ -56,7 +57,8 @@ def cartao(raiz: str, razao: str, detalhe: str) -> None:
                         continue
                     s = r[f"{cod}_status"]
                     extra = {"compra": f"última em {r[f'{cod}_ultima']}", "parou": f"última em {r[f'{cod}_ultima']}",
-                             "oportunidade": _um_em(r[f'{cod}_pct']) + " empresas parecidas compram",
+                             "cross": r.get(f"{cod}_motivo", "") or (_um_em(r[f'{cod}_pct']) + " empresas parecidas compram"),
+                             "prospectar": r.get(f"{cod}_motivo", "") or (_um_em(r[f'{cod}_pct']) + " empresas parecidas compram"),
                              "baixa": _um_em(r[f'{cod}_pct']) + " empresas parecidas compram"}[s]
                     st.markdown(f"{ICONE[s]} **{cod}** · {l['nome']}  \n<span style='color:gray'>{TEXTO[s]} · {extra}</span>",
                                 unsafe_allow_html=True)
@@ -68,4 +70,4 @@ def cartao(raiz: str, razao: str, detalhe: str) -> None:
                 quem = "Mesmo sócio" if tipo == "grupo" else "Mesmo contato (provável escritório)"
                 st.caption(f"🔗 {quem}: {hub} — conecta mais {n} empresa(s)")
         st.caption("✅ cliente ativo (comprou em 24 meses) · ⏸️ para reativar (comprou antes) · "
-                   "🎯 para prospectar (empresas do mesmo ramo e porte compram) · — pouco comum nesse perfil.")
+                   "🔄 cross-sell (já é cliente em outra linha) · 🎯 para prospectar (nunca comprou nada) · — pouco comum nesse perfil.")
