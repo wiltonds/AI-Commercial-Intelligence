@@ -747,6 +747,8 @@ elif pagina == "🔎 Explorador de Empresas":
     if "QTD_ESTABELECIMENTOS" in tabela.columns:
         tabela["Estabelecimentos"] = tabela["QTD_ESTABELECIMENTOS"]
 
+    # colunas antigas (faixa pelo Porte FIEA) saem: o número agora vem da Solução 360
+    tabela = tabela.drop(columns=["Colaboradores (faixa)", "Origem colaboradores"], errors="ignore")
     from src.tools.colaboradores import carregar_para_painel
     _col = carregar_para_painel()
     if not _col.empty:
