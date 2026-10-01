@@ -277,7 +277,6 @@ PAGINAS_TECNICAS = [
     "🟠 Visão SENAI",
     "🟢 Visão SEBRAE",
     "🔥 Visão Integrada",
-    "🔄 Matriz Cross-sell",
     "🎯 Diagnóstico & Recomendação IA",
     "✅ Auditoria de Cobertura",
     "🏗️ Arquitetura & Fluxo",
@@ -666,28 +665,6 @@ elif pagina == "🔥 Visão Integrada":
 
 # ------------------------------------------------------------
 # 5. CROSS-SELL
-# ------------------------------------------------------------
-elif pagina == "🔄 Matriz Cross-sell":
-    st.header("🔄 Matriz de Oportunidades Cross-sell")
-
-    col1, col2 = st.columns(2)
-    with col1:
-        st.subheader("Clientes SESI sem SENAI")
-        sesi_sem_senai = df_view[df_view["POSSUI_SESI"] & ~df_view["POSSUI_SENAI"]]
-        st.metric("Oportunidades para Oferta SENAI", len(sesi_sem_senai))
-        cols = [c for c in ["cnpj", "razao_social", "Municipio", "Porte"] if c in sesi_sem_senai.columns]
-        st.dataframe(sesi_sem_senai[cols].head(500), use_container_width=True, hide_index=True)
-
-    with col2:
-        st.subheader("Clientes SENAI sem SESI")
-        senai_sem_sesi = df_view[df_view["POSSUI_SENAI"] & ~df_view["POSSUI_SESI"]]
-        st.metric("Oportunidades para Oferta SESI", len(senai_sem_sesi))
-        cols = [c for c in ["cnpj", "razao_social", "Municipio", "Porte"] if c in senai_sem_sesi.columns]
-        st.dataframe(senai_sem_sesi[cols].head(500), use_container_width=True, hide_index=True)
-
-
-# ------------------------------------------------------------
-# 5B. EXPLORADOR DE EMPRESAS
 # ------------------------------------------------------------
 elif pagina == "🔎 Explorador de Empresas":
     st.header("🔎 Explorador de Empresas")
