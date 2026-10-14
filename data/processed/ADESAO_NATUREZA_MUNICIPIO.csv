@@ -1,6 +1,6 @@
 ﻿linha,produto,municipio,empresas,propostas,empresas_24m
-EB,Educação Corporativa,Fora da base industrial,131,224,127
-EB,Educação Corporativa,Maceió,100,204,99
+EB,Educação Corporativa,Fora da base industrial,131,224,124
+EB,Educação Corporativa,Maceió,100,204,98
 EB,Educação Corporativa,Arapiraca,61,103,61
 EB,Educação Corporativa,Marechal Deodoro,9,34,9
 EB,Educação Corporativa,Matriz de Camaragibe,5,39,5
@@ -41,19 +41,19 @@ EB,Educação Corporativa,Olivença,1,1,1
 EB,Educação Corporativa,Passo de Camaragibe,1,1,1
 EB,Educação Corporativa,Pilar,1,2,1
 EB,Programas E Parcerias Educacionais,Craíbas,1,1,1
-EP,Educação Profissional,Fora da base industrial,214,380,0
-EP,Educação Profissional,Maceió,171,438,0
+EP,Educação Profissional,Fora da base industrial,213,378,0
+EP,Educação Profissional,Maceió,172,440,0
 EP,Aprendizagem Industrial Básica,Maceió,152,362,152
 EP,Aperfeiçoamento Profissional,Fora da base industrial,47,63,47
 EP,Qualificação Profissional,Fora da base industrial,37,46,35
 EP,Aprendizagem Industrial Básica,Fora da base industrial,36,64,36
-EP,Qualificação Profissional,Maceió,25,28,25
+EP,Qualificação Profissional,Maceió,25,28,24
 EP,Aperfeiçoamento Profissional,Maceió,24,41,23
 EP,Educação Profissional,Arapiraca,23,88,0
 EP,Iniciação Profissional,Fora da base industrial,23,26,23
 EP,Habilitação Técnica De Nível Médio,Maceió,19,20,19
 EP,Aprendizagem Industrial Básica,Marechal Deodoro,17,46,17
-EP,Educação Profissional,Marechal Deodoro,11,40,2
+EP,Educação Profissional,Marechal Deodoro,11,40,0
 EP,Aprendizagem Industrial Básica,Arapiraca,10,24,10
 EP,Educação Profissional,Rio Largo,10,39,0
 EP,Habilitação Técnica De Nível Médio,Arapiraca,10,10,10
@@ -62,7 +62,7 @@ EP,Habilitação Técnica De Nível Médio,Fora da base industrial,9,16,9
 EP,Aprendizagem Industrial Básica,Rio Largo,8,21,8
 EP,Qualificação Profissional,Arapiraca,8,10,8
 EP,Aperfeiçoamento Profissional,Arapiraca,7,17,7
-EP,Aprendizagem Industrial Básica,Craíbas,6,15,5
+EP,Aprendizagem Industrial Básica,Craíbas,6,15,4
 EP,Educação Profissional,Craíbas,5,28,0
 EP,Iniciação Profissional,Maceió,5,5,5
 EP,Aprendizagem Industrial Básica,São Miguel dos Milagres,4,7,4
@@ -156,17 +156,17 @@ EP,Qualificação Profissional,Flexeiras,1,4,1
 EP,Qualificação Profissional,Igreja Nova,1,1,1
 EP,Qualificação Profissional,Rio Largo,1,1,1
 EP,Qualificação Profissional,São Miguel dos Milagres,1,2,1
-SSI,Saúde,Fora da base industrial,492,744,489
-SSI,Segurança Do Trabalho,Fora da base industrial,461,659,460
-SSI,Saúde,Maceió,340,665,339
+SSI,Saúde,Fora da base industrial,492,744,488
+SSI,Segurança Do Trabalho,Fora da base industrial,461,659,459
+SSI,Saúde,Maceió,340,665,337
 SSI,Segurança Do Trabalho,Maceió,297,675,296
 SSI,Saúde,Arapiraca,90,179,90
 SSI,Segurança Do Trabalho,Arapiraca,88,177,88
 SSI,Promoção À Saúde,Maceió,75,117,74
-SSI,Promoção À Saúde,Fora da base industrial,39,71,39
+SSI,Promoção À Saúde,Fora da base industrial,39,71,38
 SSI,Promoção À Saúde - Assti,Maceió,28,31,28
-SSI,Núcleo De Prevenção E Performance,Fora da base industrial,21,29,21
-SSI,Núcleo De Prevenção E Performance,Maceió,21,28,21
+SSI,Núcleo De Prevenção E Performance,Fora da base industrial,21,29,19
+SSI,Núcleo De Prevenção E Performance,Maceió,21,28,19
 SSI,Saúde,Marechal Deodoro,20,46,20
 SSI,Saúde,Rio Largo,17,31,17
 SSI,Segurança Do Trabalho,Marechal Deodoro,16,45,16
@@ -262,7 +262,7 @@ SSI,Núcleo De Prevenção E Performance,São Miguel dos Campos,1,2,1
 SSI,Promoção À Saúde,Boca da Mata,1,4,1
 SSI,Promoção À Saúde,Campo Alegre,1,3,1
 SSI,Promoção À Saúde,Chã Preta,1,1,1
-SSI,Promoção À Saúde,Coqueiro Seco,1,1,1
+SSI,Promoção À Saúde,Coqueiro Seco,1,1,0
 SSI,Promoção À Saúde,Coruripe,1,5,1
 SSI,Promoção À Saúde,Flexeiras,1,4,1
 SSI,Promoção À Saúde,Japaratinga,1,9,1
@@ -340,11 +340,11 @@ SSI,Segurança Do Trabalho,Senador Rui Palmeira,1,1,1
 SSI,Segurança Do Trabalho,Tanque d'Arca,1,1,1
 SSI,Segurança Do Trabalho,Taquarana,1,1,1
 SSI,Segurança Do Trabalho,Água Branca,1,2,1
-STI,Consultoria,Maceió,343,926,178
-STI,Consultoria,Fora da base industrial,312,562,60
-STI,Metrologia,Fora da base industrial,230,875,100
-STI,Metrologia,Maceió,180,894,107
-STI,Consultoria,Arapiraca,108,253,61
+STI,Consultoria,Maceió,343,926,175
+STI,Consultoria,Fora da base industrial,311,558,58
+STI,Metrologia,Fora da base industrial,230,875,99
+STI,Metrologia,Maceió,180,894,106
+STI,Consultoria,Arapiraca,108,253,59
 STI,Inovação,Fora da base industrial,36,49,4
 STI,Metrologia,Marechal Deodoro,20,270,14
 STI,Consultoria,Rio Largo,19,48,8
@@ -391,7 +391,7 @@ STI,Consultoria,Lagoa da Canoa,2,7,2
 STI,Consultoria,Olivença,2,10,2
 STI,Consultoria,Paripueira,2,5,2
 STI,Consultoria,Piaçabuçu,2,3,1
-STI,Consultoria,Santa Luzia do Norte,2,3,1
+STI,Consultoria,Santa Luzia do Norte,2,3,0
 STI,Consultoria,Satuba,2,3,0
 STI,Consultoria,São José da Tapera,2,3,2
 STI,Consultoria,Taquarana,2,2,1
@@ -421,6 +421,7 @@ STI,Consultoria,Pão de Açúcar,1,4,1
 STI,Consultoria,São Luís do Quitunde,1,2,1
 STI,Consultoria,Tanque d'Arca,1,3,1
 STI,Consultoria,Teotônio Vilela,1,2,1
+STI,Consultoria,União dos Palmares,1,4,1
 STI,Consultoria,Viçosa,1,2,1
 STI,Inovação,Arapiraca,1,1,1
 STI,Inovação,Igreja Nova,1,1,0
