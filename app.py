@@ -23,6 +23,7 @@ load_dotenv()
 from src.pipeline import CommercialPipeline
 from src.tools.company_data import BASE_PATH
 from src.tools.cnpj_raiz import consolidar_por_cnpj_raiz, resumir_consolidacao
+from src.tools.carteira import carregar_carteira, filtrar_por_unidade
 from src.agents.sdr_llm import SDRLLMAgent
 from painel_empresas_raiz import render_visao_raiz
 from painel_arquitetura import render_arquitetura
@@ -190,6 +191,9 @@ def carregar_base() -> pd.DataFrame:
     if "CNAE PRIMARIO" in df.columns:
         df["CNAE PRIMARIO"] = df["CNAE PRIMARIO"].fillna("NÃO INFORMADO")
 
+    # Unidade responsável SESI/SENAI pela Minuta de Carteirização (jobs/distribuir_carteira.py)
+    df = carregar_carteira(df, col_raiz="CNPJ_BASICO")
+
     return df
 
 
@@ -322,7 +326,21 @@ portes = sorted(
 )
 porte_filtro = st.sidebar.multiselect("Porte", portes)
 
+UNIDADES_FILTRO = ["Farol", "Tabuleiro", "Agreste/Sertão", "Poço"]
+unidade_filtro = st.sidebar.multiselect(
+    "Unidade (carteira)",
+    UNIDADES_FILTRO,
+    help=(
+        "Unidade responsável pela empresa segundo a Minuta de Carteirização: SESI Farol, Tabuleiro e "
+        "Agreste/Sertão; SENAI Poço e Agreste/Sertão (Benedito Bentes foi para o Poço). Cliente fica na unidade do "
+        "histórico; empresa nova vai pelo endereço da sede. A mesma empresa pode estar no SESI de uma "
+        "unidade e no SENAI de outra — por isso ela aparece em mais de um filtro."
+    ),
+)
+
 df_view = base_ativa.copy()
+if unidade_filtro:
+    df_view = filtrar_por_unidade(df_view, unidade_filtro)
 if municipio_filtro:
     df_view = df_view[df_view["Municipio"].isin(municipio_filtro)]
 if porte_filtro:
@@ -331,6 +349,8 @@ if porte_filtro:
 # Independente do toggle acima, a página "Empresas (CNPJ raiz)" sempre
 # consolida por conta própria — precisa da base por estabelecimento.
 df_estabelecimentos_view = df.copy()
+if unidade_filtro:
+    df_estabelecimentos_view = filtrar_por_unidade(df_estabelecimentos_view, unidade_filtro)
 if municipio_filtro:
     df_estabelecimentos_view = df_estabelecimentos_view[
         df_estabelecimentos_view["Municipio"].isin(municipio_filtro)

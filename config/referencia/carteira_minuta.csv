@@ -1,0 +1,155 @@
+tipo,nome,chave,senai_minuta,sesi_minuta,unidade_senai,unidade_sesi
+bairro_maceio,Antares,ANTARES,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Barro Duro,BARRO DURO,Benedito Bentes,Cambona,Poço,Farol
+bairro_maceio,Bebedouro,BEBEDOURO,Benedito Bentes,Cambona,Poço,Farol
+bairro_maceio,Benedito Bentes,BENEDITO BENTES,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Bom Parto,BOM PARTO,Poço,Cambona,Poço,Farol
+bairro_maceio,Cambona,CAMBONA,Poço,Cambona,Poço,Farol
+bairro_maceio,Canaã,CANAA,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Centro,CENTRO,Poço,Cambona,Poço,Farol
+bairro_maceio,Chã da Jaqueira,CHA DA JAQUEIRA,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Chã de Bebedouro,CHA DE BEBEDOURO,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Cidade Universitária,CIDADE UNIVERSITARIA,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Clima Bom,CLIMA BOM,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Cruz das Almas,CRUZ DAS ALMAS,Poço,Cambona,Poço,Farol
+bairro_maceio,Farol,FAROL,Poço,Cambona,Poço,Farol
+bairro_maceio,Feitosa,FEITOSA,Benedito Bentes,Cambona,Poço,Farol
+bairro_maceio,Fernão Velho,FERNAO VELHO,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Forene,FORENE,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Garca Torta,GARCA TORTA,Poço,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Gruta de Lourdes,GRUTA DE LOURDES,Benedito Bentes,Cambona,Poço,Farol
+bairro_maceio,Guaxuma,GUAXUMA,Poço,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Ipioca,IPIOCA,Poço,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Jacarecica,JACARECICA,Poço,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Jacintinho,JACINTINHO,Poço,Cambona,Poço,Farol
+bairro_maceio,Jaraguá,JARAGUA,Poço,Cambona,Poço,Farol
+bairro_maceio,Jardim Petrópolis,JARDIM PETROPOLIS,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Jatiúca,JATIUCA,Poço,Cambona,Poço,Farol
+bairro_maceio,Levada,LEVADA,Poço,Cambona,Poço,Farol
+bairro_maceio,Mangabeiras,MANGABEIRAS,Poço,Cambona,Poço,Farol
+bairro_maceio,Mutange,MUTANGE,Poço,Cambona,Poço,Farol
+bairro_maceio,Ouro Preto,OURO PRETO,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Pajuçara,PAJUCARA,Poço,Cambona,Poço,Farol
+bairro_maceio,Pescaria,PESCARIA,Poço,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Petropolis,PETROPOLIS,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Pinheiro,PINHEIRO,Benedito Bentes,Cambona,Poço,Farol
+bairro_maceio,Pitanguinha,PITANGUINHA,Benedito Bentes,Cambona,Poço,Farol
+bairro_maceio,Poço,POCO,Poço,Cambona,Poço,Farol
+bairro_maceio,Ponta da Terra,PONTA DA TERRA,Poço,Cambona,Poço,Farol
+bairro_maceio,Ponta Grossa,PONTA GROSSA,Poço,Cambona,Poço,Farol
+bairro_maceio,Ponta Verde,PONTA VERDE,Poço,Cambona,Poço,Farol
+bairro_maceio,Pontal da Barra,PONTAL DA BARRA,Poço,Cambona,Poço,Farol
+bairro_maceio,Prado,PRADO,Poço,Cambona,Poço,Farol
+bairro_maceio,Riacho Doce,RIACHO DOCE,Poço,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Rio Novo,RIO NOVO,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Santa Amélia,SANTA AMELIA,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Santa Lúcia,SANTA LUCIA,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Santo Amaro,SANTO AMARO,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Santos Dumont,SANTOS DUMONT,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,São Jorge,SAO JORGE,Benedito Bentes,Cambona,Poço,Farol
+bairro_maceio,Serraria,SERRARIA,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Tabuleiro do Martins,TABULEIRO DO MARTINS,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+bairro_maceio,Trapiche da Barra,TRAPICHE DA BARRA,Poço,Cambona,Poço,Farol
+bairro_maceio,Vergel do Lago,VERGEL DO LAGO,Poço,Cambona,Poço,Farol
+bairro_maceio,Zona Rural,ZONA RURAL,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+municipio,Água Branca,AGUA BRANCA,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Anadia,ANADIA,Poço,Arapiraca,Poço,Agreste/Sertão
+municipio,Arapiraca,ARAPIRACA,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Atalaia,ATALAIA,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+municipio,Barra de Santo Antônio,BARRA DE SANTO ANTONIO,Poço,Tabuleiro,Poço,Tabuleiro
+municipio,Barra de São Miguel,BARRA DE SAO MIGUEL,Poço,Cambona,Poço,Farol
+municipio,Batalha,BATALHA,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Belém,BELEM,Poço,Arapiraca,Poço,Agreste/Sertão
+municipio,Belo Monte,BELO MONTE,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Boca da Mata,BOCA DA MATA,Poço,Cambona,Poço,Farol
+municipio,Branquinha,BRANQUINHA,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+municipio,Cacimbinhas,CACIMBINHAS,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Cajueiro,CAJUEIRO,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+municipio,Campestre,CAMPESTRE,Poço,Tabuleiro,Poço,Tabuleiro
+municipio,Campo Alegre,CAMPO ALEGRE,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Campo Grande,CAMPO GRANDE,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Canapi,CANAPI,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Capela,CAPELA,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+municipio,Carneiros,CARNEIROS,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Chã Preta,CHA PRETA,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+municipio,Coité do Nóia,COITE DO NOIA,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Colônia Leopoldina,COLONIA LEOPOLDINA,Poço,Tabuleiro,Poço,Tabuleiro
+municipio,Coqueiro Seco,COQUEIRO SECO,Poço,Tabuleiro,Poço,Tabuleiro
+municipio,Coruripe,CORURIPE,Poço,Arapiraca,Poço,Agreste/Sertão
+municipio,Craíbas,CRAIBAS,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Delmiro Gouveia,DELMIRO GOUVEIA,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Dois Riachos,DOIS RIACHOS,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Estrela de Alagoas,ESTRELA DE ALAGOAS,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Feira Grande,FEIRA GRANDE,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Feliz Deserto,FELIZ DESERTO,Poço,Arapiraca,Poço,Agreste/Sertão
+municipio,Flexeiras,FLEXEIRAS,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+municipio,Girau do Ponciano,GIRAU DO PONCIANO,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Ibateguara,IBATEGUARA,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+municipio,Igaci,IGACI,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Igreja Nova,IGREJA NOVA,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Inhapi,INHAPI,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Jacaré dos Homens,JACARE DOS HOMENS,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Jacuípe,JACUIPE,Poço,Tabuleiro,Poço,Tabuleiro
+municipio,Japaratinga,JAPARATINGA,Poço,Tabuleiro,Poço,Tabuleiro
+municipio,Jaramataia,JARAMATAIA,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Jequiá da Praia,JEQUIA DA PRAIA,Poço,Arapiraca,Poço,Agreste/Sertão
+municipio,Joaquim Gomes,JOAQUIM GOMES,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+municipio,Jundiá,JUNDIA,Poço,Tabuleiro,Poço,Tabuleiro
+municipio,Junqueiro,JUNQUEIRO,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Lagoa da Canoa,LAGOA DA CANOA,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Limoeiro de Anadia,LIMOEIRO DE ANADIA,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Major Isidoro,MAJOR ISIDORO,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Mar Vermelho,MAR VERMELHO,Benedito Bentes,Arapiraca,Poço,Agreste/Sertão
+municipio,Maragogi,MARAGOGI,Poço,Tabuleiro,Poço,Tabuleiro
+municipio,Maravilha,MARAVILHA,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Marechal Deodoro,MARECHAL DEODORO,Poço,Cambona,Poço,Farol
+municipio,Maribondo,MARIBONDO,Poço,Arapiraca,Poço,Agreste/Sertão
+municipio,Mata Grande,MATA GRANDE,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Matriz de Camaragibe,MATRIZ DE CAMARAGIBE,Poço,Tabuleiro,Poço,Tabuleiro
+municipio,Messias,MESSIAS,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+municipio,Minador do Negrão,MINADOR DO NEGRAO,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Monteirópolis,MONTEIROPOLIS,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Murici,MURICI,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+municipio,Novo Lino,NOVO LINO,Poço,Tabuleiro,Poço,Tabuleiro
+municipio,Olho d´Agua Grande,OLHO DAGUA GRANDE,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Olho d'Água das Flores,OLHO DAGUA DAS FLORES,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Olho d'Água do Casado,OLHO DAGUA DO CASADO,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Olivença,OLIVENCA,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Ouro Branco,OURO BRANCO,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Palestina,PALESTINA,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Palmeira dos Índios,PALMEIRA DOS INDIOS,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Pão de Açúcar,PAO DE ACUCAR,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Pariconha,PARICONHA,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Paripueira,PARIPUEIRA,Poço,Tabuleiro,Poço,Tabuleiro
+municipio,Passo de Camaragibe,PASSO DE CAMARAGIBE,Poço,Tabuleiro,Poço,Tabuleiro
+municipio,Paulo Jacinto,PAULO JACINTO,Benedito Bentes,Arapiraca,Poço,Agreste/Sertão
+municipio,Penedo,PENEDO,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Piaçabuçu,PIACABUCU,Poço,Arapiraca,Poço,Agreste/Sertão
+municipio,Pilar,PILAR,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+municipio,Pindoba,PINDOBA,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+municipio,Piranhas,PIRANHAS,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Poço das Trincheiras,POCO DAS TRINCHEIRAS,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Porto Calvo,PORTO CALVO,Poço,Tabuleiro,Poço,Tabuleiro
+municipio,Porto de Pedras,PORTO DE PEDRAS,Poço,Tabuleiro,Poço,Tabuleiro
+municipio,Porto Real do Colégio,PORTO REAL DO COLEGIO,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Quebrangulo,QUEBRANGULO,Benedito Bentes,Arapiraca,Poço,Agreste/Sertão
+municipio,Rio Largo,RIO LARGO,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+municipio,Roteiro,ROTEIRO,Poço,Cambona,Poço,Farol
+municipio,Santa Luzia do Norte,SANTA LUZIA DO NORTE,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+municipio,Santana do Ipanema,SANTANA DO IPANEMA,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Santana do Mundaú,SANTANA DO MUNDAU,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+municipio,São Brás,SAO BRAS,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,São José da Laje,SAO JOSE DA LAJE,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+municipio,São José da Tapera,SAO JOSE DA TAPERA,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,São Luís do Quitunde,SAO LUIS DO QUITUNDE,Poço,Tabuleiro,Poço,Tabuleiro
+municipio,São Miguel dos Campos,SAO MIGUEL DOS CAMPOS,Poço,Cambona,Poço,Farol
+municipio,São Miguel dos Milagres,SAO MIGUEL DOS MILAGRES,Poço,Tabuleiro,Poço,Tabuleiro
+municipio,São Sebastião,SAO SEBASTIAO,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Satuba,SATUBA,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+municipio,Senador Rui Palmeira,SENADOR RUI PALMEIRA,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Tanque d'Arca,TANQUE DARCA,Poço,Arapiraca,Poço,Agreste/Sertão
+municipio,Taquarana,TAQUARANA,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,Teotônio Vilela,TEOTONIO VILELA,Poço,Arapiraca,Poço,Agreste/Sertão
+municipio,Traipu,TRAIPU,Arapiraca,Arapiraca,Agreste/Sertão,Agreste/Sertão
+municipio,União dos Palmares,UNIAO DOS PALMARES,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
+municipio,Viçosa,VICOSA,Benedito Bentes,Tabuleiro,Poço,Tabuleiro
