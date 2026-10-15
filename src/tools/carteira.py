@@ -5,7 +5,7 @@ Segue a Minuta da Política de Carteirização (config/referencia/carteira_minut
   1. Empresa com histórico na entidade  -> fica na unidade do histórico (regra de preservação).
   2. Histórico com mais de uma unidade   -> vale o endereço da sede.
   3. Empresa sem histórico (nova)        -> vale o endereço da sede: bairro em Maceió, município fora dela.
-  4. Sede fora de AL                     -> "A definir (1º serviço)" — exceção da minuta.
+  4. Sede fora de AL                     -> "Sede fora de AL": fica com a unidade do 1º atendimento (exceção da minuta).
 
 Unidades vigentes (out/2026):
   SESI : Farol (= "Cambona" da minuta), Tabuleiro, Agreste/Sertão (= "Arapiraca" da minuta)
@@ -26,7 +26,7 @@ RAIZ = Path(__file__).resolve().parents[2]
 ARQ_MINUTA = RAIZ / "config" / "referencia" / "carteira_minuta.csv"
 UNIDADES_SESI = ["Farol", "Tabuleiro", "Agreste/Sertão"]
 UNIDADES_SENAI = ["Poço", "Agreste/Sertão"]
-A_DEFINIR = "A definir (1º serviço)"
+A_DEFINIR = "Sede fora de AL"   # minuta: fica com a unidade do 1º atendimento
 
 # grafias que aparecem no cadastro da Receita e não batem com a tabela da minuta
 ALIAS_BAIRRO = {
