@@ -82,11 +82,14 @@ def grupo_natureza(natureza: str) -> str:
     return "Outra" if n else ""
 
 
-def alertas(razao_social: str, sede_em_al: bool) -> str:
+def alertas(razao_social: str, sede_em_al: bool, ativa_al: bool = True) -> str:
     out = []
     if RE_ALERTA_JURIDICO.search(str(razao_social or "")):
         out.append("Falência/recuperação judicial")
-    if not sede_em_al:
+    if not ativa_al:
+        # Base Mestre antiga: a empresa não tem mais nenhum estabelecimento ativo em AL na Receita
+        out.append("Não ativa na Receita (fechou ou saiu de AL)")
+    elif not sede_em_al:
         out.append("Sede fora de AL (conta nacional)")
     return " · ".join(out)
 
@@ -154,5 +157,6 @@ def pontuar(u: pd.DataFrame) -> tuple[pd.DataFrame, float]:
     out["nota"] = np.where(sem, np.round(p * 10, 1), np.nan)
     out["potencial"] = [faixa(x) if s else "" for x, s in zip(p, sem)]
     out["motivo"] = np.where(sem, motivos(u).values, "")
-    out["alerta"] = [alertas(r, s) for r, s in zip(u["razao_social"], u["sede_em_al"])]
+    ativa = u["ativa_al"] if "ativa_al" in u else pd.Series(True, index=u.index)
+    out["alerta"] = [alertas(r, s, a) for r, s, a in zip(u["razao_social"], u["sede_em_al"], ativa)]
     return out, auc

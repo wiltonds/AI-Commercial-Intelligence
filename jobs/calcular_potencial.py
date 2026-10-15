@@ -101,6 +101,9 @@ def universo() -> pd.DataFrame:
         u = u[~(u["cnpj_basico"].isin(mei) & ~u["cliente"])]
 
     e = ler_enderecos()
+    # ENDERECOS_AL só tem estabelecimento ATIVO: raiz fora dele não está mais ativa em AL na Receita
+    # (acontece na Base Mestre, que vem de uma carga anterior). Sem o arquivo, não dá para saber.
+    u["ativa_al"] = u["cnpj_basico"].isin(set(e["cnpj_basico"])) if not e.empty else True
     u = u.merge(e, on="cnpj_basico", how="left")
     u["capital"] = u["capital"].fillna(u["capital_e"])
     u["natureza"] = u["natureza"].where(u["natureza"] != "", u["natureza_e"].fillna(""))
@@ -123,6 +126,7 @@ def main() -> None:
     print(f"Empresas: {len(out):,} · sem relacionamento: {len(sem):,} · AUC (validação): {auc:.3f}")
     print(sem["potencial"].value_counts().reindex(["Muito alto", "Alto", "Médio", "Baixo"]).to_string())
     print(f"Com alerta: {(sem['alerta'] != '').sum():,}  ·  com bairro: {(out['bairro'] != '').sum():,}")
+    print("Alertas:", sem.loc[sem["alerta"] != "", "alerta"].value_counts().to_dict())
     print(f"Gravado: {ARQ_SAIDA}")
 
 

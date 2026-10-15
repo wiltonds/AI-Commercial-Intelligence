@@ -95,3 +95,9 @@ def test_mei_optante_sai_do_mercado_mas_cliente_mei_fica():
     })
     u = montar(mestre, pd.DataFrame(), pd.DataFrame(), None, mei={"11111111", "22222222"})
     assert set(u["cnpj_basico"]) == {"11111111", "33333333"}
+
+
+def test_alerta_empresa_nao_ativa_na_receita():
+    assert alertas("ACME LTDA", True, ativa_al=False) == "Não ativa na Receita (fechou ou saiu de AL)"
+    assert alertas("ACME LTDA", False, ativa_al=False).count("·") == 0      # não repete "sede fora"
+    assert alertas("ACME LTDA", False) == "Sede fora de AL (conta nacional)"
