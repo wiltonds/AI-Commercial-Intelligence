@@ -28,9 +28,8 @@ $arquivos = @(
     "data/processed/PRODUTOS_RANKING.csv",
     "data/processed/ATENDIMENTO_POR_ANO.csv",
     "data/processed/BASE_AMPLIADA_AL.csv",
-    "data/processed/LOG_ATUALIZACOES.csv",
-    "data/contatos/CONTATOS_EMPRESAS.csv",
-    "data/contatos/CONTATOS_RECEITA.csv"
+    "data/processed/CARTEIRA_UNIDADES.csv",
+    "data/processed/LOG_ATUALIZACOES.csv"
 )
 $origem = (Get-Location).Path
 $alvo = if ($Destino) { (Resolve-Path $Destino).Path } else { $origem }
