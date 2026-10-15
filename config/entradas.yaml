@@ -25,8 +25,8 @@ entradas:
     nome: Receita Federal — cadastro de CNPJ (dados abertos)
     dono: Receita Federal (público)
     como_obter: >
-      Estabelecimentos0..9.zip, Empresas0..9.zip, Municipios.zip, Cnaes.zip e Naturezas.zip
-      da competência mais recente em https://arquivos.receitafederal.gov.br/index.php/s/YggdBLfdninEJX9
+      Estabelecimentos0..9.zip, Empresas0..9.zip, Simples.zip, Municipios.zip, Cnaes.zip e
+      Naturezas.zip da competência mais recente em https://arquivos.receitafederal.gov.br/index.php/s/YggdBLfdninEJX9
       (ou deixar o job baixar com --mes). O BI_Project já guarda os Estabelecimentos.
     colunas: [layout oficial da Receita, sem cabeçalho]
     onde_colocar: uma pasta local, ex. C:/Users/.../BI_Project/downloads_AAAAMM
@@ -34,7 +34,8 @@ entradas:
       python jobs/carregar_base_ampliada.py --pasta <pasta> --mes AAAA-MM ;
       python jobs/incorporar_industrias_novas.py --competencia AAAA-MM
     atualiza: >
-      Não indústrias (médias e grandes); indústrias novas entram na Base Mestre;
+      Não indústrias de todos os portes (ME, EPP, Demais), menos o MEI optante (Simples.zip);
+      MEI_BASE_MESTRE.csv; indústrias novas entram na Base Mestre;
       e-mail e telefone cadastrais de todas as empresas; lista INDUSTRIAS_NOVAS para o comercial.
     frequencia_dias: 35
     confidencial: false
@@ -142,13 +143,55 @@ entradas:
     confidencial: true
     ordem: 5
 
+  enderecos:
+    nome: Endereço da sede de cada empresa (Receita)
+    dono: Receita Federal (público) — mesmos zips da entrada receita_cnpj
+    como_obter: Nada novo a baixar — usa a pasta de zips da Receita.
+    colunas: [layout oficial da Receita, sem cabeçalho]
+    onde_colocar: (gerado em data/contatos/ENDERECOS_AL.csv — fora do Git, tem endereço de MEI)
+    comando: python jobs/extrair_enderecos.py --pasta <pasta dos zips>
+    atualiza: >
+      Bairro, CEP, capital social e natureza de todos os estabelecimentos ativos de AL.
+      Base para a carteira por unidade (endereço da sede) e para o alerta "Não ativa na Receita".
+    frequencia_dias: 35
+    confidencial: true
+    ordem: 1
+
+  carteira_unidades:
+    nome: Carteira por unidade SESI/SENAI (Minuta de Carteirização)
+    dono: Automático (endereços + propostas + config/referencia/carteira_minuta.csv)
+    como_obter: Nada a baixar. Rodar depois dos endereços e das propostas.
+    colunas: []
+    onde_colocar: (gerado em data/processed/CARTEIRA_UNIDADES.csv e data/privado/CARTEIRA_UNIDADES_DETALHE.csv)
+    comando: python jobs/distribuir_carteira.py --historico data/privado/propostas.xlsx
+    atualiza: >
+      Unidade SESI e unidade SENAI de cada empresa: cliente fica na unidade do histórico; empresa nova
+      vai pelo bairro (Maceió) ou município da sede; sede fora de AL fica com quem atender primeiro.
+    frequencia_dias: 31
+    confidencial: false
+    ordem: 6
+
+  potencial:
+    nome: Prioridade das empresas que nunca compraram (modelo de semelhança)
+    dono: Automático (Base Mestre + Base Ampliada + endereços)
+    como_obter: Nada a baixar. Rodar depois das propostas (o alvo do modelo é "já comprou").
+    colunas: []
+    onde_colocar: (gerado em data/processed/POTENCIAL_MERCADO.csv)
+    comando: python jobs/calcular_potencial.py
+    atualiza: >
+      Página Mercado: nota 0–10, prioridade (Muito alto / Alto / Médio / Baixo), motivo e alertas
+      (falência, sede fora de AL, não ativa na Receita).
+    frequencia_dias: 31
+    confidencial: false
+    ordem: 7
+
   publicacao:
     nome: Publicação no painel online
     dono: Você
     como_obter: Nada a baixar.
     colunas: []
     onde_colocar: "-"
-    comando: .\jobs\publicar_dados.ps1   (depois, Reboot app no Streamlit)
+    comando: .\jobs\publicar_dados.ps1   (o painel online percebe os CSVs novos sozinho; não precisa reboot)
     atualiza: >
       Leva ao GitHub/Streamlit tudo o que os passos anteriores geraram (menos data/privado e data/contatos),
       e prepara o backup desses dois para o Teams (jobs/backup_teams.ps1): abre a pasta

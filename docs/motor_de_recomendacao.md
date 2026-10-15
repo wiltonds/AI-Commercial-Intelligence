@@ -1,6 +1,6 @@
-# AI Commercial Intelligence
+# Motor de recomendação por IA (páginas Diagnóstico & Recomendação IA e Base Qualificada)
 
-**🇺🇸 [Read in English](README.md)**
+> Parte do projeto que cruza cada empresa com o catálogo real de produtos SESI/SENAI. Visão geral do projeto: [README](../README.md) · 🇺🇸 [English version](portfolio_en.md)
 
 > Transformar uma planilha de 15 mil empresas num sistema que diz a um time comercial exatamente quem ligar, o que oferecer, e por quê.
 

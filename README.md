@@ -1,103 +1,169 @@
-# AI Commercial Intelligence — AI-Assisted B2B Lead Intelligence
+# Inteligência Comercial SESI | SENAI — Alagoas
 
-**🇧🇷 [Leia em Português](README.pt-BR.md)**
+Painel que mostra ao time comercial **quem já é cliente, quem procurar e por onde começar**, para
+indústrias e não indústrias de Alagoas, separado pela unidade SESI/SENAI responsável por cada empresa.
 
-> An applied AI and data intelligence system that transforms company data into auditable commercial opportunities, product recommendations and AI-assisted sales preparation.
+- **Painel online:** https://inteligenciacomerical.streamlit.app
+- **Código:** este repositório (público — leia [O que é público e o que não é](#o-que-é-público-e-o-que-não-é))
 
-![Portfolio architecture](./docs/portfolio-hero.svg)
+> **Comece por aqui.** Este arquivo explica o que o projeto faz, de onde vêm os dados, quais regras
+> são aplicadas e onde mudar cada coisa. O passo a passo de atualização está em
+> [docs/manual_atualizacao.md](docs/manual_atualizacao.md) e o mapa completo (fonte → job → arquivo →
+> página) em [docs/mapa_do_sistema.md](docs/mapa_do_sistema.md).
 
-## Application Demo
+---
 
-![AI Commercial Intelligence demo](./docs/screenshots/ai-commercial-demo.svg)
+## O que o painel responde
 
-> **Demo mode:** the interface below uses synthetic company data so the commercial workflow can be demonstrated safely without exposing production customer records.
+As duas primeiras páginas são para o consultor comercial. As outras ficam no menu ou atrás do botão
+**Modo técnico**.
 
-Run the recruiter-facing demo locally:
-
-```bash
-streamlit run demo_app.py
-```
-
-
-
-**Portfolio focus:** Data Engineering · Machine Learning/Scoring · Semantic Matching · AI Agents · Decision Support
-
-## Business problem
-
-SESI and SENAI (Brazil's national industry training and worker-wellness systems) sell hundreds of real courses and services — safety training, quality management, industrial maintenance, and more — to thousands of companies. But matching the *right* company to the *right* product, out of a catalog of **3,712 real offerings**, was a manual, gut-feeling process. A sales coordinator had no fast way to answer: *"Out of my 15,000 companies, which ones actually need what we sell, and which specific product should I lead with?"*
-
-## Solution
-
-Give it a company (by tax ID / CNPJ), and it:
-
-1. **Looks up the company** in a real database of ~15,000 industrial businesses
-2. **Scores data quality and sales priority** — is this lead worth pursuing, and how urgently?
-3. **Classifies its industry sector** from its official activity code
-4. **Matches it against the real product catalog** (not a generic category — an actual course, with a real product code)
-5. **Runs every match through an automated quality check** before it ever reaches a human — rejecting weak or coincidental matches
-6. **Optionally, generates a ready-to-use sales approach** (a pain hypothesis, qualifying questions, talking points, and a next step) using Claude, Anthropic's AI model
-
-Everything is presented in a dashboard a non-technical commercial team can use directly — search a company, see the market overview, get a recommendation, and understand *why* it was recommended.
-
-```mermaid
-flowchart LR
-    A["Company (CNPJ)"] --> B["Lead Research"]
-    B --> C["Data Quality Score"]
-    B --> D["Sector Classification"]
-    D --> E["Sector Affinity Engine"]
-    E --> F["Portfolio Matcher\n3,712 real products"]
-    F --> G["Supervisor\n(automated quality gate)"]
-    G --> H["Approved Recommendations"]
-    H -.optional.-> I["AI Sales Agent\n(Claude API)"]
-```
-
-## Engineering approach
-
-The interesting engineering problem here wasn't wiring up a database — it was making the *matching* trustworthy. Along the way, real data testing surfaced real failure modes that a demo built on 2-3 examples would never catch:
-
-- A product matched purely because it shared one generic word with the target sector (e.g. "technical" matched "Sales Techniques" to a "Technical Training" category) — fixed by weighting how *rare* a matching term is across the whole catalog, not just whether it matched.
-- A product matched on a technically rare word that still wasn't sector-relevant (a bakery/food course matched a metalworking company) — this is now a known, documented limit, not a hidden bug: the system flags *why* a match happened so a human can catch it, rather than pretending the match is certain.
-- Only after every deterministic layer (classification → affinity → matching → quality gate) was tested against dozens of real companies did the project add its first AI-generated content — and even then, the AI is instructed never to invent a product or number that wasn't already verified upstream.
-
-That "evidence, then trust" order is deliberate: the AI writes the sales pitch, but it never chooses what to sell — that decision is fully auditable, rule-based, and tested.
-
-## Architecture and components
-
-| Layer | What it does |
+| Página | Pergunta que responde |
 |---|---|
-| **Lead Research** | Looks up a company and normalizes its data |
-| **Data Quality Agent** | Flags whether there's enough reliable data to act on |
-| **Sector Classifier** | Turns an official activity code into a business sector |
-| **Sector Affinity Engine** | Ranks which SESI/SENAI service areas fit that sector |
-| **Portfolio Matcher** | Finds actual catalog products/courses that match, with evidence |
-| **Supervisor** | Automated quality gate — approves or rejects each match with a documented reason |
-| **Opportunity Engine** | Routes cross-sell vs. new-customer logic based on existing relationship |
-| **SDR (LLM) Agent** | Generates a human-readable sales approach from Claude, grounded only in already-approved data |
-| **Streamlit App** | The interface a commercial team actually uses — market dashboard + per-company recommendation |
+| 👥 **Clientes** | Quem já comprou de SESI ou SENAI? Quem parou de comprar (para recuperar)? Quem compra de uma casa só (para oferecer a outra)? |
+| 🎯 **Mercado — Potencial** | Das empresas que **nunca compraram**, quais se parecem mais com nossos clientes? Por quê? Em qual unidade? |
+| 📊 Visão Geral | Tamanho do mercado industrial e a cobertura SESI/SENAI |
+| 📈 Share & Relacionamento | Quanto do mercado já atendemos, produtos mais vendidos, atendimento por ano |
+| 🏛️ SESI \| SENAI | Oportunidades por linha de negócio de cada casa |
+| 🔗 Canais e Conexões | Escritórios e grupos que conectam muitas empresas de uma vez |
+| 🔎 Explorador de Empresas | Busca de qualquer empresa, com contato (só na máquina local) e cartão "Visão 360" |
+| 🎯 Base Qualificada (CRM) | Produto sugerido por empresa, para subir no CRM ([motor de recomendação](docs/motor_de_recomendacao.md)) |
+| 🗓️ Rotina de Dados *(técnico)* | O que está em dia, vencido ou faltando atualizar |
 
-**Tech stack:** Python, pandas, Pydantic, pytest, Streamlit, Anthropic Claude API
+Em **Clientes** e **Mercado**, a primeira escolha é **🏭 Indústria** ou **🏪 Não indústria**; depois vêm
+os filtros (unidade SESI, unidade SENAI, município, bairro, atividade, porte, busca por nome/CNPJ).
 
-**Test coverage:** 40 automated tests, including a dedicated *evaluation suite* of real edge cases discovered during development — a permanent regression check so a future change can't silently reintroduce a bug that was already fixed once.
+---
 
-## Run locally
+## Como os dados chegam ao painel
+
+```
+ FONTES (de fora)                      JOBS (scripts em jobs/)               ARQUIVOS (data/processed/)          PAINEL
+ ───────────────────────────────────   ─────────────────────────────────    ────────────────────────────────   ───────────────
+ Receita Federal (zips mensais) ──┬──► carregar_base_ampliada.py ────────►  BASE_AMPLIADA_AL.csv, MEI_*.csv ─┐
+                                  ├──► incorporar_industrias_novas.py ───►  BASE_MESTRE_COMERCIAL.csv ───────┤
+                                  └──► extrair_enderecos.py ─────────────►  (data/contatos/ENDERECOS_AL.csv) ┤
+ Base Mestre (BI_Project / FIEA) ────► (substitui o arquivo)                                                 │
+ Propostas SESI/SENAI (export) ──────► atualizar_relacionamento.py ──────►  cliente, situação, última       ├─► app.py
+                                                                            compra (dentro das bases),       │   (Streamlit)
+                                                                            VISAO_360.csv, PORTE_FIEA.csv... │
+ Minuta de Carteirização ────────────► distribuir_carteira.py ───────────►  CARTEIRA_UNIDADES.csv ───────────┤
+ (config/referencia)                   calcular_potencial.py ────────────►  POTENCIAL_MERCADO.csv ───────────┤
+ BrasilAPI / Serper (robôs) ─────────► enriquecer_contatos.py / _digital ►  (data/contatos/ — só local) ─────┘
+                                                                                     │
+                                       publicar_dados.ps1 ── leva data/processed ao GitHub ──► painel online
+```
+
+Cada job tem, no topo do arquivo, um texto explicando **o que lê, o que grava e como rodar**.
+Todos gravam a data em que rodaram em `data/processed/LOG_ATUALIZACOES.csv` — é por ali que
+`python jobs/checar_entradas.py` e a página **Rotina de Dados** sabem o que está vencido.
+
+---
+
+## Bases de dados usadas
+
+| Base | De onde vem | Onde fica | Atualização | Confidencial? |
+|---|---|---|---|---|
+| **Cadastro de CNPJ** (Estabelecimentos, Empresas, Simples, tabelas de códigos) | Receita Federal — dados abertos ([link](https://arquivos.receitafederal.gov.br/index.php/s/YggdBLfdninEJX9)) | Pasta local de zips (~6,5 GB), fora do repositório | Mensal | Não (público) |
+| **Base Mestre de indústrias** | BI_Project (FIEA) | `data/processed/BASE_MESTRE_COMERCIAL.csv` | Quando o BI_Project gerar | Não |
+| **Tabela DN da CNI** (o que é indústria) | CNI, via BI_Project | `config/referencia/tabela_dn_cni.csv` | Quando a CNI revisar | Não |
+| **Propostas SESI/SENAI** | Sistema comercial (exportação completa, todos os status, desde 2018) | `data/privado/propostas.xlsx` | Mensal | **Sim** |
+| **Minuta de Carteirização** (bairro/município → unidade) | Política de carteirização SESI/SENAI | `config/referencia/carteira_minuta.csv` | Quando a política mudar | Não |
+| **Contatos** (telefone, e-mail, responsável) | Robô BrasilAPI + cadastro da Receita | `data/contatos/` | A cada 90 dias | **Sim** (LGPD) |
+| **Presença digital** (site, Instagram) | Google via Serper (precisa de chave) | `data/contatos/` | Semestral | **Sim** |
+| **Nº de colaboradores** | Solução 360 | `data/privado/colaboradores.xlsx` | Trimestral | **Sim** |
+| **Catálogo de produtos** | Portfólio SESI/SENAI | `knowledge/portfolio/portfolio_compact.json` | Quando o portfólio mudar | Não |
+
+O significado de cada coluna da Base Mestre está em [docs/dicionario_dados.md](docs/dicionario_dados.md).
+
+---
+
+## Regras de negócio (o que o painel considera)
+
+| Regra | Como funciona | Onde mudar |
+|---|---|---|
+| **Indústria** | CNAE principal na Tabela DN da CNI. Empresa com CNAE industrial que não está na Base Mestre também conta como indústria. | `config/referencia/tabela_dn_cni.csv` |
+| **Quem entra na não indústria** | Empresas **ativas** de AL, de todos os portes (ME, EPP, Demais), **menos o MEI optante**. Saem órgãos públicos, condomínios, partidos, igrejas e holdings. | `config/referencia/filtro_nao_industria.yaml` |
+| **Cliente** | Teve proposta com status **Aceita**. **Ativo** = comprou nos últimos 24 meses; **Inativo** = antes disso. | `config/referencia/relacionamento.yaml` |
+| **Unidade responsável** | Cliente fica na unidade do histórico; com histórico em duas unidades, vale a sede. Empresa nova vai pelo **bairro** da sede (Maceió) ou **município** (interior); se o bairro da Receita não bate com a minuta, vale o bairro dos vizinhos de mesmo CEP. **Sede fora de AL** fica com quem atender primeiro. Benedito Bentes foi desativado: a carteira foi para o Poço. | `config/referencia/carteira_minuta.csv` e `src/tools/carteira.py` |
+| **Prioridade (Mercado)** | Nota 0–10 de semelhança com quem já compra (modelo treinado só com dado público: atividade, porte, cidade, capital, filiais, idade). Muito alto ≥ 30% das parecidas compram; Alto 15–30%; Médio 5–15%; Baixo < 5%. **Não é previsão de venda**, é ordem de procura. | `src/tools/potencial.py` |
+| **Alertas** | Falência/recuperação judicial, sede fora de AL e **não ativa na Receita** (empresa da Base Mestre que fechou ou saiu de AL). Ficam escondidos por padrão na lista do Mercado. | `src/tools/potencial.py` |
+| **Porte** | Duas réguas que **nunca se misturam**: Receita (faturamento: Micro, Pequena, Média ou grande) e FIEA (colaboradores: Micro 0–19, EPP 20–99, Média 100–499, Demais 500+). Empresa sem nº de colaboradores no cadastro fica "A confirmar". | `src/tools/universo_comercial.py` |
+| **Dado pessoal** | A razão social do Empresário Individual vem com CPF da Receita: o CPF é **retirado** de todo arquivo público. Endereço de pessoa física e contatos nunca vão para o Git. | `src/tools/lgpd.py` |
+
+---
+
+## Atualizar os dados (resumo)
+
+```
+python jobs/checar_entradas.py          # o que está vencido e o que rodar
+```
+
+Rotina mensal, nesta ordem (detalhes em [docs/manual_atualizacao.md](docs/manual_atualizacao.md)):
+
+1. Receita: `carregar_base_ampliada.py` → `incorporar_industrias_novas.py` → `extrair_enderecos.py`
+2. Propostas: `atualizar_relacionamento.py`
+3. Carteira e prioridade: `distribuir_carteira.py` → `calcular_potencial.py`
+4. Publicar: `.\jobs\publicar_dados.ps1` — o painel online percebe os arquivos novos sozinho.
+
+---
+
+## Estrutura de pastas
+
+```
+app.py                  painel (Streamlit): menu, filtros globais e as páginas antigas
+src/paginas/            páginas novas do painel (comercial.py = Clientes e Mercado)
+src/tools/              regras e cálculos (carteira, potencial, relacionamento, LGPD...)
+src/agents/, src/intelligence/, src/domain/   motor de recomendação de produto (IA)
+jobs/                   scripts que atualizam os dados (rodar na raiz do projeto)
+config/                 regras editáveis sem mexer em código + lista de entradas (entradas.yaml)
+data/processed/         arquivos que o painel lê (vão para o GitHub)
+data/privado/           propostas, valores, detalhes da carteira (NUNCA vão para o Git)
+data/contatos/          contatos e endereços (NUNCA vão para o Git)
+data/raw/               bases de origem antigas (referência)
+knowledge/              catálogo de produtos SESI/SENAI
+docs/                   documentação
+tests/                  testes automáticos (pytest)
+```
+
+---
+
+## O que é público e o que não é
+
+O repositório e o painel online são **públicos**. Regra: vai para o Git só o que alimenta o painel e
+**não identifica pessoa nem expõe valor comercial**.
+
+- **Vai:** `data/processed/` (bases sem contato e sem CPF, carteira só com a unidade, prioridade, agregados), `config/`, código.
+- **Não vai:** `data/privado/` (propostas, valores, histórico de unidade), `data/contatos/` (telefones, e-mails, sócios, endereços), `.env` (chaves).
+
+As pastas que não vão para o Git são guardadas como backup no Teams/SharePoint pelo
+`jobs/backup_teams.ps1`, chamado pelo `publicar_dados.ps1`.
+
+---
+
+## Rodar na sua máquina
 
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
+python -m pytest            # testes
 ```
 
-The AI sales-approach feature requires an `ANTHROPIC_API_KEY` environment variable; everything else (search, scoring, matching, dashboard) works without it.
+Chaves (opcionais), num arquivo `.env` a partir do `.env.example`: `ANTHROPIC_API_KEY` (texto de
+abordagem por IA) e `SERPER_API_KEY` (presença digital). O painel funciona sem elas.
 
 ---
 
-## Portfolio perspective
+## Documentação
 
-This project demonstrates an end-to-end pattern for **turning structured business data into explainable AI-assisted decisions**.
-
-The core principle is simple:
-
-**evidence → deterministic intelligence → validation → AI assistance → human decision**
-
-The LLM is intentionally downstream of the data and validation layers. It helps prepare communication, while verified business rules and evidence remain the source of the recommendation.
-
-> **Privacy:** sensitive company/customer datasets and credentials should remain outside public repositories. This repository should contain only data that is safe to publish or synthetic/anonymized demonstrations.
+| Documento | Para quê |
+|---|---|
+| [docs/manual_atualizacao.md](docs/manual_atualizacao.md) | Passo a passo mensal: o que baixar, onde colocar, o que rodar |
+| [docs/mapa_do_sistema.md](docs/mapa_do_sistema.md) | Cada job: o que lê, o que grava, qual página usa |
+| [docs/dicionario_dados.md](docs/dicionario_dados.md) | Coluna por coluna da Base Mestre e dos outros arquivos |
+| [docs/arquitetura_dados.md](docs/arquitetura_dados.md) | Da Receita até o painel: funil, curadoria, consolidação por CNPJ raiz |
+| [docs/guia_observatorio.md](docs/guia_observatorio.md) | Como levar o processamento para o Data Warehouse e automatizar |
+| [docs/motor_de_recomendacao.md](docs/motor_de_recomendacao.md) | Como funciona a recomendação de produto por IA |
+| [docs/catalogo_sti.md](docs/catalogo_sti.md) | Catálogo de serviços técnicos |
+| [config/entradas.yaml](config/entradas.yaml) | Lista oficial das entradas de dados e de quanto em quanto tempo vencem |
+| [docs/portfolio_en.md](docs/portfolio_en.md) | Apresentação do projeto em inglês |

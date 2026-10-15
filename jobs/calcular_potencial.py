@@ -128,6 +128,11 @@ def main() -> None:
     print(f"Com alerta: {(sem['alerta'] != '').sum():,}  ·  com bairro: {(out['bairro'] != '').sum():,}")
     print("Alertas:", sem.loc[sem["alerta"] != "", "alerta"].value_counts().to_dict())
     print(f"Gravado: {ARQ_SAIDA}")
+    try:
+        from src.tools.log_atualizacoes import registrar
+        registrar("potencial", f"{len(sem):,} sem relacionamento; AUC {auc:.3f}")
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":
