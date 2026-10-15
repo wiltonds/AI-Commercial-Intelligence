@@ -1,18 +1,18 @@
 ﻿produto,Entidade,industria_base,empresas,propostas,valor,empresas_recentes
-Consultoria,SENAI,True,630,1690,10107014.12,350
+Consultoria,SENAI,True,630,1690,10107014.12,347
 Saúde,SESI,True,614,1261,7446024.82,610
-Segurança Do Trabalho,SESI,True,559,1246,4853934.37,556
+Segurança Do Trabalho,SESI,True,559,1246,4853934.37,555
 Saúde,SESI,False,492,744,1837315.07,488
-Segurança Do Trabalho,SESI,False,461,659,2614267.4,459
-Consultoria,SENAI,False,311,558,5880853.43,58
+Segurança Do Trabalho,SESI,False,461,659,2614267.4,457
+Consultoria,SENAI,False,311,558,5880853.43,57
 Educação Profissional,SENAI,True,266,880,8897361.63,0
-Metrologia,SENAI,True,256,1443,3578883.85,155
-Educação Corporativa,SESI,True,239,540,1843718.93,237
+Metrologia,SENAI,True,256,1443,3578883.85,154
+Educação Corporativa,SESI,True,239,540,1843718.93,236
 Aprendizagem Industrial Básica,SENAI,True,231,571,536547.95,229
 Metrologia,SENAI,False,230,875,924949.31,99
 Educação Profissional,SENAI,False,213,378,21643880.28,0
-Educação Corporativa,SESI,False,131,224,1497442.89,124
-Promoção À Saúde,SESI,True,119,220,914157.86,117
+Educação Corporativa,SESI,False,131,224,1497442.89,123
+Promoção À Saúde,SESI,True,119,220,914157.86,116
 Qualificação Profissional,SENAI,True,57,66,1569627.74,55
 Promoção À Saúde - Assti,SESI,True,54,59,0.12,54
 Locação De Espaços,SESI,False,49,129,353036.8,48

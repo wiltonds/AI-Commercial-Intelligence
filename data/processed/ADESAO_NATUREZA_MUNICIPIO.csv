@@ -1,5 +1,5 @@
 ﻿linha,produto,municipio,empresas,propostas,empresas_24m
-EB,Educação Corporativa,Fora da base industrial,131,224,124
+EB,Educação Corporativa,Fora da base industrial,131,224,123
 EB,Educação Corporativa,Maceió,100,204,98
 EB,Educação Corporativa,Arapiraca,61,103,61
 EB,Educação Corporativa,Marechal Deodoro,9,34,9
@@ -13,7 +13,7 @@ EB,Educação Corporativa,Major Isidoro,3,6,3
 EB,Educação Corporativa,Palmeira dos Índios,3,4,3
 EB,Educação Corporativa,Porto de Pedras,3,9,3
 EB,Educação Corporativa,São José da Tapera,3,5,3
-EB,Educação Corporativa,Girau do Ponciano,2,2,2
+EB,Educação Corporativa,Girau do Ponciano,2,2,1
 EB,Educação Corporativa,Murici,2,16,2
 EB,Educação Corporativa,Penedo,2,3,2
 EB,Educação Corporativa,Quebrangulo,2,3,2
@@ -157,12 +157,12 @@ EP,Qualificação Profissional,Igreja Nova,1,1,1
 EP,Qualificação Profissional,Rio Largo,1,1,1
 EP,Qualificação Profissional,São Miguel dos Milagres,1,2,1
 SSI,Saúde,Fora da base industrial,492,744,488
-SSI,Segurança Do Trabalho,Fora da base industrial,461,659,459
+SSI,Segurança Do Trabalho,Fora da base industrial,461,659,457
 SSI,Saúde,Maceió,340,665,337
 SSI,Segurança Do Trabalho,Maceió,297,675,296
 SSI,Saúde,Arapiraca,90,179,90
 SSI,Segurança Do Trabalho,Arapiraca,88,177,88
-SSI,Promoção À Saúde,Maceió,75,117,74
+SSI,Promoção À Saúde,Maceió,75,117,73
 SSI,Promoção À Saúde,Fora da base industrial,39,71,38
 SSI,Promoção À Saúde - Assti,Maceió,28,31,28
 SSI,Núcleo De Prevenção E Performance,Fora da base industrial,21,29,19
@@ -323,7 +323,7 @@ SSI,Segurança Do Trabalho,Coité do Nóia,1,2,1
 SSI,Segurança Do Trabalho,Coqueiro Seco,1,6,1
 SSI,Segurança Do Trabalho,Feliz Deserto,1,2,1
 SSI,Segurança Do Trabalho,Flexeiras,1,3,1
-SSI,Segurança Do Trabalho,Girau do Ponciano,1,1,1
+SSI,Segurança Do Trabalho,Girau do Ponciano,1,1,0
 SSI,Segurança Do Trabalho,Igaci,1,2,1
 SSI,Segurança Do Trabalho,Igreja Nova,1,3,1
 SSI,Segurança Do Trabalho,Japaratinga,1,2,1
@@ -340,17 +340,17 @@ SSI,Segurança Do Trabalho,Senador Rui Palmeira,1,1,1
 SSI,Segurança Do Trabalho,Tanque d'Arca,1,1,1
 SSI,Segurança Do Trabalho,Taquarana,1,1,1
 SSI,Segurança Do Trabalho,Água Branca,1,2,1
-STI,Consultoria,Maceió,343,926,175
-STI,Consultoria,Fora da base industrial,311,558,58
+STI,Consultoria,Maceió,343,926,174
+STI,Consultoria,Fora da base industrial,311,558,57
 STI,Metrologia,Fora da base industrial,230,875,99
-STI,Metrologia,Maceió,180,894,106
+STI,Metrologia,Maceió,180,894,105
 STI,Consultoria,Arapiraca,108,253,59
 STI,Inovação,Fora da base industrial,36,49,4
 STI,Metrologia,Marechal Deodoro,20,270,14
 STI,Consultoria,Rio Largo,19,48,8
 STI,Soluções Digitais,Fora da base industrial,17,71,10
 STI,Metrologia,Arapiraca,15,73,9
-STI,Consultoria,Palmeira dos Índios,14,38,6
+STI,Consultoria,Palmeira dos Índios,14,38,4
 STI,Inovação,Maceió,14,16,3
 STI,Consultoria,Murici,10,40,5
 STI,Consultoria,Marechal Deodoro,9,23,6
