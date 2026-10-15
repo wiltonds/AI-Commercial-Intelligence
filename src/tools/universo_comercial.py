@@ -57,7 +57,10 @@ def _cnae_codigo(serie: pd.Series) -> pd.Series:
     return pd.to_numeric(serie, errors="coerce").map(lambda v: f"{int(v):07d}" if pd.notna(v) else "")
 
 
-def _bloco(df: pd.DataFrame, categoria: str, raiz: str, razao: str, cnae_cod: pd.Series, cnae_desc: str,
+TIPO_LACUNA = "Indústria fora da Base Mestre"   # Base Ampliada: CNAE da tabela da CNI, fora do cadastro FIEA
+
+
+def _bloco(df: pd.DataFrame, categoria, raiz: str, razao: str, cnae_cod: pd.Series, cnae_desc: str,
            porte: str, municipio: str, sesi: pd.Series, senai: pd.Series) -> pd.DataFrame:
     sesi, senai = _bool(sesi), _bool(senai)
     situacao = df.get("SITUACAO_CLIENTE", pd.Series("", index=df.index)).fillna("").replace("", "Sem compra")
@@ -65,7 +68,7 @@ def _bloco(df: pd.DataFrame, categoria: str, raiz: str, razao: str, cnae_cod: pd
     out = pd.DataFrame({
         "cnpj_basico": df[raiz].astype(str).str.replace(r"\D", "", regex=True).str.zfill(8).values,
         "Razão social": df[razao].values,
-        "Categoria": categoria,
+        "Categoria": categoria if isinstance(categoria, str) else pd.Series(categoria).values,
         "Segmento": cnae_cod.str[:2].map(segmento_cnae).values,
         "CNAE": [f"{c[:4]}-{c[4:5]}/{c[5:]} · {d}" if c else d for c, d in zip(cnae_cod, df[cnae_desc].fillna(""))],
         "Município": df[municipio].values,
@@ -100,7 +103,10 @@ def montar(mestre: pd.DataFrame, ampliada: pd.DataFrame, porte_fiea: pd.DataFram
                              mestre.get("POSSUI_SENAI", mestre.get("TEM_SENAI"))))
     if not ampliada.empty:
         cod = ampliada["cnae_principal"].fillna("").astype(str).str.replace(r"\D", "", regex=True).str.zfill(7)
-        partes.append(_bloco(ampliada, "Não indústria", "cnpj_basico", "razao_social", cod, "CNAE PRIMARIO",
+        # a lacuna ("Indústria fora da Base Mestre") tem CNAE industrial: entra como Indústria
+        tipo = ampliada.get("Tipo", pd.Series("", index=ampliada.index)).fillna("")
+        categoria = tipo.eq(TIPO_LACUNA).map({True: "Indústria", False: "Não indústria"})
+        partes.append(_bloco(ampliada, categoria, "cnpj_basico", "razao_social", cod, "CNAE PRIMARIO",
                              "Porte", "Municipio", ampliada["POSSUI_SESI"], ampliada["POSSUI_SENAI"]))
     u = pd.concat(partes, ignore_index=True).drop_duplicates("cnpj_basico")
     u = u.rename(columns={"unidade_sesi": "Unidade SESI", "unidade_senai": "Unidade SENAI"})

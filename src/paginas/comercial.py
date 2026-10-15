@@ -1,13 +1,12 @@
-"""Páginas "👥 Clientes" e "🎯 Mercado — Potencial".
+"""Páginas "👥 Clientes" e "🎯 Mercado — Potencial", feitas para o consultor comercial.
 
-Dois públicos, dois tratamentos:
+Primeira escolha, no topo: Indústria ou Não indústria (são públicos e conversas diferentes).
+Depois, os mesmos filtros nas duas páginas, na lateral: unidade SESI e SENAI (Minuta de
+Carteirização), município, bairro, porte, atividade e busca por nome/CNPJ.
+
 * Clientes (já compraram): reter e expandir. Porte FIEA do cadastro.
-* Mercado (nunca compraram): conquistar. Nota de potencial = quão parecida a empresa é
-  com quem já compra (jobs/calcular_potencial.py), com o motivo escrito ao lado.
-
-Os mesmos filtros nas duas: unidade SESI e SENAI (Minuta de Carteirização), categoria
-(indústria ou não), segmento, porte (régua FIEA ou Receita, nunca misturadas),
-município e bairro.
+* Mercado (nunca compraram): conquistar. Prioridade = quão parecida a empresa é com quem
+  já compra (jobs/calcular_potencial.py), com o motivo escrito ao lado.
 """
 from __future__ import annotations
 
@@ -19,6 +18,14 @@ from src.tools.universo_comercial import (A_CONFIRMAR, CLIENTE, MERCADO, ORDEM_F
 
 UNIDADES_SESI = ["Farol", "Tabuleiro", "Agreste/Sertão"]
 UNIDADES_SENAI = ["Poço", "Agreste/Sertão"]
+INDUSTRIA, NAO_INDUSTRIA = "Indústria", "Não indústria"
+ROTULO_PUBLICO = {INDUSTRIA: "🏭 Indústria", NAO_INDUSTRIA: "🏪 Não indústria"}
+EXPLICA_PUBLICO = {
+    INDUSTRIA: "Empresas com atividade industrial (tabela da CNI): fábricas, construção, extração, energia…",
+    NAO_INDUSTRIA: "Comércio, serviços, saúde, educação, alimentação… O SESI também atende essas empresas.",
+}
+# nomes da Receita em linguagem do dia a dia (o filtro continua usando o valor original)
+NOME_PORTE_RECEITA = {"MICRO EMPRESA": "Micro", "PEQUENO PORTE": "Pequena (EPP)", "DEMAIS": "Média ou grande"}
 
 
 def _n(x) -> str:
@@ -26,41 +33,60 @@ def _n(x) -> str:
 
 
 def _pct(a, b) -> str:
-    return f"{a / b * 100:.1f}%".replace(".", ",") if b else "–"
+    return f"{a / b * 100:.0f}%" if b else "–"
 
 
-def _quebra(df: pd.DataFrame) -> str:
-    ind = int((df["Categoria"] == "Indústria").sum())
-    return f"Indústria {_n(ind)} · Não indústria {_n(len(df) - ind)}"
+def _cartao(col, rotulo: str, valor, nota: str = "", ajuda: str | None = None) -> None:
+    """Número grande + legenda neutra embaixo. O delta do st.metric põe seta (↑) e corta o texto."""
+    col.metric(rotulo, valor, help=ajuda)
+    if nota:
+        col.caption(nota)
 
 
-def filtros(u: pd.DataFrame, chave: str) -> pd.DataFrame:
-    """Barra de filtros na lateral. `chave` separa o estado das duas páginas."""
+def escolher_publico(base: pd.DataFrame, chave: str) -> tuple[str, pd.DataFrame]:
+    """Indústria ou Não indústria, com o tamanho de cada uma no botão."""
+    tamanho = base["Categoria"].value_counts()
+    escolha = st.segmented_control(
+        "Público", [INDUSTRIA, NAO_INDUSTRIA], default=INDUSTRIA, key=f"{chave}_publico",
+        format_func=lambda p: f"{ROTULO_PUBLICO[p]}  ·  {_n(tamanho.get(p, 0))}", label_visibility="collapsed",
+    ) or INDUSTRIA
+    st.caption(EXPLICA_PUBLICO[escolha])
+    return escolha, base[base["Categoria"] == escolha]
+
+
+def filtros(u: pd.DataFrame, chave: str, regua_padrao: str) -> tuple[pd.DataFrame, str]:
+    """Filtros na lateral. Devolve a base filtrada e a régua de porte em uso."""
     sb = st.sidebar
     sb.subheader("Filtros")
     k = lambda nome: f"{chave}_{nome}"  # noqa: E731
+    busca = sb.text_input("🔍 Procurar empresa", placeholder="nome ou CNPJ", key=k("busca"))
     sesi = sb.multiselect("Unidade SESI", opcoes(u["Unidade SESI"], UNIDADES_SESI), key=k("sesi"),
-                          help="Pela Minuta de Carteirização: cliente fica na unidade do histórico; empresa nova "
-                               "vai pelo endereço da sede (bairro em Maceió, município no interior).")
+                          help="Unidade responsável pela empresa (Minuta de Carteirização). Cliente fica na "
+                               "unidade onde já compra; empresa nova vai pelo endereço da sede.")
     senai = sb.multiselect("Unidade SENAI", opcoes(u["Unidade SENAI"], UNIDADES_SENAI), key=k("senai"),
                            help="Benedito Bentes foi desativado: as empresas dele estão no Poço.")
-    categorias = sb.multiselect("Categoria", ["Indústria", "Não indústria"], key=k("cat"),
-                                help="Indústria = CNAE na tabela da CNI. O SESI também atende não indústria.")
-    segmentos = sb.multiselect("Segmento (CNAE)", opcoes(u["Segmento"]), key=k("seg"))
-    regua = sb.radio("Régua de porte", ["FIEA", "Receita"], horizontal=True, key=k("regua"),
-                     help="FIEA = colaboradores (Micro 0–19, EPP 20–99, Média 100–499, Demais 500+). "
-                          "Receita = faturamento (ME/EPP/Demais). São réguas diferentes: uma empresa pode ser "
-                          "Demais na Receita e Micro na FIEA. Empresa sem número de colaboradores fica "
-                          f"'{A_CONFIRMAR}'.")
-    ordem = ORDEM_PORTE_FIEA if regua == "FIEA" else ORDEM_PORTE_RECEITA
-    col_porte = "Porte FIEA" if regua == "FIEA" else "Porte Receita"
-    portes = sb.multiselect("Porte", opcoes(u[col_porte], ordem), key=k("porte"))
     municipios = sb.multiselect("Município", opcoes(u["Município"]), key=k("mun"))
     base_bairro = u[u["Município"].isin(municipios)] if municipios else u
     bairros = sb.multiselect("Bairro", opcoes(base_bairro["Bairro"]), key=k("bairro"))
-    busca = sb.text_input("Razão social ou CNPJ", key=k("busca"))
-    return filtrar(u, unidades_sesi=sesi, unidades_senai=senai, categorias=categorias, segmentos=segmentos,
-                   regua=regua, portes=portes, municipios=municipios, bairros=bairros, busca=busca)
+    segmentos = sb.multiselect("Atividade", opcoes(u["Segmento"]), key=k("seg"),
+                               help="Grande grupo da atividade principal (CNAE).")
+    with sb.expander("Mais opções"):
+        regua = st.radio("Porte medido por", ["FIEA", "Receita"], horizontal=True, key=k("regua"),
+                         index=["FIEA", "Receita"].index(regua_padrao),
+                         format_func={"FIEA": "Colaboradores (FIEA)", "Receita": "Faturamento (Receita)"}.get,
+                         help="Colaboradores (FIEA): Micro 0–19, EPP 20–99, Média 100–499, Demais 500+. "
+                              "Faturamento (Receita): Micro, Pequena, Média ou grande. São medidas diferentes: "
+                              "uma empresa pode faturar muito e ter poucos funcionários. Quem não tem o número de "
+                              f"colaboradores no cadastro aparece como '{A_CONFIRMAR}'.")
+    col_porte = "Porte FIEA" if regua == "FIEA" else "Porte Receita"
+    ordem = ORDEM_PORTE_FIEA if regua == "FIEA" else ORDEM_PORTE_RECEITA
+    portes = sb.multiselect("Porte", opcoes(u[col_porte], ordem), key=k(f"porte_{regua}"),
+                            format_func=lambda p: NOME_PORTE_RECEITA.get(p, p))
+    sb.caption(f"Porte por {'colaboradores (FIEA)' if regua == 'FIEA' else 'faturamento (Receita)'} — "
+               "troque em *Mais opções*.")
+    df = filtrar(u, unidades_sesi=sesi, unidades_senai=senai, segmentos=segmentos, regua=regua, portes=portes,
+                 municipios=municipios, bairros=bairros, busca=busca)
+    return df, regua
 
 
 def _contagem(df: pd.DataFrame, coluna: str, ordem: list[str] | None = None) -> pd.DataFrame:
@@ -70,97 +96,122 @@ def _contagem(df: pd.DataFrame, coluna: str, ordem: list[str] | None = None) -> 
     return c.rename("Empresas").to_frame()
 
 
+def _por_unidade(df: pd.DataFrame) -> pd.DataFrame:
+    return pd.concat([df["Unidade SESI"].replace("", "Sem unidade").value_counts().rename("SESI"),
+                      df["Unidade SENAI"].replace("", "Sem unidade").value_counts().rename("SENAI")],
+                     axis=1).fillna(0)
+
+
+def _atividade(df: pd.DataFrame) -> pd.Series:
+    """'1091-1/00 · Fabricação de produtos de panificação' -> 'Fabricação de produtos de panificação'."""
+    return df["CNAE"].astype(str).str.split(" · ", n=1).str[-1]
+
+
 def render_clientes(universo: pd.DataFrame) -> None:
-    st.header("👥 Clientes — com relacionamento")
-    st.caption("Empresas que já compraram de SESI ou SENAI (proposta aceita). Aqui o trabalho é **reter** "
-               "(quem esfriou) e **expandir** (o que ainda não compraram). Porte FIEA vem do nosso cadastro.")
-    base = universo[universo["Relacionamento"] == CLIENTE]
-    df = filtros(base, "cli")
+    st.header("👥 Clientes")
+    st.caption("Empresas que **já compraram** de SESI ou SENAI. O trabalho aqui é **não perder** quem parou de "
+               "comprar e **vender mais** para quem já é cliente.")
+    publico, base = escolher_publico(universo[universo["Relacionamento"] == CLIENTE], "cli")
+    df, regua = filtros(base, "cli", "FIEA")
+
     ativos = int((df["Situação"] == "Ativo").sum())
     inativos = int((df["Situação"] == "Inativo").sum())
-    c = st.columns(5)
-    c[0].metric("Clientes", _n(len(df)), _quebra(df), delta_color="off")
-    c[1].metric("Ativos (24 meses)", _n(ativos), _pct(ativos, len(df)), delta_color="off")
-    c[2].metric("Inativos — reter", _n(inativos), _pct(inativos, len(df)), delta_color="off")
-    c[3].metric("Só SESI ou só SENAI", _n(df["Entidade"].isin(["SESI", "SENAI"]).sum()),
-                "espaço para a outra casa", delta_color="off")
-    c[4].metric("Porte FIEA a confirmar", _n((df["Porte FIEA"] == A_CONFIRMAR).sum()),
-                help="Cliente sem porte no cadastro: o comercial confirma o nº de colaboradores.")
+    uma_casa = int(df["Entidade"].isin(["SESI", "SENAI"]).sum())
+    c = st.columns(4)
+    _cartao(c[0], "Clientes", _n(len(df)), f"{publico.lower()} · com os filtros")
+    _cartao(c[1], "Compram hoje", _n(ativos), f"{_pct(ativos, len(df))} · compraram nos últimos 2 anos")
+    _cartao(c[2], "Pararam de comprar", _n(inativos), f"{_pct(inativos, len(df))} · ligar para recuperar")
+    _cartao(c[3], "Compram de uma casa só", _n(uma_casa), "só SESI ou só SENAI · oferecer a outra")
 
-    a, b, d = st.columns(3)
-    a.markdown("**Por porte FIEA**")
-    a.bar_chart(_contagem(df, "Porte FIEA", ORDEM_PORTE_FIEA), sort=False)
-    b.markdown("**Por unidade SESI**")
-    b.bar_chart(_contagem(df, "Unidade SESI", UNIDADES_SESI), sort=False)
-    d.markdown("**Por unidade SENAI**")
-    d.bar_chart(_contagem(df, "Unidade SENAI", UNIDADES_SENAI), sort=False)
+    a, b = st.columns(2)
+    col_porte = "Porte FIEA" if regua == "FIEA" else "Porte Receita"
+    ordem = ORDEM_PORTE_FIEA if regua == "FIEA" else ORDEM_PORTE_RECEITA
+    a.markdown("**Clientes por porte**")
+    a.bar_chart(_contagem(df, col_porte, ordem).rename(index=NOME_PORTE_RECEITA), sort=False)
+    b.markdown("**Clientes por unidade**")
+    b.bar_chart(_por_unidade(df), stack=False, color=["#0b3d91", "#e8792b"])
 
-    st.subheader("Carteira")
-    cols = ["Razão social", "cnpj_basico", "Situação", "Entidade", "Última compra", "Porte FIEA", "Porte Receita",
-            "Categoria", "Segmento", "Município", "Bairro", "Unidade SESI", "Unidade SENAI"]
-    tabela = df[cols].sort_values(["Situação", "Última compra"], ascending=[True, False])
-    st.dataframe(tabela, width="stretch", hide_index=True,
-                 column_config={"cnpj_basico": "CNPJ raiz"})
-    st.download_button("⬇️ Baixar carteira filtrada", tabela.to_csv(index=False).encode("utf-8-sig"),
-                       file_name="clientes_filtrados.csv", mime="text/csv")
-    st.info("Próximo passo: segmentação RFV (Alta Performance, Fidelizados, Risco de Inatividade…) alinhada à do "
-            "Núcleo de Estratégia e Mercado, e o portfólio por cliente (o que comprou × o que falta oferecer).")
+    st.subheader("Lista de clientes")
+    tabela = pd.DataFrame({
+        "Empresa": df["Razão social"], "CNPJ raiz": df["cnpj_basico"], "Situação": df["Situação"],
+        "Compra de": df["Entidade"], "Última compra": df["Última compra"],
+        "Porte": df[col_porte].map(lambda p: NOME_PORTE_RECEITA.get(p, p)), "Atividade": _atividade(df),
+        "Município": df["Município"], "Bairro": df["Bairro"],
+        "Unidade SESI": df["Unidade SESI"], "Unidade SENAI": df["Unidade SENAI"],
+    }).sort_values(["Situação", "Última compra"], ascending=[False, False])
+    st.caption("Primeiro quem parou de comprar (Inativo), do mais recente para o mais antigo.")
+    st.dataframe(tabela, width="stretch", hide_index=True)
+    st.download_button("⬇️ Baixar esta lista", tabela.to_csv(index=False).encode("utf-8-sig"),
+                       file_name=f"clientes_{publico.lower().replace(' ', '_')}.csv", mime="text/csv")
 
 
 def render_mercado(universo: pd.DataFrame) -> None:
-    st.header("🎯 Mercado — potencial (sem relacionamento)")
-    st.caption("Empresas que **nunca compraram**. A nota mostra o quanto cada uma se parece com quem já é "
-               "cliente — perfil de CNAE, porte, município, capital, filiais e idade, só com dado público. "
-               "Ao fechar a primeira proposta, a empresa passa sozinha para a página de Clientes.")
+    st.header("🎯 Mercado — quem procurar")
+    st.caption("Empresas que **nunca compraram**. A prioridade diz o quanto cada uma se parece com quem já é "
+               "nosso cliente (atividade, porte, cidade, tamanho, idade). Quando fechar a primeira proposta, "
+               "ela passa sozinha para a página de Clientes.")
     base = universo[universo["Relacionamento"] == MERCADO]
     if base["Potencial"].eq("").all():
-        st.warning("Potencial ainda não calculado. Rode `python jobs/calcular_potencial.py` e publique "
+        st.warning("Prioridade ainda não calculada. Rode `python jobs/calcular_potencial.py` e publique "
                    "`data/processed/POTENCIAL_MERCADO.csv`.")
-    df = filtros(base, "mer")
+    publico, base = escolher_publico(base, "mer")
+    df, regua = filtros(base, "mer", "Receita")
+
     f1, f2 = st.columns([3, 2])
-    faixas = f1.multiselect("Potencial", ORDEM_FAIXAS, default=["Muito alto", "Alto"], key="mer_faixa")
-    esconder = f2.toggle("Esconder empresas com alerta", value=True, key="mer_alerta",
-                         help="Falência / recuperação judicial e sede fora de AL (conta nacional; pela minuta, "
-                              "fica com a unidade do 1º atendimento).")
+    faixas = f1.multiselect("Prioridade", ORDEM_FAIXAS, default=["Muito alto", "Alto"], key="mer_faixa",
+                            help="Muito alto: em perfis assim, 30% ou mais das empresas já compram. "
+                                 "Alto: 15 a 30%. Médio: 5 a 15%. Baixo: menos de 5%.")
+    esconder = f2.toggle("Esconder empresas com problema", value=True, key="mer_alerta",
+                         help="Falência ou recuperação judicial, e empresas com sede fora de Alagoas "
+                              "(atendidas pela unidade do 1º serviço).")
     vis = df[df["Potencial"].isin(faixas)] if faixas else df
     if esconder:
         vis = vis[vis["Alerta"] == ""]
 
-    c = st.columns(5)
-    c[0].metric("Sem relacionamento", _n(len(df)), _quebra(df), delta_color="off",
-                help="Indústria (Base Mestre) + não indústria (Base Ampliada). MEI optante fica fora: "
-                     "não atendemos MEI; microempresa (ME) é atendida normalmente.")
-    c[1].metric("Muito alto", _n((df["Potencial"] == "Muito alto").sum()), help="Perfis em que ≥30% das parecidas já compram.")
-    c[2].metric("Alto", _n((df["Potencial"] == "Alto").sum()), help="15–30% das parecidas já compram.")
-    c[3].metric("Na fila (filtros atuais)", _n(len(vis)))
-    c[4].metric("Porte FIEA a confirmar", _n((vis["Porte FIEA"] == A_CONFIRMAR).sum()),
-                help="Na fila sem nº de colaboradores: a primeira pergunta da abordagem (ou Apollo).")
+    c = st.columns(4)
+    _cartao(c[0], "Nunca compraram", _n(len(df)), f"{publico.lower()} · com os filtros")
+    _cartao(c[1], "Prioridade muito alta", _n((df["Potencial"] == "Muito alto").sum()),
+            "muito parecidas com nossos clientes")
+    _cartao(c[2], "Prioridade alta", _n((df["Potencial"] == "Alto").sum()), "parecidas com nossos clientes")
+    _cartao(c[3], "Na sua lista", _n(len(vis)), "prioridade escolhida, abaixo")
 
     a, b = st.columns(2)
-    a.markdown("**Muito alto e alto, por segmento**")
-    pv = df[df["Potencial"] != ""].pivot_table(index="Segmento", columns="Potencial", values="cnpj_basico",
-                                                aggfunc="count", fill_value=0)
-    pv = pv[[f for f in ["Muito alto", "Alto"] if f in pv.columns]]
-    if not pv.empty:
-        top = pv.loc[pv.sum(axis=1).sort_values(ascending=False).index[:12]]
-        a.bar_chart(top, horizontal=True, sort=False, color=["#0b3d91", "#7fb2e5"][: len(top.columns)])
-    b.markdown("**Fila por unidade SESI / SENAI**")
-    uni = pd.concat([vis["Unidade SESI"].replace("", "Sem unidade").value_counts().rename("SESI"),
-                     vis["Unidade SENAI"].replace("", "Sem unidade").value_counts().rename("SENAI")], axis=1).fillna(0)
-    b.bar_chart(uni, stack=False, color=["#0b3d91", "#e8792b"])
-
-    st.subheader("Fila — conquistar")
-    cols = ["Razão social", "cnpj_basico", "Nota", "Potencial", "Motivo", "Categoria", "Segmento", "CNAE",
-            "Município", "Bairro", "Porte Receita", "Porte FIEA", "Unidade SESI", "Unidade SENAI", "Alerta"]
-    tabela = vis[cols].sort_values("Nota", ascending=False)
-    st.dataframe(tabela, width="stretch", hide_index=True, column_config={
-        "cnpj_basico": "CNPJ raiz",
-        "Nota": st.column_config.ProgressColumn("Nota", min_value=0, max_value=10, format="%.1f"),
-        "Motivo": st.column_config.TextColumn(width="large"),
+    # tabela com barra em vez de gráfico: nome de atividade é longo e o eixo do gráfico corta
+    grupo = _atividade(vis).str.capitalize() if publico == INDUSTRIA else vis["Segmento"]
+    a.markdown("**Na sua lista, por atividade**" if publico == INDUSTRIA else "**Na sua lista, por tipo de negócio**")
+    top = grupo.value_counts().head(10).rename_axis("Atividade").rename("Empresas").reset_index()
+    a.dataframe(top, hide_index=True, width="stretch", height=387, column_config={
+        "Atividade": st.column_config.TextColumn(width="large"),
+        "Empresas": st.column_config.ProgressColumn("Empresas", format="%d", min_value=0,
+                                                    max_value=int(top["Empresas"].max()) if len(top) else 1),
     })
-    st.download_button("⬇️ Baixar fila filtrada", tabela.to_csv(index=False).encode("utf-8-sig"),
-                       file_name="fila_conquistar.csv", mime="text/csv")
-    st.caption("Como ler a nota: 0–10, a chance de a empresa ser cliente se ela se comportasse como as parecidas "
-               "(validação: os 10% de maior nota concentram ~4× mais clientes reais que uma lista aleatória). "
-               "Não é previsão de venda — é a ordem de abordagem. Porte FIEA fica 'A confirmar' até termos o "
-               "número de colaboradores; a régua da Receita é só peneira.")
+    b.markdown("**Na sua lista, por unidade**")
+    b.bar_chart(_por_unidade(vis), stack=False, color=["#0b3d91", "#e8792b"])
+
+    st.subheader("Lista para procurar")
+    tabela = pd.DataFrame({
+        "Empresa": vis["Razão social"], "CNPJ raiz": vis["cnpj_basico"], "Nota": vis["Nota"],
+        "Prioridade": vis["Potencial"], "Por quê": vis["Motivo"], "Atividade": _atividade(vis),
+        "Porte": vis["Porte Receita"].map(lambda p: NOME_PORTE_RECEITA.get(p, p)),
+        "Município": vis["Município"], "Bairro": vis["Bairro"],
+        "Unidade SESI": vis["Unidade SESI"], "Unidade SENAI": vis["Unidade SENAI"], "Atenção": vis["Alerta"],
+    }).sort_values("Nota", ascending=False)
+    if esconder:
+        tabela = tabela.drop(columns=["Atenção"])
+    st.caption("Da mais parecida com nossos clientes para a menos. A nota vai de 0 a 10.")
+    st.dataframe(tabela, width="stretch", hide_index=True, column_config={
+        "Nota": st.column_config.ProgressColumn("Nota", min_value=0, max_value=10, format="%.1f"),
+        "Por quê": st.column_config.TextColumn(width="large"),
+    })
+    st.download_button("⬇️ Baixar esta lista", tabela.to_csv(index=False).encode("utf-8-sig"),
+                       file_name=f"procurar_{publico.lower().replace(' ', '_')}.csv", mime="text/csv")
+    with st.expander("Como a prioridade é calculada?"):
+        st.markdown(
+            "- Olhamos as empresas que **já compram** e as que **nunca compraram**, só com dado público "
+            "(atividade, porte, cidade, capital, nº de filiais e idade).\n"
+            "- Cada empresa recebe uma nota de 0 a 10: quanto **mais parecida com nossos clientes**, maior.\n"
+            "- Na validação, as 10% de maior nota tinham cerca de **4 vezes mais clientes** que uma lista "
+            "aleatória.\n"
+            "- **Não é garantia de venda** — é a ordem sugerida para procurar.\n"
+            "- O porte aqui é o da **Receita** (faturamento): empresa nova ainda não tem o nº de colaboradores "
+            "no nosso cadastro. Pergunte na primeira conversa.")

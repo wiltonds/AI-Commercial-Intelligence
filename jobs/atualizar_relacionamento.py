@@ -30,6 +30,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.tools.company_data import BASE_PATH  # noqa: E402
+from src.tools.lgpd import limpar_cpf  # noqa: E402
 from src.tools.receita_cnpj import faixa_colaboradores  # noqa: E402
 from src.tools.relacionamento import (  # noqa: E402
     aplicar_na_base,
@@ -69,7 +70,7 @@ def atualizar_ampliada(por_raiz: pd.DataFrame, porte: pd.DataFrame) -> int:
     a["Colaboradores (faixa)"] = [faixa_colaboradores(t, p) for t, p in zip(a["Tipo"], a["porte_fiea"])]
     a["Origem colaboradores"] = a["Colaboradores (faixa)"].map(
         lambda f: "Porte FIEA (propostas/relacionamento)" if f else "Sem informação")
-    a.to_csv(ARQ_AMPLIADA, index=False, encoding="utf-8-sig")
+    limpar_cpf(a).to_csv(ARQ_AMPLIADA, index=False, encoding="utf-8-sig")   # repositório público: sem CPF
     return int((a["POSSUI_SESI"].eq("True") | a["POSSUI_SENAI"].eq("True")).sum())
 
 
@@ -93,7 +94,7 @@ def main():
     antes = _clientes(base)
     nova = aplicar_na_base(base, por_raiz, por_cnpj)
     depois = _clientes(nova)
-    nova.to_csv(BASE_PATH, index=False, encoding="utf-8-sig")
+    limpar_cpf(nova).to_csv(BASE_PATH, index=False, encoding="utf-8-sig")   # repositório público: sem CPF
     raizes_base = set(nova["CNPJ_BASICO"].astype(str).str.zfill(8))
     emp = nova.drop_duplicates("CNPJ_BASICO")
     print(f"\nBase Mestre ({len(raizes_base):,} empresas)")

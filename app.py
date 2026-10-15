@@ -387,19 +387,20 @@ st.caption(
     "Ecossistema de Negócios e Diagnóstico do Mercado Industrial de "
     "Alagoas — com recomendação de produto real por IA."
 )
-st.caption(
-    f"🏢 {numero(resumo_consolidacao['total_empresas'])} empresas (CNPJ raiz) "
-    f"a partir de {numero(resumo_consolidacao['total_estabelecimentos'])} "
-    f"estabelecimentos cadastrados — "
-    f"{numero(resumo_consolidacao['empresas_com_filial'])} empresas têm mais "
-    f"de uma unidade ({numero(resumo_consolidacao['total_filiais'])} filiais "
-    "consolidadas para não inflar a contagem). "
-    + (
-        "Exibindo por estabelecimento (matriz + filiais separados)."
-        if visao_estabelecimento
-        else "Exibindo por empresa — uma linha por CNPJ raiz."
+if pagina not in PAGINAS_FILTRO_PROPRIO:   # Clientes/Mercado têm universo próprio (indústria + não indústria)
+    st.caption(
+        f"🏢 {numero(resumo_consolidacao['total_empresas'])} empresas (CNPJ raiz) "
+        f"a partir de {numero(resumo_consolidacao['total_estabelecimentos'])} "
+        f"estabelecimentos cadastrados — "
+        f"{numero(resumo_consolidacao['empresas_com_filial'])} empresas têm mais "
+        f"de uma unidade ({numero(resumo_consolidacao['total_filiais'])} filiais "
+        "consolidadas para não inflar a contagem). "
+        + (
+            "Exibindo por estabelecimento (matriz + filiais separados)."
+            if visao_estabelecimento
+            else "Exibindo por empresa — uma linha por CNPJ raiz."
+        )
     )
-)
 st.divider()
 
 # ------------------------------------------------------------

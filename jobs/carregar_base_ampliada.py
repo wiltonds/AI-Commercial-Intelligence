@@ -44,6 +44,7 @@ import requests
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.tools.company_data import BASE_PATH  # noqa: E402
+from src.tools.lgpd import limpar_cpf  # noqa: E402
 from src.tools.receita_cnpj import (  # noqa: E402
     PORTE,
     carregar_filtro,
@@ -169,7 +170,7 @@ def refiltrar() -> None:
     amp = pd.read_csv(ARQ_SAIDA, dtype=str, encoding="utf-8-sig").fillna("")
     antes = len(amp)
     amp = amp[manter_para_venda(amp, carregar_filtro())]
-    amp.to_csv(ARQ_SAIDA, index=False, encoding="utf-8-sig")
+    limpar_cpf(amp).to_csv(ARQ_SAIDA, index=False, encoding="utf-8-sig")   # repositório público: sem CPF
     if ARQ_CONTATOS.exists():
         mestre = pd.read_csv(BASE_PATH, dtype=str, usecols=["CNPJ_BASICO"], encoding="utf-8-sig")
         manter = set(mestre["CNPJ_BASICO"].str.zfill(8)) | set(amp["cnpj_basico"])
@@ -197,7 +198,7 @@ def main():
 
     amp, contatos, mei_mestre = montar(pasta)
     ARQ_SAIDA.parent.mkdir(parents=True, exist_ok=True)
-    amp.to_csv(ARQ_SAIDA, index=False, encoding="utf-8-sig")
+    limpar_cpf(amp).to_csv(ARQ_SAIDA, index=False, encoding="utf-8-sig")   # repositório público: sem CPF
     mei_mestre.to_csv(ARQ_MEI_MESTRE, index=False, encoding="utf-8-sig")
     print(f"Base Mestre: {len(mei_mestre):,} empresas são MEI optante (saem da fila de prospecção)")
     ARQ_CONTATOS.parent.mkdir(parents=True, exist_ok=True)

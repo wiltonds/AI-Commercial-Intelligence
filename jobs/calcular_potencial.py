@@ -84,13 +84,16 @@ def universo() -> pd.DataFrame:
         "Porte Receita": a["Porte"],
         "Município": a["Municipio"],
         "n_estab": pd.to_numeric(a["QTD_ESTABELECIMENTOS"], errors="coerce"),
-        "cliente": a["SITUACAO_CLIENTE"].isin(["Ativo", "Inativo"]),
+        # a Base Ampliada não tem SITUACAO_CLIENTE: cliente = já comprou de SESI ou SENAI
+        # (mesmo critério do painel em universo_comercial._bloco)
+        "cliente": a["POSSUI_SESI"].str.upper().eq("TRUE") | a["POSSUI_SENAI"].str.upper().eq("TRUE"),
         "matriz_base": a["cnpj"].str.zfill(14).str[8:12].eq("0001"),
         "capital": a["capital_social"].map(numero_br),
         "natureza": a["natureza"],
         "data_abertura": a["data_inicio_atividade"],
     })
-    nao["Categoria"] = "Não indústria"
+    # lacuna da Base Mestre (CNAE da tabela da CNI) é indústria, como no painel
+    nao["Categoria"] = a["Tipo"].eq("Indústria fora da Base Mestre").map({True: "Indústria", False: "Não indústria"})
     u = pd.concat([ind, nao], ignore_index=True).drop_duplicates("cnpj_basico")
     # Regra comercial: MEI optante não é atendido. Fora do modelo (a não ser que já tenha comprado).
     if ARQ_MEI.exists():

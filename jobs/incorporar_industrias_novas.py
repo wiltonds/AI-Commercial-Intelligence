@@ -34,6 +34,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.tools.company_data import BASE_PATH  # noqa: E402
+from src.tools.lgpd import limpar_cpf  # noqa: E402
 from src.tools.contatos import carregar_contatos  # noqa: E402
 
 RAIZ = Path(__file__).resolve().parent.parent
@@ -176,8 +177,8 @@ def main():
 
     linhas = montar_linhas(novas, base, args.competencia)
     base_nova = pd.concat([base, linhas[base.columns]], ignore_index=True)
-    base_nova.to_csv(BASE_PATH, index=False, encoding="utf-8-sig")
-    amp[amp["Tipo"] != TIPO_LACUNA].to_csv(ARQ_AMPLIADA, index=False, encoding="utf-8-sig")
+    limpar_cpf(base_nova).to_csv(BASE_PATH, index=False, encoding="utf-8-sig")   # repositório público: sem CPF
+    limpar_cpf(amp[amp["Tipo"] != TIPO_LACUNA]).to_csv(ARQ_AMPLIADA, index=False, encoding="utf-8-sig")
 
     PASTA_LISTA.mkdir(parents=True, exist_ok=True)
     arq_lista = PASTA_LISTA / f"INDUSTRIAS_NOVAS_{args.competencia.replace('-', '')}.xlsx"

@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src.tools.company_data import BASE_PATH  # noqa: E402
 from src.tools.contatos import carregar_contatos  # noqa: E402
 from src.tools.hubs import chave_email, mapear_canais, mapear_grupos, publico  # noqa: E402
+from src.tools.lgpd import limpar_cpf  # noqa: E402
 
 RAIZ = Path(__file__).resolve().parent.parent
 ARQ_AMPLIADA = RAIZ / "data" / "processed" / "BASE_AMPLIADA_AL.csv"
@@ -89,8 +90,8 @@ def main():
     PUB_CANAIS.parent.mkdir(parents=True, exist_ok=True)
     pub.to_csv(PUB_CANAIS, index=False, encoding="utf-8-sig")
     mem = todos_membros[todos_membros["hub"].isin(set(pub["hub"]))] if not pub.empty and not todos_membros.empty else todos_membros.head(0)
-    mem[[c for c in ["hub", "cnpj_basico", "razao_social", "municipio", "segmento", "situacao", "tipo_empresa"] if c in mem.columns]] \
-        .to_csv(PUB_MEMBROS, index=False, encoding="utf-8-sig")
+    limpar_cpf(mem[[c for c in ["hub", "cnpj_basico", "razao_social", "municipio", "segmento", "situacao",
+                                "tipo_empresa"] if c in mem.columns]]).to_csv(PUB_MEMBROS, index=False, encoding="utf-8-sig")
     if not canais.empty:
         print("Tipos de canal:", canais["tipo_canal"].value_counts().to_dict())
         print(f"Publicados no painel (domínio de empresa): {len(pub):,} canais")

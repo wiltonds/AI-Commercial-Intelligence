@@ -29,6 +29,8 @@ $arquivos = @(
     "data/processed/ATENDIMENTO_POR_ANO.csv",
     "data/processed/BASE_AMPLIADA_AL.csv",
     "data/processed/CARTEIRA_UNIDADES.csv",
+    "data/processed/POTENCIAL_MERCADO.csv",
+    "data/processed/MEI_BASE_MESTRE.csv",
     "data/processed/LOG_ATUALIZACOES.csv"
 )
 $origem = (Get-Location).Path
