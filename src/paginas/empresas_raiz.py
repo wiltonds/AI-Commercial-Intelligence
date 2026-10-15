@@ -79,7 +79,7 @@ def render_visao_raiz(base_estabelecimentos: pd.DataFrame) -> None:
         )
         st.dataframe(
             pistas["novos"][_cols(pistas["novos"])],
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
         )
 
@@ -90,7 +90,7 @@ def render_visao_raiz(base_estabelecimentos: pd.DataFrame) -> None:
         )
         st.dataframe(
             pistas["antigos"][_cols(pistas["antigos"])],
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
         )
 
@@ -102,7 +102,7 @@ def render_visao_raiz(base_estabelecimentos: pd.DataFrame) -> None:
         )
         st.dataframe(
             pistas["contas_nomeadas"][_cols(pistas["contas_nomeadas"])],
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
         )
 

@@ -80,7 +80,7 @@ def render() -> None:
     tabela["Escritório"] = tabela["hub"].map(_nome)
     tabela["Tipo"] = tabela["tipo_canal"].map(lambda t: TIPOS.get(t, (t,))[0])
     st.dataframe(tabela[["Escritório", "Tipo", "Empresas que atende", "Nunca compraram", "Quem pode apresentar"]],
-                 use_container_width=True, hide_index=True, height=330,
+                 width="stretch", hide_index=True, height=330,
                  column_config={"Nunca compraram": st.column_config.ProgressColumn(
                      format="%d", min_value=0, max_value=int(tabela["Nunca compraram"].max() or 1))})
 
@@ -105,6 +105,6 @@ def render() -> None:
     car["segmento"] = car.get("segmento", "").map(acentuar)
     car = car.sort_values("É cliente?").rename(columns={"razao_social": "Empresa", "municipio": "Município", "segmento": "Segmento"})
     cols = [c_ for c_ in ["Empresa", "Município", "Segmento", "É cliente?", "O que oferecer", "Retomar"] if c_ in car.columns]
-    st.dataframe(car[cols], use_container_width=True, hide_index=True)
+    st.dataframe(car[cols], width="stretch", hide_index=True)
     st.download_button("⬇️ Baixar empresas deste escritório", car[cols].to_csv(index=False).encode("utf-8-sig"),
                        file_name=f"carteira_{_nome(sel).replace('.', '_')}.csv", mime="text/csv")

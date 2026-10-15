@@ -48,7 +48,7 @@ def render() -> None:
                        "Última atualização": x["ultima"], "Próxima prevista": proxima or "-",
                        "Frequência": f"{x['freq']} dias",
                        "Último resultado": log.get(x["chave"], {}).get("resumo", "")})
-    st.dataframe(pd.DataFrame(tabela), use_container_width=True, hide_index=True)
+    st.dataframe(pd.DataFrame(tabela), width="stretch", hide_index=True)
 
     st.subheader("O que fazer agora" if pendentes else "Tudo em dia ✅")
     for x in linhas:
@@ -64,4 +64,4 @@ def render() -> None:
 
     if ARQ_LOG.exists():
         with st.expander("Histórico de atualizações"):
-            st.dataframe(pd.read_csv(ARQ_LOG).iloc[::-1], use_container_width=True, hide_index=True)
+            st.dataframe(pd.read_csv(ARQ_LOG).iloc[::-1], width="stretch", hide_index=True)

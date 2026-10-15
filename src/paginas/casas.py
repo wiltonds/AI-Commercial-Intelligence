@@ -190,13 +190,13 @@ def render(df_empresas: pd.DataFrame) -> None:
             # 3. Onde focar?
             st.subheader("Onde focar")
             st.caption("Perfis de empresa com mais espaço para vender, do maior para o menor.")
-            st.dataframe(fx.head(10), use_container_width=True, hide_index=True)
+            st.dataframe(fx.head(10), width="stretch", hide_index=True)
 
             # 4. Em que cidade? · 5. O que oferecer?
             a, b = st.columns(2)
             with a:
                 st.subheader("Em que cidade")
-                st.dataframe(por_municipio(df, cod).head(10), use_container_width=True, hide_index=True)
+                st.dataframe(por_municipio(df, cod).head(10), width="stretch", hide_index=True)
             with b:
                 st.subheader("O que mais vendemos")
                 if nat.empty:
@@ -208,7 +208,7 @@ def render(df_empresas: pd.DataFrame) -> None:
                     prod = n.groupby("produto")[["empresas", "empresas_24m"]].sum().sort_values("empresas", ascending=False)
                     st.dataframe(prod.reset_index().rename(columns={"produto": "Produto", "empresas": "Empresas que compraram",
                                                                     "empresas_24m": "Nos últimos 24 meses"}),
-                                 use_container_width=True, hide_index=True)
+                                 width="stretch", hide_index=True)
 
             # 6. Me dá a lista
             st.subheader("Listas prontas")
@@ -221,7 +221,7 @@ def render(df_empresas: pd.DataFrame) -> None:
             with t1:
                 r = base_lista[s == "parou"].sort_values(f"{cod}_ultima", ascending=False)
                 r = r[list(colunas) + [f"{cod}_ultima"]].rename(columns={**colunas, f"{cod}_ultima": "Última compra"})
-                st.dataframe(r, use_container_width=True, hide_index=True, height=320)
+                st.dataframe(r, width="stretch", hide_index=True, height=320)
                 st.download_button("⬇️ Baixar lista para reativar", r.to_csv(index=False).encode("utf-8-sig"),
                                    file_name=f"{cod}_reativar.csv", mime="text/csv", key=f"r_{cod}")
             for aba_, estado, rotulo in ((t2, "cross", "cross-sell"), (t3, "prospectar", "prospectar")):
@@ -234,6 +234,6 @@ def render(df_empresas: pd.DataFrame) -> None:
                         p["Já compra"] = p["linhas_ativas"].astype(str) + " linha(s)"
                     cols_ = ["Chance"] + list(colunas) + ["Motivo", "Quem já compra"] + (["Já compra"] if estado == "cross" else [])
                     p = p[cols_].rename(columns=colunas)
-                    st.dataframe(p, use_container_width=True, hide_index=True, height=320)
+                    st.dataframe(p, width="stretch", hide_index=True, height=320)
                     st.download_button(f"⬇️ Baixar lista de {rotulo}", p.to_csv(index=False).encode("utf-8-sig"),
                                        file_name=f"{cod}_{estado}.csv", mime="text/csv", key=f"{estado}_{cod}")

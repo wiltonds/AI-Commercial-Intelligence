@@ -70,7 +70,7 @@ def render(df_empresas: pd.DataFrame, df_estab: pd.DataFrame) -> None:
                "o perfil de cliente que já compra — o ponto de partida para buscar empresas parecidas.")
     col_seg = "SEBRAE_setor" if "SEBRAE_setor" in df.columns else "SETOR"
     seg = tabela_share(df.assign(**{col_seg: df[col_seg].fillna("Não classificado")}), col_seg, minimo=20)
-    st.dataframe(seg, use_container_width=True, column_config={
+    st.dataframe(seg, width="stretch", column_config={
         "Share (já atendidas)": st.column_config.ProgressColumn(format="%.1f%%", min_value=0, max_value=100),
         "Share (ativas)": st.column_config.ProgressColumn(format="%.1f%%", min_value=0, max_value=100),
     })
@@ -78,10 +78,10 @@ def render(df_empresas: pd.DataFrame, df_estab: pd.DataFrame) -> None:
     a, b = st.columns(2)
     with a:
         st.subheader("Share por porte")
-        st.dataframe(tabela_share(df, "Porte"), use_container_width=True)
+        st.dataframe(tabela_share(df, "Porte"), width="stretch")
     with b:
         st.subheader("Share por município (maiores)")
-        st.dataframe(tabela_share(df, "Municipio").head(15), use_container_width=True)
+        st.dataframe(tabela_share(df, "Municipio").head(15), width="stretch")
 
     if ARQ_ANOS.exists():
         st.divider()
@@ -103,7 +103,7 @@ def render(df_empresas: pd.DataFrame, df_estab: pd.DataFrame) -> None:
         st.dataframe(top.rename(columns={"produto": "Produto", "empresas": "Empresas que compraram",
                                          "empresas_recentes": "Empresas (24 meses)", "propostas": "Propostas aceitas",
                                          "valor": "Valor aceito (R$)"}),
-                     use_container_width=True, hide_index=True,
+                     width="stretch", hide_index=True,
                      column_config={"Valor aceito (R$)": st.column_config.NumberColumn(format="R$ %.0f")})
 
     st.divider()
@@ -111,6 +111,6 @@ def render(df_empresas: pd.DataFrame, df_estab: pd.DataFrame) -> None:
     cols = [c for c in ["razao_social", "Municipio", "Porte", col_seg, "STATUS_RELACIONAMENTO_REAL",
                         "ULTIMA_COMPRA", "ULTIMA_COMPRA_SESI", "ULTIMA_COMPRA_SENAI"] if c in df.columns]
     inat = df[df["SITUACAO_CLIENTE"] == "Inativo"][cols].sort_values("ULTIMA_COMPRA", ascending=False)
-    st.dataframe(inat, use_container_width=True, hide_index=True)
+    st.dataframe(inat, width="stretch", hide_index=True)
     st.download_button("⬇️ Baixar lista de reativação", inat.to_csv(index=False).encode("utf-8-sig"),
                        file_name="empresas_para_reativar.csv", mime="text/csv")

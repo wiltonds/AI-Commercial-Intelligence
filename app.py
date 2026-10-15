@@ -554,7 +554,7 @@ elif pagina == "🏭 Mercado":
             .rename_axis("CNAE")
             .to_frame("Empresas")
         )
-        st.dataframe(cnae, use_container_width=True)
+        st.dataframe(cnae, width="stretch")
 
 
 # ------------------------------------------------------------
@@ -601,7 +601,7 @@ elif pagina == "🔵 Visão SESI":
     ]
     st.dataframe(
         df_view[~df_view["POSSUI_SESI"]][cols].head(1000),
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -630,7 +630,7 @@ elif pagina == "🟠 Visão SENAI":
     ]
     st.dataframe(
         df_view[~df_view["POSSUI_SENAI"]][cols].head(1000),
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -681,7 +681,7 @@ elif pagina == "🟢 Visão SEBRAE":
         if c in df_oportunidade.columns
     ]
     st.dataframe(
-        df_oportunidade[cols].head(3000), use_container_width=True, hide_index=True
+        df_oportunidade[cols].head(3000), width="stretch", hide_index=True
     )
 
 
@@ -709,7 +709,7 @@ elif pagina == "🔥 Visão Integrada":
     st.divider()
     st.subheader("SESI/SENAI × SEBRAE")
     cruzamento = pd.crosstab(df_view["STATUS_RELACIONAMENTO_REAL"], df_view["STATUS_SEBRAE"])
-    st.dataframe(cruzamento, use_container_width=True)
+    st.dataframe(cruzamento, width="stretch")
 
     st.divider()
     st.subheader("Sem SESI/SENAI e não atendidas pelo SEBRAE")
@@ -724,7 +724,7 @@ elif pagina == "🔥 Visão Integrada":
         if c in oportunidade_integrada.columns
     ]
     st.dataframe(
-        oportunidade_integrada[cols].head(3000), use_container_width=True, hide_index=True
+        oportunidade_integrada[cols].head(3000), width="stretch", hide_index=True
     )
     st.caption(
         "Importante: este grupo representa uma lacuna de cobertura institucional. "
@@ -913,7 +913,7 @@ elif pagina == "🔎 Explorador de Empresas":
                str(_lin["razao_social"]),
                " · ".join(str(_lin.get(c, "")) for c in ("Municipio", "Porte", "CNAE PRIMARIO") if str(_lin.get(c, ""))))
     st.subheader("Lista de empresas")
-    st.dataframe(vista, use_container_width=True, height=600, hide_index=True, column_config={
+    st.dataframe(vista, width="stretch", height=600, hide_index=True, column_config={
         "Instagram": st.column_config.LinkColumn("Instagram", display_text=r"instagram\.com/(.+)"),
         "Site": st.column_config.LinkColumn("Site"),
     })
@@ -1009,7 +1009,7 @@ elif pagina == "🎯 Base Qualificada (CRM)":
             c1.metric("Qualificadas", numero(len(qualificada)))
             c2.metric("Cross-sell", numero(int((qualificada["tratamento"] == "CROSS-SELL").sum())))
             c3.metric("Aquisição", numero(int((qualificada["tratamento"] == "AQUISIÇÃO").sum())))
-            st.dataframe(qualificada, use_container_width=True, height=520, hide_index=True)
+            st.dataframe(qualificada, width="stretch", height=520, hide_index=True)
             st.download_button(
                 "⬇️ Baixar base qualificada (CSV)",
                 data=qualificada.to_csv(index=False).encode("utf-8-sig"),  # BOM: Excel lê os acentos
@@ -1339,7 +1339,7 @@ elif pagina == "✅ Auditoria de Cobertura":
     st.divider()
     st.subheader("Impacto por carteira")
     impacto = auditoria.groupby(["COBERTURA", "MOTIVO"]).size().unstack(fill_value=0)
-    st.dataframe(impacto, use_container_width=True)
+    st.dataframe(impacto, width="stretch")
 
     st.divider()
     st.subheader("Empresas recuperadas para o seu radar comercial")
@@ -1352,7 +1352,7 @@ elif pagina == "✅ Auditoria de Cobertura":
         tabela_recuperadas = correcao[["razao_social", "Municipio", "Porte", "CNAE PRIMARIO"]].rename(
             columns={"razao_social": "Empresa", "Municipio": "Município", "CNAE PRIMARIO": "Atividade"}
         )
-        st.dataframe(tabela_recuperadas, use_container_width=True, height=350, hide_index=True)
+        st.dataframe(tabela_recuperadas, width="stretch", height=350, hide_index=True)
     else:
         st.info("Nenhuma empresa recuperada nesta versão da base.")
 
