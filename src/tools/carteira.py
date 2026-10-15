@@ -44,7 +44,17 @@ ALIAS_BAIRRO = {
     "CIDADE UNIVERSITRIA": "CIDADE UNIVERSITARIA", "CID UNIVERSITARIA": "CIDADE UNIVERSITARIA",
     "CID. UNIVERSITARIA": "CIDADE UNIVERSITARIA", "BENDITO BENTES": "BENEDITO BENTES", "STO AMARO": "SANTO AMARO",
     "P VERDE": "PONTA VERDE", "PORTA VERDE": "PONTA VERDE", "JAITUCA": "JATIUCA", "FARL": "FAROL",
+    # conferidos em out/2026 (data/privado/bairros_conferir.csv)
+    "JACERECICA": "JACARECICA", "ANATARES": "ANTARES", "CRUS DAS ALMAS": "CRUZ DAS ALMAS",
+    "MAGABEIRAS": "MANGABEIRAS", "JARDIM PETRPOLIS": "JARDIM PETROPOLIS", "GRUTAS DE LOURDES": "GRUTA DE LOURDES",
+    "CONJUNTO BENEDITO BENTES I": "BENEDITO BENTES", "TABULEIRO MARTINS": "TABULEIRO DO MARTINS",
+    "TABULEIRO DOS MARTIN": "TABULEIRO DO MARTINS", "TABULEIRO DOS MATINS": "TABULEIRO DO MARTINS",
+    "TABUELEIRO DOS MARTINS": "TABULEIRO DO MARTINS", "TABUL DOS MARTINS": "TABULEIRO DO MARTINS",
 }
+
+# Fallback por CEP: quando o bairro da Receita não bate exato com a minuta, vale o bairro em que caem
+# os outros estabelecimentos de Maceió com o mesmo CEP — e o CEP vence o nome se os dois discordarem.
+CEP_MIN_APOIO = 2   # estabelecimentos com bairro exato no mesmo CEP, e maioria absoluta entre eles
 
 
 def norm(texto) -> str:
@@ -61,9 +71,35 @@ def carregar_minuta(caminho: Path = ARQ_MINUTA) -> tuple[dict, dict]:
     return bairros, municipios
 
 
-def bairro_minuta(bairro: str, bairros: dict) -> str:
+def _limpar_bairro(bairro: str) -> str:
     x = re.sub(r"^(BAIRRO|B\.)\s+", "", norm(bairro))
-    x = re.sub(r"\s*\(.*\)$", "", x).strip()
+    return re.sub(r"\s*\(.*\)$", "", x).strip()
+
+
+def cep_generico(cep) -> bool:
+    """CEP que não localiza bairro: inválido ou terminado em 000 (geral da cidade / grande logradouro)."""
+    c = re.sub(r"\D", "", str(cep or ""))
+    return len(c) != 8 or c.endswith("000")
+
+
+def mapa_cep_bairro(enderecos: pd.DataFrame, bairros: dict) -> dict:
+    """CEP de Maceió -> bairro da minuta, pela maioria dos estabelecimentos cujo bairro bate exato com a tabela."""
+    if "cep" not in enderecos.columns or enderecos.empty:
+        return {}
+    e = enderecos[enderecos["municipio"].map(norm) == "MACEIO"]
+    t = pd.DataFrame({"cep": e["cep"].astype(str).str.replace(r"\D", "", regex=True),
+                      "bairro": e["bairro"].map(_limpar_bairro)})
+    t = t[t["bairro"].isin(bairros.keys()) & ~t["cep"].map(cep_generico)]
+    mapa = {}
+    for cep, g in t.groupby("cep")["bairro"]:
+        v = g.value_counts()
+        if v.iloc[0] >= CEP_MIN_APOIO and v.iloc[0] * 2 > len(g):
+            mapa[cep] = v.index[0]
+    return mapa
+
+
+def bairro_minuta(bairro: str, bairros: dict) -> str:
+    x = _limpar_bairro(bairro)
     if x in bairros:
         return x
     if ALIAS_BAIRRO.get(x) in bairros:
@@ -74,17 +110,24 @@ def bairro_minuta(bairro: str, bairros: dict) -> str:
     return ""
 
 
-def unidade_pela_sede(municipio: str, bairro: str, bairros: dict, municipios: dict) -> tuple[str, str, str]:
-    """(unidade SESI, unidade SENAI, de onde saiu). Vazio quando não dá para decidir."""
+def unidade_pela_sede(municipio: str, bairro: str, bairros: dict, municipios: dict,
+                      cep: str = "", ceps: dict | None = None) -> tuple[str, str, str]:
+    """(unidade SESI, unidade SENAI, de onde saiu). Vazio quando não dá para decidir.
+
+    Em Maceió: bairro exato da minuta > bairro pelo CEP (ceps = mapa_cep_bairro) > alias/aproximação do nome."""
     m = norm(municipio)
     if not m:
         return "", "", "sem endereço"
     if m == "MACEIO":
-        b = bairro_minuta(bairro, bairros)
-        if not b:
-            return "", "", f"bairro '{bairro}' fora da tabela da minuta"
-        sesi, senai = bairros[b]
-        return sesi, senai, f"sede no bairro {b.title()} (Maceió)"
+        pelo_cep = "" if cep_generico(cep) else (ceps or {}).get(re.sub(r"\D", "", str(cep)), "")
+        if _limpar_bairro(bairro) in bairros or not pelo_cep:
+            b = bairro_minuta(bairro, bairros)
+            if not b:
+                return "", "", f"bairro '{bairro}' fora da tabela da minuta"
+            sesi, senai = bairros[b]
+            return sesi, senai, f"sede no bairro {b.title()} (Maceió)"
+        sesi, senai = bairros[pelo_cep]
+        return sesi, senai, f"bairro pelo CEP {cep}: {pelo_cep.title()} (Maceió; na Receita '{bairro}')"
     if m in municipios:
         sesi, senai = municipios[m]
         return sesi, senai, f"sede em {municipio.title()}"
@@ -126,7 +169,10 @@ def distribuir(enderecos: pd.DataFrame, historico: pd.DataFrame | None, raizes: 
     """enderecos: ENDERECOS_AL (cnpj, cnpj_basico, matriz, bairro, municipio).
     historico: propostas aceitas (cnpj_basico, Entidade, Unidade). Devolve uma linha por CNPJ raiz."""
     bairros, municipios = carregar_minuta()
+    ceps = mapa_cep_bairro(enderecos, bairros)   # de todos os estabelecimentos, matriz e filial
     e = enderecos.copy()
+    if "cep" not in e.columns:
+        e["cep"] = ""
     e["cnpj_basico"] = e["cnpj_basico"].astype(str).str.zfill(8)
     e = e.sort_values(["cnpj_basico", "matriz"], ascending=[True, False]).drop_duplicates("cnpj_basico")
     hist = pd.DataFrame(columns=["cnpj_basico", "Entidade", "unidade"])
@@ -144,7 +190,7 @@ def distribuir(enderecos: pd.DataFrame, historico: pd.DataFrame | None, raizes: 
     for r in sorted(todas):
         if r in e.index:
             mun, bai, matriz = e.at[r, "municipio"], e.at[r, "bairro"], e.at[r, "matriz"]
-            sesi_s, senai_s, origem = unidade_pela_sede(mun, bai, bairros, municipios)
+            sesi_s, senai_s, origem = unidade_pela_sede(mun, bai, bairros, municipios, e.at[r, "cep"], ceps)
             fora = matriz != "S"   # só filial em AL -> matriz fora do estado
             if fora:
                 sesi_s, senai_s, origem = "", "", "matriz fora de AL (filial em " + str(mun).title() + ")"
@@ -169,7 +215,7 @@ def distribuir(enderecos: pd.DataFrame, historico: pd.DataFrame | None, raizes: 
 
 
 ARQ_CARTEIRA = RAIZ / "data" / "processed" / "CARTEIRA_UNIDADES.csv"
-COLS_CARTEIRA = ["unidade_sesi", "motivo_sesi", "unidade_senai", "motivo_senai", "unidades"]
+COLS_CARTEIRA = ["unidade_sesi", "unidade_senai", "unidades"]   # motivos só no DETALHE (data/privado)
 
 
 def carregar_carteira(df: pd.DataFrame, col_raiz: str = "cnpj_basico", caminho: Path = ARQ_CARTEIRA) -> pd.DataFrame:

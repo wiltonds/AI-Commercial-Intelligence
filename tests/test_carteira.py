@@ -71,9 +71,40 @@ def test_versao_publica_sem_historico():
     out = pd.DataFrame({"cnpj_basico": ["1"], "historico_sesi": ["Farol, Tabuleiro"], "historico_senai": [""],
                         "unidade_sesi": ["Farol"], "motivo_sesi": ["histórico em Farol, Tabuleiro — vale a sede"],
                         "unidade_senai": ["Poço"], "motivo_senai": ["empresa nova — endereço da sede"], "unidades": ["Farol | Poço"]})
+    out["endereco_sede"] = "bairro pelo CEP 57000001: Farol (Maceió; na Receita 'X')"
     p = dc.publico(out)
-    assert "historico_sesi" not in p.columns and "historico_senai" not in p.columns
-    assert p.loc[0, "motivo_sesi"] == "cliente" and p.loc[0, "motivo_senai"] == "empresa nova"
+    assert list(p.columns) == ["cnpj_basico", "unidade_sesi", "unidade_senai", "unidades"]
+    assert not [c for c in p.columns if c.startswith(("motivo_", "historico_", "endereco", "bairro", "municipio"))]
+
+
+def _end_cep(linhas):
+    return pd.DataFrame(linhas, columns=["cnpj", "cnpj_basico", "matriz", "bairro", "cep", "municipio"])
+
+
+def test_bairro_pelo_cep():
+    from src.tools.carteira import cep_generico, mapa_cep_bairro
+    vizinhos = [(f"9000000{i}000101", f"9000000{i}", "S", "Jatiuca", "57036540", "Maceio") for i in range(3)]
+    end = _end_cep(vizinhos + [
+        ("55555555000105", "55555555", "S", "Tabuleiro Dos Martin", "57036540", "Maceio"),   # alias diz Tabuleiro, CEP diz Jatiúca
+        ("66666666000106", "66666666", "S", "Reginaldo", "57036540", "Maceio"),              # fora da minuta, CEP resolve
+        ("77777777000107", "77777777", "S", "Magabeiras", "57010000", "Maceio"),             # CEP genérico: vale o alias
+        ("88888888000108", "88888888", "S", "Farol", "57036540", "Maceio"),                  # nome exato vence o CEP
+    ])
+    assert cep_generico("57010-000") and not cep_generico("57036-540")
+    assert mapa_cep_bairro(end, B)["57036540"] == "JATIUCA"
+    out = distribuir(end, None).set_index("cnpj_basico")
+    assert out.at["55555555", "unidade_sesi"] == "Farol"                 # Jatiúca -> Cambona/Farol, não Tabuleiro
+    assert out.at["55555555", "endereco_sede"].startswith("bairro pelo CEP")
+    assert out.at["66666666", "unidade_sesi"] == "Farol"
+    assert out.at["77777777", "endereco_sede"] == "sede no bairro Mangabeiras (Maceió)"
+    assert out.at["88888888", "endereco_sede"] == "sede no bairro Farol (Maceió)"
+
+
+def test_cep_sem_maioria_nao_decide():
+    from src.tools.carteira import mapa_cep_bairro
+    end = _end_cep([("1", "1", "S", "Farol", "57051111", "Maceio"), ("2", "2", "S", "Prado", "57051111", "Maceio"),
+                    ("3", "3", "S", "Pinheiro", "57052222", "Maceio")])                    # empate e apoio de 1
+    assert mapa_cep_bairro(end, B) == {}
 
 
 def test_olho_dagua_grande_com_acento_agudo():

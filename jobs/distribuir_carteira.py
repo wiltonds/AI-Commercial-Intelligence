@@ -11,8 +11,7 @@ Saída:
   data/privado/CARTEIRA_UNIDADES_DETALHE.csv   tudo, inclusive em quais unidades a empresa comprou
                                                (vem das propostas: fica FORA do Git)
   data/processed/CARTEIRA_UNIDADES.csv         só o que o painel usa: cnpj_basico, unidade_sesi,
-                                               unidade_senai, unidades e a origem resumida
-                                               (cliente / empresa nova / sede fora de AL)
+                                               unidade_senai, unidades (sem motivo: repositório público)
 
 Sem --historico, todo mundo é tratado como empresa nova (só endereço da sede): serve para
 prospecção, mas os clientes atuais podem ficar na unidade errada até a exportação ser passada.
@@ -70,14 +69,12 @@ def _origem(motivo: str) -> str:
     return "conferir"
 
 
+COLS_PUBLICO = ["cnpj_basico", "unidade_sesi", "unidade_senai", "unidades"]
+
+
 def publico(out: pd.DataFrame) -> pd.DataFrame:
-    """Versão do painel: sem as unidades onde a empresa comprou nem o motivo detalhado."""
-    return pd.DataFrame({
-        "cnpj_basico": out["cnpj_basico"],
-        "unidade_sesi": out["unidade_sesi"], "motivo_sesi": out["motivo_sesi"].map(_origem),
-        "unidade_senai": out["unidade_senai"], "motivo_senai": out["motivo_senai"].map(_origem),
-        "unidades": out["unidades"],
-    })
+    """Versão do painel (repositório público): só a unidade. Motivos e histórico ficam no DETALHE."""
+    return out[COLS_PUBLICO].copy()
 
 
 def main():
@@ -95,6 +92,10 @@ def main():
     print(f"Salvo: {ARQ_DETALHE.relative_to(RAIZ)}  (completo, fora do Git)")
     print(f"Salvo: {ARQ_SAIDA.relative_to(RAIZ)}  ({len(out):,} empresas, versão do painel)")
     print(pd.crosstab(out["unidade_sesi"].replace("", "(sem)"), out["unidade_senai"].replace("", "(sem)")).to_string())
+    print("\nOrigem (só no DETALHE):")
+    print(pd.DataFrame({"SESI": out["motivo_sesi"].map(_origem).value_counts(),
+                        "SENAI": out["motivo_senai"].map(_origem).value_counts()}).fillna(0).astype(int).to_string())
+    print(f"bairro pelo CEP: {int(out['endereco_sede'].str.startswith('bairro pelo CEP').sum()):,} empresas")
     if hist is None:
         print("\nATENÇÃO: sem --historico. Clientes atuais foram distribuídos só pelo endereço da sede.")
     try:
