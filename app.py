@@ -266,6 +266,8 @@ st.sidebar.title("Navegação")
 # antigas). As técnicas continuam no código e testadas: só ficam atrás do
 # "Modo técnico" para o menu do consultor ficar enxuto.
 PAGINAS_COMERCIAIS = [
+    "👥 Clientes",
+    "🎯 Mercado — Potencial",
     "📊 Visão Geral",
     "📈 Share & Relacionamento",
     "🏛️ SESI | SENAI",
@@ -313,30 +315,36 @@ else:
     visao_estabelecimento = False
 base_ativa = df if visao_estabelecimento else df_empresas
 
+# "Clientes" e "Mercado — Potencial" têm filtros próprios (unidade SESI/SENAI, categoria,
+# segmento, porte nas duas réguas, município e bairro): os globais ficam escondidos nelas.
+PAGINAS_FILTRO_PROPRIO = {"👥 Clientes", "🎯 Mercado — Potencial"}
 st.sidebar.divider()
-st.sidebar.subheader("Filtros Globais")
+if pagina not in PAGINAS_FILTRO_PROPRIO:
+    st.sidebar.subheader("Filtros Globais")
 
-municipios = sorted(
-    [m for m in base_ativa["Municipio"].unique() if m and m != "NÃO INFORMADO"]
-)
-municipio_filtro = st.sidebar.multiselect("Município", municipios)
+    municipios = sorted(
+        [m for m in base_ativa["Municipio"].unique() if m and m != "NÃO INFORMADO"]
+    )
+    municipio_filtro = st.sidebar.multiselect("Município", municipios)
 
-portes = sorted(
-    [p for p in base_ativa["Porte"].unique() if p and p != "NÃO INFORMADO"]
-)
-porte_filtro = st.sidebar.multiselect("Porte", portes)
+    portes = sorted(
+        [p for p in base_ativa["Porte"].unique() if p and p != "NÃO INFORMADO"]
+    )
+    porte_filtro = st.sidebar.multiselect("Porte", portes)
 
-UNIDADES_FILTRO = ["Farol", "Tabuleiro", "Agreste/Sertão", "Poço"]
-unidade_filtro = st.sidebar.multiselect(
-    "Unidade (carteira)",
-    UNIDADES_FILTRO,
-    help=(
-        "Unidade responsável pela empresa segundo a Minuta de Carteirização: SESI Farol, Tabuleiro e "
-        "Agreste/Sertão; SENAI Poço e Agreste/Sertão (Benedito Bentes foi para o Poço). Cliente fica na unidade do "
-        "histórico; empresa nova vai pelo endereço da sede. A mesma empresa pode estar no SESI de uma "
-        "unidade e no SENAI de outra — por isso ela aparece em mais de um filtro."
-    ),
-)
+    UNIDADES_FILTRO = ["Farol", "Tabuleiro", "Agreste/Sertão", "Poço"]
+    unidade_filtro = st.sidebar.multiselect(
+        "Unidade (carteira)",
+        UNIDADES_FILTRO,
+        help=(
+            "Unidade responsável pela empresa segundo a Minuta de Carteirização: SESI Farol, Tabuleiro e "
+            "Agreste/Sertão; SENAI Poço e Agreste/Sertão (Benedito Bentes foi para o Poço). Cliente fica na unidade do "
+            "histórico; empresa nova vai pelo endereço da sede. A mesma empresa pode estar no SESI de uma "
+            "unidade e no SENAI de outra — por isso ela aparece em mais de um filtro."
+        ),
+    )
+else:
+    municipio_filtro, porte_filtro, unidade_filtro = [], [], []
 
 df_view = base_ativa.copy()
 if unidade_filtro:
@@ -397,7 +405,25 @@ st.divider()
 # ------------------------------------------------------------
 # 1. VISÃO GERAL
 # ------------------------------------------------------------
-if pagina == "📊 Visão Geral":
+if pagina in PAGINAS_FILTRO_PROPRIO:
+    from src.paginas.comercial import render_clientes, render_mercado
+    from src.tools.universo_ampliado import carregar_ampliada, porte_fiea as _porte_fiea_cadastro
+    from src.tools.universo_comercial import carregar_potencial, montar as montar_universo
+
+    @st.cache_data
+    def carregar_universo_comercial(base_raiz: pd.DataFrame) -> pd.DataFrame:
+        ampliada = carregar_ampliada()
+        if not ampliada.empty:
+            ampliada = carregar_carteira(ampliada, col_raiz="cnpj_basico")
+        return montar_universo(base_raiz, ampliada, _porte_fiea_cadastro(), carregar_potencial())
+
+    universo_comercial = carregar_universo_comercial(df_empresas)
+    if pagina == "👥 Clientes":
+        render_clientes(universo_comercial)
+    else:
+        render_mercado(universo_comercial)
+
+elif pagina == "📊 Visão Geral":
     st.header("Visão Geral do Mercado")
 
     c1, c2, c3, c4, c5 = st.columns(5)
