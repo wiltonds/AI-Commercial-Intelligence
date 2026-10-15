@@ -17,18 +17,21 @@ Bônus: a própria coluna taxa_cliente É a primeira MATRIZ empírica
 hardcoded, sem esperar o consumo 25/26.
 
 Roda LOCAL (base tem CNPJ).
-    python validar_afinidade.py
-    python validar_afinidade.py --entidade SESI --min-amostra 30
+    python jobs/validar_afinidade.py
+    python jobs/validar_afinidade.py --entidade SESI --min-amostra 30
 """
 
 import argparse
 import pandas as pd
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.tools.company_data import CompanyDataTool
 from src.tools.cnpj_raiz import consolidar_por_cnpj_raiz
 
-SAIDA = Path(__file__).resolve().parent / "data" / "processed"
+SAIDA = Path(__file__).resolve().parents[1] / "data" / "processed"
 
 
 def _coluna_cliente(entidade: str) -> str:

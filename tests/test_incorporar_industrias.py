@@ -43,7 +43,9 @@ def test_incorpora_e_gera_lista(ambiente, monkeypatch):
     depois = pd.read_csv(base, dtype=str, low_memory=False)
     assert len(depois) == len(antes) + 3
     novas = depois[depois["ORIGEM_REGISTRO"] == "Receita 2026-07 (incorporada)"].set_index("CNPJ_BASICO")
-    assert (depois["ORIGEM_REGISTRO"] == "Base Mestre (BI_Project)").sum() == len(antes)
+    # as linhas que já existiam não mudam de origem (a base real já tem indústrias incorporadas antes)
+    origem_antes = antes.get("ORIGEM_REGISTRO", pd.Series(index=antes.index, dtype=str)).fillna("Base Mestre (BI_Project)")
+    assert depois["ORIGEM_REGISTRO"].iloc[:len(antes)].tolist() == origem_antes.tolist()
     obra = novas.loc["33333333"]
     assert obra["Municipio"] == "Marechal Deodoro" and obra["SETOR"] == "INDÚSTRIA"
     assert isinstance(obra["SEBRAE_setor"], str) and obra["SEBRAE_setor"] != ""       # copiado da base

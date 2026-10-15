@@ -10,22 +10,25 @@ NÃO reescreve lógica: reaproveita src/pipeline.py inteiro. A única regra nova
 não entra na recomendação de CNPJ).
 
 Uso:
-    python qualificar_base.py                 # base inteira
-    python qualificar_base.py --limite 500    # amostra p/ teste
-    python qualificar_base.py --min-prioridade 40  # só leads que valem a pena
+    python jobs/qualificar_base.py                 # base inteira
+    python jobs/qualificar_base.py --limite 500    # amostra p/ teste
+    python jobs/qualificar_base.py --min-prioridade 40  # só leads que valem a pena
 
 Roda LOCAL — a base tem CNPJ e não deve sair da máquina.
 """
 
 import argparse
 import pandas as pd
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.pipeline import CommercialPipeline
 from src.tools.company_data import CompanyDataTool
 from src.tools.cnpj_raiz import consolidar_por_cnpj_raiz
 
-SAIDA = Path(__file__).resolve().parent / "data" / "processed" / "BASE_QUALIFICADA_CRM.csv"
+SAIDA = Path(__file__).resolve().parents[1] / "data" / "processed" / "BASE_QUALIFICADA_CRM.csv"
 
 # Rótulo de honestidade: esta base é uma PRIMEIRA LEITURA direcional (CNAE +
 # porte), não uma previsão validada por consumo. Vai em cada linha e no topo

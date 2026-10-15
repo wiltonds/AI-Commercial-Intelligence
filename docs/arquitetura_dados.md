@@ -4,7 +4,7 @@
 
 Material de apresentação para o time do Observatório, responsável por colocar o modelo em produção (Data Warehouse → Power BI / aplicação). Cobre a Etapa 1 (dados) do início ao fim e fecha com o que vem na Etapa 2.
 
-Repositório (código-fonte de tudo abaixo): [github.com/wiltonds/AI-Commercial-Intelligence](https://github.com/wiltonds/AI-Commercial-Intelligence). Schema coluna a coluna da base atual: [Dicionário de Dados](dicionario_dados.md). Passo a passo para automatizar e manter o painel: [Guia para o Observatório](guia_observatorio.md). Versão comentável/editável deste material: [doc no claude.ai](https://claude.ai/artifact/5nNAR3w952B3YAbkQboAve). Visão interativa (com números ao vivo): página "🏗️ Arquitetura & Fluxo" no próprio dashboard (`painel_arquitetura.py`).
+Repositório (código-fonte de tudo abaixo): [github.com/wiltonds/AI-Commercial-Intelligence](https://github.com/wiltonds/AI-Commercial-Intelligence). Schema coluna a coluna da base atual: [Dicionário de Dados](dicionario_dados.md). Passo a passo para automatizar e manter o painel: [Guia para o Observatório](guia_observatorio.md). Versão comentável/editável deste material: [doc no claude.ai](https://claude.ai/artifact/5nNAR3w952B3YAbkQboAve). Visão interativa (com números ao vivo): página "🏗️ Arquitetura & Fluxo" no próprio dashboard (`src/paginas/arquitetura.py`).
 
 ## Pipeline de dados, ponta a ponta
 

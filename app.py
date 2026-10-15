@@ -25,8 +25,8 @@ from src.tools.company_data import BASE_PATH
 from src.tools.cnpj_raiz import consolidar_por_cnpj_raiz, resumir_consolidacao
 from src.tools.carteira import carregar_carteira, filtrar_por_unidade
 from src.agents.sdr_llm import SDRLLMAgent
-from painel_empresas_raiz import render_visao_raiz
-from painel_arquitetura import render_arquitetura
+from src.paginas.empresas_raiz import render_visao_raiz
+from src.paginas.arquitetura import render_arquitetura
 
 from src.presentation import (
     ORIGEM_LABEL,
@@ -815,7 +815,8 @@ elif pagina == "🔎 Explorador de Empresas":
     tabela["Status Relacionamento"] = tabela["STATUS_RELACIONAMENTO_REAL"]
     tabela["Status SEBRAE"] = tabela["STATUS_SEBRAE"]
     if "QTD_ESTABELECIMENTOS" in tabela.columns:
-        tabela["Estabelecimentos"] = tabela["QTD_ESTABELECIMENTOS"]
+        # indústria vem como número e não indústria como texto: um tipo só para a tabela
+        tabela["Estabelecimentos"] = pd.to_numeric(tabela["QTD_ESTABELECIMENTOS"], errors="coerce").astype("Int64")
 
     # colunas antigas (faixa pelo Porte FIEA) saem: o número agora vem da Solução 360
     tabela = tabela.drop(columns=["Colaboradores (faixa)", "Origem colaboradores"], errors="ignore")
