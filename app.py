@@ -132,6 +132,28 @@ def kpi(titulo, valor, subtitulo=""):
 # CARREGAMENTO DOS DADOS (VISÃO DE MERCADO)
 # ============================================================
 
+# O st.cache_data guarda o resultado pelo código da função, não pelo arquivo: quando só um CSV
+# muda (publicar_dados.ps1 / git pull no Streamlit Cloud), o painel seguia mostrando os dados
+# antigos até um reboot. Aqui, se algum arquivo de data/processed mudou, o cache é limpo uma vez.
+PASTA_DADOS = Path(ARQUIVO_MESTRE).parent
+
+
+def versao_dados() -> str:
+    return "|".join(f"{p.name}:{p.stat().st_mtime_ns}:{p.stat().st_size}"
+                    for p in sorted(PASTA_DADOS.glob("*")) if p.suffix in (".csv", ".xlsx"))
+
+
+@st.cache_resource
+def _versao_em_cache() -> dict:
+    return {"versao": None}
+
+
+_atual, _guardada = versao_dados(), _versao_em_cache()
+if _guardada["versao"] != _atual:
+    st.cache_data.clear()
+    _guardada["versao"] = _atual
+
+
 @st.cache_data
 def carregar_base() -> pd.DataFrame:
     if not ARQUIVO_MESTRE.exists():
