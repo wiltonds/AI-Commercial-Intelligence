@@ -20,6 +20,7 @@ from src.tools.potencial import ORDEM_FAIXAS, segmento_cnae
 
 RAIZ = Path(__file__).resolve().parents[2]
 ARQ_POTENCIAL = RAIZ / "data" / "processed" / "POTENCIAL_MERCADO.csv"
+ARQ_MEI = RAIZ / "data" / "processed" / "MEI_BASE_MESTRE.csv"
 
 CLIENTE, MERCADO = "Cliente", "Sem relacionamento"
 A_CONFIRMAR = "A confirmar"
@@ -79,8 +80,15 @@ def _bloco(df: pd.DataFrame, categoria: str, raiz: str, razao: str, cnae_cod: pd
     return out
 
 
+def carregar_mei(caminho: Path = ARQ_MEI) -> set[str]:
+    """CNPJ raiz que são MEI optante (jobs/carregar_base_ampliada.py, a partir do Simples da Receita)."""
+    if not Path(caminho).exists():
+        return set()
+    return set(pd.read_csv(caminho, dtype=str, encoding="utf-8-sig")["cnpj_basico"].str.zfill(8))
+
+
 def montar(mestre: pd.DataFrame, ampliada: pd.DataFrame, porte_fiea: pd.DataFrame,
-           potencial: pd.DataFrame | None = None) -> pd.DataFrame:
+           potencial: pd.DataFrame | None = None, mei: set[str] | None = None) -> pd.DataFrame:
     """mestre: Base Mestre consolidada por raiz (com colunas da carteira);
     ampliada: Base Ampliada (não indústrias, com colunas da carteira);
     porte_fiea: cnpj_basico, porte_fiea (cadastro); potencial: POTENCIAL_MERCADO.csv."""
@@ -96,6 +104,8 @@ def montar(mestre: pd.DataFrame, ampliada: pd.DataFrame, porte_fiea: pd.DataFram
                              "Porte", "Municipio", ampliada["POSSUI_SESI"], ampliada["POSSUI_SENAI"]))
     u = pd.concat(partes, ignore_index=True).drop_duplicates("cnpj_basico")
     u = u.rename(columns={"unidade_sesi": "Unidade SESI", "unidade_senai": "Unidade SENAI"})
+    if mei:
+        u = u[~(u["cnpj_basico"].isin(mei) & (u["Relacionamento"] == MERCADO))]
 
     # Porte FIEA: só do cadastro (clientes). Empresa nova = "A confirmar".
     pf = porte_fiea.drop_duplicates("cnpj_basico").set_index("cnpj_basico")["porte_fiea"] \
@@ -158,5 +168,5 @@ def filtrar(u: pd.DataFrame, *, unidades_sesi=None, unidades_senai=None, categor
     return u[m]
 
 
-__all__ = ["montar", "filtrar", "opcoes", "carregar_potencial", "CLIENTE", "MERCADO", "ORDEM_FAIXAS",
+__all__ = ["montar", "filtrar", "opcoes", "carregar_potencial", "carregar_mei", "CLIENTE", "MERCADO", "ORDEM_FAIXAS",
            "ORDEM_PORTE_FIEA", "ORDEM_PORTE_RECEITA", "A_CONFIRMAR"]

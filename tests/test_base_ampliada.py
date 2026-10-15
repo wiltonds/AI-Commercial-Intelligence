@@ -27,7 +27,9 @@ def pasta(tmp_path):
         _estab("11111111", "0001", "1", "AL", "02", "4711302", "CONTATO@MERCADO.COM.BR"),  # supermercado DEMAIS
         _estab("11111111", "0002", "2", "AL", "02", "4711302"),                             # filial: mesma empresa
         _estab("22222222", "0001", "1", "AL", "02", "8610101"),                             # hospital EPP
-        _estab("33333333", "0001", "1", "AL", "02", "4781400"),                             # loja ME -> fora
+        _estab("33333333", "0001", "1", "AL", "02", "4781400"),                             # MEI optante -> fora
+        _estab("34343434", "0001", "1", "AL", "02", "4781400"),                             # loja ME (não MEI) -> entra
+        _estab("99999999", "0001", "1", "AL", "02", "7112000"),                             # Base Mestre, mas MEI
         _estab("44444444", "0001", "1", "PE", "02", "4711302"),                             # outro estado
         _estab("55555555", "0001", "1", "AL", "08", "4711302"),                             # baixada
         _estab("66666666", "0001", "1", "AL", "02", "8411600"),                             # prefeitura -> fora
@@ -38,11 +40,15 @@ def pasta(tmp_path):
     _zip(tmp_path, "Empresas0.zip", [
         emp("11111111", "SUPERMERCADO ALAGOAS LTDA", "2062", "05"),
         emp("22222222", "HOSPITAL MACEIO LTDA", "2062", "03"),
-        emp("33333333", "LOJINHA ME", "2135", "01"),
+        emp("33333333", "LOJINHA MEI", "2135", "01"),
+        emp("34343434", "LOJA PEQUENA LTDA", "2062", "01"),
+        emp("99999999", "PROJETOS Z", "2135", "01"),
         emp("66666666", "MUNICIPIO DE MACEIO", "1244", "05"),
         emp("77777777", "METALURGICA X", "2062", "05"),
         emp("88888888", "ENGENHARIA Y LTDA", "2062", "03"),
     ])
+    simples = lambda b, mei: ";".join(f'"{x}"' for x in [b, "S", "20200101", "", mei, "20200101" if mei == "S" else "", ""])
+    _zip(tmp_path, "Simples.zip", [simples("33333333", "S"), simples("34343434", "N"), simples("99999999", "S")])
     _zip(tmp_path, "Municipios.zip", ['"2785";"MACEIO"'])
     _zip(tmp_path, "Cnaes.zip", ['"4711302";"Comércio varejista de mercadorias em geral - supermercados"',
                                  '"8610101";"Atividades de atendimento hospitalar"'])
@@ -64,8 +70,10 @@ def job(monkeypatch, tmp_path):
 
 
 def test_monta_nao_industrias_e_lacunas_de_al(pasta, job):
-    amp, contatos = job.montar(pasta)
-    assert set(amp["cnpj_basico"]) == {"11111111", "22222222", "88888888"}
+    amp, contatos, mei_mestre = job.montar(pasta)
+    # ME entra (atendemos microempresa); só o MEI optante fica fora
+    assert set(amp["cnpj_basico"]) == {"11111111", "22222222", "34343434", "88888888"}
+    assert set(mei_mestre["cnpj_basico"]) == {"99999999"}
     tipos = amp.set_index("cnpj_basico")["Tipo"]
     assert tipos["11111111"] == "Não indústria" and tipos["22222222"] == "Não indústria"
     assert tipos["88888888"] == "Indústria fora da Base Mestre"          # CNAE da Tabela DN, sem estar na base
@@ -76,7 +84,7 @@ def test_monta_nao_industrias_e_lacunas_de_al(pasta, job):
     assert "email" not in amp.columns                                       # contatos ficam fora do arquivo público
     hosp = amp.set_index("cnpj_basico").loc["22222222"]
     assert hosp["Colaboradores (faixa)"] == "50 a 99" and bool(hosp["POSSUI_SESI"])
-    assert set(contatos["cnpj_basico"]) == {"11111111", "22222222", "77777777", "88888888"}
+    assert set(contatos["cnpj_basico"]) == {"11111111", "22222222", "34343434", "77777777", "88888888"}
     assert contatos.set_index("cnpj_basico").loc["11111111", "email"] == "contato@mercado.com.br"
 
 
@@ -114,12 +122,13 @@ def test_contatos_da_receita_complementam_o_robo(tmp_path):
 
 
 def test_universo_do_explorador(pasta, job, tmp_path):
-    amp, _ = job.montar(pasta)
+    amp, _, _ = job.montar(pasta)
     arq = tmp_path / "amp.csv"
     amp.to_csv(arq, index=False, encoding="utf-8-sig")
     nao = carregar_ampliada(arq)
     assert nao.set_index("cnpj_basico")["STATUS_RELACIONAMENTO_REAL"].to_dict() == {
-        "11111111": "Sem relacionamento", "22222222": "Somente SESI", "88888888": "Sem relacionamento"}
+        "11111111": "Sem relacionamento", "22222222": "Somente SESI", "34343434": "Sem relacionamento",
+        "88888888": "Sem relacionamento"}
     assert set(nao["Colaboradores (faixa)"]) == {"50 a 99", "Sem informação"}
     ind = anotar_industrias(pd.DataFrame({"cnpj": ["77777777000110"]}),
                             pd.DataFrame({"cnpj_basico": ["77777777"], "porte_fiea": ["Grande"]}))

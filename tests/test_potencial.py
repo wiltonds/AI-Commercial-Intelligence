@@ -84,3 +84,14 @@ def test_montar_separa_clientes_e_mercado_com_as_duas_reguas():
     assert set(filtrar(uu, regua="FIEA", portes=[A_CONFIRMAR])["cnpj_basico"]) == {"22222222", "33333333"}
     assert set(filtrar(uu, regua="Receita", portes=["DEMAIS"])["cnpj_basico"]) == {"11111111", "22222222", "33333333"}
     assert set(filtrar(uu, bairros=["Centro"])["cnpj_basico"]) == {"22222222"}
+
+
+def test_mei_optante_sai_do_mercado_mas_cliente_mei_fica():
+    mestre = pd.DataFrame({
+        "CNPJ_BASICO": ["11111111", "22222222", "33333333"], "razao_social": ["MEI CLIENTE", "MEI NOVO", "ME NOVA"],
+        "SEBRAE_cnae_norm": ["1091100.0"] * 3, "CNAE PRIMARIO": ["x"] * 3, "Porte": ["MICRO EMPRESA"] * 3,
+        "Municipio": ["Maceió"] * 3, "POSSUI_SESI": [True, False, False], "POSSUI_SENAI": [False] * 3,
+        "SITUACAO_CLIENTE": ["Ativo", "Sem compra", "Sem compra"],
+    })
+    u = montar(mestre, pd.DataFrame(), pd.DataFrame(), None, mei={"11111111", "22222222"})
+    assert set(u["cnpj_basico"]) == {"11111111", "33333333"}

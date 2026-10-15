@@ -5,6 +5,7 @@ Os arquivos vêm em .zip, cada um com um CSV sem cabeçalho, separado por
 
   Estabelecimentos*.zip  uma linha por estabelecimento (matriz ou filial)
   Empresas*.zip          uma linha por CNPJ raiz (razão social, porte)
+  Simples.zip            uma linha por CNPJ raiz optante (Simples Nacional / MEI)
   Municipios.zip / Cnaes.zip / Naturezas.zip   tabelas de códigos
 
 Os arquivos de Estabelecimentos do Brasil inteiro somam dezenas de
@@ -28,6 +29,9 @@ COLS_ESTAB = [
 ]
 COLS_EMPRESA = ["cnpj_basico", "razao_social", "natureza_juridica", "qualificacao_responsavel",
                 "capital_social", "porte_codigo", "ente_federativo"]
+
+COLS_SIMPLES = ["cnpj_basico", "opcao_simples", "data_opcao_simples", "data_exclusao_simples",
+                "opcao_mei", "data_opcao_mei", "data_exclusao_mei"]
 
 PORTE = {"01": "MICRO EMPRESA", "03": "PEQUENO PORTE", "05": "DEMAIS", "00": "NÃO INFORMADO"}
 ATIVA = "02"
@@ -64,6 +68,18 @@ def ler_estabelecimentos(caminho: Path, uf: str = "AL") -> pd.DataFrame:
 def ler_empresas(caminho: Path, raizes: set[str]) -> pd.DataFrame:
     partes = [b[b["cnpj_basico"].isin(raizes)] for b in _ler_zip(caminho, COLS_EMPRESA)]
     return pd.concat(partes, ignore_index=True) if partes else pd.DataFrame(columns=COLS_EMPRESA)
+
+
+def ler_mei(caminho: Path, raizes: set[str]) -> set[str]:
+    """CNPJ raiz optantes do MEI hoje (opcao_mei = S), entre as raízes pedidas.
+    Regra comercial: MEI optante não é atendido; microempresa (ME) é atendida normalmente."""
+    if not caminho or not Path(caminho).exists():
+        return set()
+    out: set[str] = set()
+    for b in _ler_zip(caminho, COLS_SIMPLES):
+        b = b[b["cnpj_basico"].isin(raizes)]
+        out |= set(b.loc[b["opcao_mei"].str.strip().str.upper() == "S", "cnpj_basico"])
+    return out
 
 
 def ler_codigos(caminho: Path) -> dict[str, str]:

@@ -29,6 +29,11 @@ def _pct(a, b) -> str:
     return f"{a / b * 100:.1f}%".replace(".", ",") if b else "–"
 
 
+def _quebra(df: pd.DataFrame) -> str:
+    ind = int((df["Categoria"] == "Indústria").sum())
+    return f"Indústria {_n(ind)} · Não indústria {_n(len(df) - ind)}"
+
+
 def filtros(u: pd.DataFrame, chave: str) -> pd.DataFrame:
     """Barra de filtros na lateral. `chave` separa o estado das duas páginas."""
     sb = st.sidebar
@@ -74,7 +79,7 @@ def render_clientes(universo: pd.DataFrame) -> None:
     ativos = int((df["Situação"] == "Ativo").sum())
     inativos = int((df["Situação"] == "Inativo").sum())
     c = st.columns(5)
-    c[0].metric("Clientes", _n(len(df)))
+    c[0].metric("Clientes", _n(len(df)), _quebra(df), delta_color="off")
     c[1].metric("Ativos (24 meses)", _n(ativos), _pct(ativos, len(df)), delta_color="off")
     c[2].metric("Inativos — reter", _n(inativos), _pct(inativos, len(df)), delta_color="off")
     c[3].metric("Só SESI ou só SENAI", _n(df["Entidade"].isin(["SESI", "SENAI"]).sum()),
@@ -122,7 +127,9 @@ def render_mercado(universo: pd.DataFrame) -> None:
         vis = vis[vis["Alerta"] == ""]
 
     c = st.columns(5)
-    c[0].metric("Sem relacionamento", _n(len(df)))
+    c[0].metric("Sem relacionamento", _n(len(df)), _quebra(df), delta_color="off",
+                help="Indústria (Base Mestre) + não indústria (Base Ampliada). MEI optante fica fora: "
+                     "não atendemos MEI; microempresa (ME) é atendida normalmente.")
     c[1].metric("Muito alto", _n((df["Potencial"] == "Muito alto").sum()), help="Perfis em que ≥30% das parecidas já compram.")
     c[2].metric("Alto", _n((df["Potencial"] == "Alto").sum()), help="15–30% das parecidas já compram.")
     c[3].metric("Na fila (filtros atuais)", _n(len(vis)))

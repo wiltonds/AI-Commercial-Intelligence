@@ -4,11 +4,16 @@ carregar_base_ampliada.py — Não indústrias de AL + colaboradores + contatos 
 Lê os dados abertos do CNPJ (Receita Federal, carga mensal) e gera:
 
   data/processed/BASE_AMPLIADA_AL.csv
-      empresas ativas de AL FORA da Base Mestre, médias e grandes (porte
-      Receita DEMAIS ou EPP), uma linha por CNPJ raiz — sem contatos.
+      empresas ativas de AL FORA da Base Mestre, de qualquer porte Receita
+      (ME, EPP, DEMAIS), MENOS os optantes do MEI (regra comercial: MEI não é
+      atendido; microempresa é), uma linha por CNPJ raiz — sem contatos.
       Tipo "Não indústria" (CNAE fora da Tabela DN da CNI) ou "Indústria
       fora da Base Mestre" (CNAE na Tabela DN, mas ausente da base — lacuna).
       Órgãos públicos ficam fora (recorte B2B).
+
+  data/processed/MEI_BASE_MESTRE.csv
+      CNPJ raiz da Base Mestre que são MEI optante (dado público do Simples),
+      para o painel tirar essas empresas da fila de prospecção.
 
   data/contatos/CONTATOS_RECEITA.csv   (fora do Git — LGPD)
       telefones e e-mail cadastrais das empresas acima E das indústrias
@@ -22,8 +27,8 @@ Uso:
     python jobs/carregar_base_ampliada.py --pasta "C:/caminho/dos/zips"
     python jobs/carregar_base_ampliada.py --mes 2026-09     # tenta baixar
 
-A pasta precisa ter Estabelecimentos0..9.zip, Empresas0..9.zip e, para
-os nomes, Municipios.zip, Cnaes.zip e Naturezas.zip — os mesmos arquivos
+A pasta precisa ter Estabelecimentos0..9.zip, Empresas0..9.zip, Simples.zip
+(para tirar os MEI) e, para os nomes, Municipios.zip, Cnaes.zip e Naturezas.zip — os mesmos arquivos
 que o BI_Project baixa. Se o download automático falhar, baixe pelo
 navegador em https://arquivos.receitafederal.gov.br/index.php/s/YggdBLfdninEJX9
 e use --pasta.
@@ -50,6 +55,7 @@ from src.tools.receita_cnpj import (  # noqa: E402
     ler_codigos,
     ler_empresas,
     ler_estabelecimentos,
+    ler_mei,
     manter_para_venda,
     tipo_empresa,
 )
@@ -57,11 +63,14 @@ from src.tools.receita_cnpj import (  # noqa: E402
 RAIZ = Path(__file__).resolve().parent.parent
 ARQ_SAIDA = RAIZ / "data" / "processed" / "BASE_AMPLIADA_AL.csv"
 ARQ_CONTATOS = RAIZ / "data" / "contatos" / "CONTATOS_RECEITA.csv"
+ARQ_MEI_MESTRE = RAIZ / "data" / "processed" / "MEI_BASE_MESTRE.csv"
 ARQ_RELACIONAMENTO = RAIZ / "data" / "raw" / "BASE_CONSOLIDADA_SESI_SENAI.xlsx"
 URL_DAV = "https://arquivos.receitafederal.gov.br/public.php/dav/files/YggdBLfdninEJX9/{mes}/{arquivo}"
 ARQUIVOS = ([f"Estabelecimentos{i}.zip" for i in range(10)] + [f"Empresas{i}.zip" for i in range(10)]
-            + ["Municipios.zip", "Cnaes.zip", "Naturezas.zip"])
-PORTES_ALVO = {"DEMAIS", "PEQUENO PORTE"}
+            + ["Simples.zip", "Municipios.zip", "Cnaes.zip", "Naturezas.zip"])
+# Regra comercial: atendemos ME, EPP e DEMAIS; só o MEI optante fica fora.
+PORTES_ALVO = {"DEMAIS", "PEQUENO PORTE", "MICRO EMPRESA"}
+NATUREZA_EMPRESARIO_INDIVIDUAL = "2135"
 NATUREZAS_B2B = ("2", "3")        # 2xxx entidades empresariais, 3xxx sem fins lucrativos
 
 
@@ -115,16 +124,27 @@ def montar(pasta: Path, uf: str = "AL") -> tuple[pd.DataFrame, pd.DataFrame]:
     df["CNAE PRIMARIO"] = df["cnae_principal"].map(cnaes).fillna("")
     df["natureza"] = df["natureza_juridica"].map(naturezas).fillna(df["natureza_juridica"])
 
+    simples = pasta / "Simples.zip"
+    if simples.exists():
+        mei = ler_mei(simples, raizes)
+        df["mei"] = df["cnpj_basico"].isin(mei)
+        print(f"MEI optantes em {uf} (fora do recorte): {len(mei):,}")
+    else:
+        # Sem o Simples.zip não dá para saber quem é MEI: aproximação pelo Empresário
+        # Individual microempresa (quase todo MEI é EI; alguns EI não MEI saem junto).
+        df["mei"] = (df["natureza_juridica"] == NATUREZA_EMPRESARIO_INDIVIDUAL) & (df["Porte"] == "MICRO EMPRESA")
+        print("ATENÇÃO: sem Simples.zip — MEI aproximado por Empresário Individual ME. Baixe o Simples.zip.")
+
     fiea = carregar_porte_fiea(ARQ_RELACIONAMENTO).set_index("cnpj_basico")
     df["porte_fiea"] = df["cnpj_basico"].map(fiea["porte_fiea"]).fillna("")
     df["POSSUI_SESI"] = df["cnpj_basico"].map(fiea["sesi"]).fillna(False).astype(bool)
     df["POSSUI_SENAI"] = df["cnpj_basico"].map(fiea["senai"]).fillna(False).astype(bool)
 
     # contatos da Receita: indústrias da Base Mestre + não indústrias do recorte
-    alvo = (~df["na_base_mestre"] & df["Porte"].isin(PORTES_ALVO)
+    alvo = (~df["na_base_mestre"] & df["Porte"].isin(PORTES_ALVO) & ~df["mei"]
             & df["natureza_juridica"].str[:1].isin(NATUREZAS_B2B))
     alvo &= manter_para_venda(df, carregar_filtro())
-    contatos = df[df["na_base_mestre"] | alvo].assign(
+    contatos = df[(df["na_base_mestre"] & ~df["mei"]) | alvo].assign(
         telefone_1=lambda d: [formatar_tel(a, b) for a, b in zip(d["ddd_1"], d["telefone_1"])],
         telefone_2=lambda d: [formatar_tel(a, b) for a, b in zip(d["ddd_2"], d["telefone_2"])],
         email=lambda d: d["email"].str.strip().str.lower(),
@@ -139,7 +159,9 @@ def montar(pasta: Path, uf: str = "AL") -> tuple[pd.DataFrame, pd.DataFrame]:
                "porte_fiea", "Colaboradores (faixa)", "Origem colaboradores", "cnae_principal", "CNAE PRIMARIO",
                "cnaes_secundarios", "natureza", "capital_social", "data_inicio_atividade",
                "QTD_ESTABELECIMENTOS", "POSSUI_SESI", "POSSUI_SENAI"]
-    return amp[colunas].sort_values(["Porte", "razao_social"]).reset_index(drop=True), contatos
+    amp = amp[colunas].sort_values(["Porte", "razao_social"]).reset_index(drop=True)
+    mei_mestre = df.loc[df["na_base_mestre"] & df["mei"], ["cnpj_basico"]].reset_index(drop=True)
+    return amp, contatos, mei_mestre
 
 
 def refiltrar() -> None:
@@ -173,9 +195,11 @@ def main():
     if args.mes:
         baixar(args.mes, pasta)
 
-    amp, contatos = montar(pasta)
+    amp, contatos, mei_mestre = montar(pasta)
     ARQ_SAIDA.parent.mkdir(parents=True, exist_ok=True)
     amp.to_csv(ARQ_SAIDA, index=False, encoding="utf-8-sig")
+    mei_mestre.to_csv(ARQ_MEI_MESTRE, index=False, encoding="utf-8-sig")
+    print(f"Base Mestre: {len(mei_mestre):,} empresas são MEI optante (saem da fila de prospecção)")
     ARQ_CONTATOS.parent.mkdir(parents=True, exist_ok=True)
     contatos.to_csv(ARQ_CONTATOS, index=False, encoding="utf-8-sig")
 

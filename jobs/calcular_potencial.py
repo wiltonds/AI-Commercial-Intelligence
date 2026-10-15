@@ -26,6 +26,7 @@ ARQ_MESTRE = RAIZ / "data" / "processed" / "BASE_MESTRE_COMERCIAL.csv"
 ARQ_AMPLIADA = RAIZ / "data" / "processed" / "BASE_AMPLIADA_AL.csv"
 ARQ_ENDERECOS = RAIZ / "data" / "contatos" / "ENDERECOS_AL.csv"
 ARQ_SAIDA = RAIZ / "data" / "processed" / "POTENCIAL_MERCADO.csv"
+ARQ_MEI = RAIZ / "data" / "processed" / "MEI_BASE_MESTRE.csv"
 
 
 def ler_enderecos(caminho: Path = ARQ_ENDERECOS) -> pd.DataFrame:
@@ -91,6 +92,10 @@ def universo() -> pd.DataFrame:
     })
     nao["Categoria"] = "Não indústria"
     u = pd.concat([ind, nao], ignore_index=True).drop_duplicates("cnpj_basico")
+    # Regra comercial: MEI optante não é atendido. Fora do modelo (a não ser que já tenha comprado).
+    if ARQ_MEI.exists():
+        mei = set(pd.read_csv(ARQ_MEI, dtype=str, encoding="utf-8-sig")["cnpj_basico"].str.zfill(8))
+        u = u[~(u["cnpj_basico"].isin(mei) & ~u["cliente"])]
 
     e = ler_enderecos()
     u = u.merge(e, on="cnpj_basico", how="left")

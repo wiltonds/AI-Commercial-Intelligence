@@ -408,14 +408,14 @@ st.divider()
 if pagina in PAGINAS_FILTRO_PROPRIO:
     from src.paginas.comercial import render_clientes, render_mercado
     from src.tools.universo_ampliado import carregar_ampliada, porte_fiea as _porte_fiea_cadastro
-    from src.tools.universo_comercial import carregar_potencial, montar as montar_universo
+    from src.tools.universo_comercial import carregar_mei, carregar_potencial, montar as montar_universo
 
     @st.cache_data
     def carregar_universo_comercial(base_raiz: pd.DataFrame) -> pd.DataFrame:
         ampliada = carregar_ampliada()
         if not ampliada.empty:
             ampliada = carregar_carteira(ampliada, col_raiz="cnpj_basico")
-        return montar_universo(base_raiz, ampliada, _porte_fiea_cadastro(), carregar_potencial())
+        return montar_universo(base_raiz, ampliada, _porte_fiea_cadastro(), carregar_potencial(), carregar_mei())
 
     universo_comercial = carregar_universo_comercial(df_empresas)
     if pagina == "👥 Clientes":
