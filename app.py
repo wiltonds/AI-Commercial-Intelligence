@@ -755,8 +755,9 @@ elif pagina == "🔎 Explorador de Empresas":
     m2.metric("Com contato utilizável", numero(int(resultado["confianca"].isin(["alta", "media"]).sum())),
               help="Confiança alta = decisor + contato que não é de contador; média = contato sem decisor.")
     if contatos.empty:
-        st.info("Nenhum contato carregado ainda. Rode `python jobs/enriquecer_contatos.py` "
-                "para preencher a base (as empresas com sinal vêm primeiro).")
+        st.info("Contatos indisponíveis aqui: eles têm dado pessoal e só existem na máquina local "
+                "(data/contatos/, fora do Git). Localmente, rode `python jobs/enriquecer_contatos.py` "
+                "para preencher a base.")
 
     tabela = resultado.copy()
     tabela["Possui SESI"] = tabela["POSSUI_SESI"].map({True: "SIM", False: "NÃO"})

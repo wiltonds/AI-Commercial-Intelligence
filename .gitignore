@@ -9,3 +9,6 @@ __pycache__/
 # Estado operacional do job diário — muda a cada execução; quando isto
 # virar uma tabela no Data Warehouse, este arquivo local deixa de existir.
 data/processed/MONITORAMENTO_SITUACAO_CADASTRAL.csv
+
+# Contatos e endereços têm dado pessoal (LGPD): nunca vão para o Git — repositório público
+data/contatos/
