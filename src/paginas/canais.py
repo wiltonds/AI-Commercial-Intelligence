@@ -12,6 +12,8 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+from src.tools.municipios import padronizar_df
+
 RAIZ = Path(__file__).resolve().parents[2]
 ARQ_CANAIS = RAIZ / "data" / "processed" / "HUBS_CANAIS_PUBLICO.csv"
 ARQ_MEMBROS = RAIZ / "data" / "processed" / "HUBS_MEMBROS_PUBLICO.csv"
@@ -55,7 +57,8 @@ def render() -> None:
     if c.empty:
         st.info("Nenhum escritório atende 5 ou mais empresas da base.")
         return
-    m = pd.read_csv(ARQ_MEMBROS, dtype=str, encoding="utf-8-sig").fillna("") if ARQ_MEMBROS.exists() else pd.DataFrame()
+    m = padronizar_df(pd.read_csv(ARQ_MEMBROS, dtype=str, encoding="utf-8-sig").fillna("")) \
+        if ARQ_MEMBROS.exists() else pd.DataFrame()
 
     # 1. resumo em uma frase
     st.info(f"Encontramos **{_n(len(c))} escritórios** que, juntos, cuidam de **{_n(c['empresas'].sum())} empresas** "

@@ -201,7 +201,7 @@ SSI,Promoção À Saúde - Assti,Marechal Deodoro,3,3,3
 SSI,Saúde,Coruripe,3,8,3
 SSI,Saúde,Delmiro Gouveia,3,6,3
 SSI,Saúde,Lagoa da Canoa,3,6,3
-SSI,Saúde,MACEIO,3,6,3
+SSI,Saúde,Maceió,3,6,3
 SSI,Saúde,Passo de Camaragibe,3,4,3
 SSI,Saúde,Piranhas,3,3,3
 SSI,Saúde,São José da Tapera,3,4,3
@@ -211,7 +211,7 @@ SSI,Segurança Do Trabalho,Capela,3,4,3
 SSI,Segurança Do Trabalho,Coruripe,3,6,3
 SSI,Segurança Do Trabalho,Delmiro Gouveia,3,8,3
 SSI,Segurança Do Trabalho,Limoeiro de Anadia,3,6,3
-SSI,Segurança Do Trabalho,MACEIO,3,6,3
+SSI,Segurança Do Trabalho,Maceió,3,6,3
 SSI,Segurança Do Trabalho,Piranhas,3,3,3
 SSI,Segurança Do Trabalho,Santana do Ipanema,3,5,3
 SSI,Segurança Do Trabalho,São José da Tapera,3,6,3
@@ -289,7 +289,7 @@ SSI,Promoção À Saúde - Coração Da Indústria,Arapiraca,1,1,1
 SSI,Promoção À Saúde - Coração Da Indústria,Maceió,1,1,1
 SSI,Promoção À Saúde - Coração Da Indústria,Marechal Deodoro,1,1,0
 SSI,Promoção À Saúde - Coração Da Indústria,Rio Largo,1,1,1
-SSI,Saúde,ARAPIRACA,1,3,1
+SSI,Saúde,Arapiraca,1,3,1
 SSI,Saúde,Belo Monte,1,3,1
 SSI,Saúde,Cajueiro,1,3,1
 SSI,Saúde,Chã Preta,1,1,1
@@ -306,14 +306,14 @@ SSI,Saúde,Messias,1,1,1
 SSI,Saúde,Olivença,1,2,1
 SSI,Saúde,Porto Calvo,1,2,1
 SSI,Saúde,Pão de Açúcar,1,2,1
-SSI,Saúde,SANTA LUZIA DO NORTE,1,1,1
-SSI,Saúde,SAO MIGUEL DOS CAMPOS,1,2,1
+SSI,Saúde,Santa Luzia do Norte,1,1,1
+SSI,Saúde,São Miguel dos Campos,1,2,1
 SSI,Saúde,Senador Rui Palmeira,1,1,1
 SSI,Saúde,São Sebastião,1,1,1
 SSI,Saúde,Tanque d'Arca,1,1,1
 SSI,Saúde,Taquarana,1,1,1
 SSI,Saúde,Água Branca,1,2,1
-SSI,Segurança Do Trabalho,ARAPIRACA,1,2,1
+SSI,Segurança Do Trabalho,Arapiraca,1,2,1
 SSI,Segurança Do Trabalho,Belo Monte,1,4,1
 SSI,Segurança Do Trabalho,Boca da Mata,1,2,1
 SSI,Segurança Do Trabalho,Cacimbinhas,1,1,1
@@ -334,7 +334,7 @@ SSI,Segurança Do Trabalho,Olho d'Água das Flores,1,1,1
 SSI,Segurança Do Trabalho,Olivença,1,2,1
 SSI,Segurança Do Trabalho,Porto Calvo,1,2,1
 SSI,Segurança Do Trabalho,Pão de Açúcar,1,3,1
-SSI,Segurança Do Trabalho,SAO MIGUEL DOS CAMPOS,1,2,1
+SSI,Segurança Do Trabalho,São Miguel dos Campos,1,2,1
 SSI,Segurança Do Trabalho,Santa Luzia do Norte,1,5,1
 SSI,Segurança Do Trabalho,Senador Rui Palmeira,1,1,1
 SSI,Segurança Do Trabalho,Tanque d'Arca,1,1,1

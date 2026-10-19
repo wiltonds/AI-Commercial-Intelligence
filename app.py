@@ -22,6 +22,7 @@ load_dotenv()
 
 from src.pipeline import CommercialPipeline
 from src.tools.company_data import BASE_PATH
+from src.tools.municipios import padronizar_df
 from src.tools.cnpj_raiz import consolidar_por_cnpj_raiz, resumir_consolidacao
 from src.tools.carteira import carregar_carteira, filtrar_por_unidade
 from src.agents.sdr_llm import SDRLLMAgent
@@ -170,6 +171,7 @@ def carregar_base() -> pd.DataFrame:
 
     if "cnpj" in df.columns:
         df["cnpj"] = df["cnpj"].apply(normalizar_cnpj)
+    padronizar_df(df)  # uma grafia só por município (ex.: "ARAPIRACA" -> "Arapiraca")
 
     df["POSSUI_SESI"] = converter_para_booleano(df, "TEM_SESI")
     df["POSSUI_SENAI"] = converter_para_booleano(df, "TEM_SENAI")

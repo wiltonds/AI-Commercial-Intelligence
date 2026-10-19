@@ -16,6 +16,7 @@ import pandas as pd
 import streamlit as st
 
 from src.paginas.visao360 import carregar_360
+from src.tools.municipios import padronizar_df
 from src.tools.visao360 import ARQ_NAT_MUN, carregar_linhas
 
 PORTE_CURTO = {"MICRO EMPRESA": "micro", "PEQUENO PORTE": "pequeno porte", "DEMAIS": "médio e grande porte"}
@@ -168,7 +169,7 @@ def render(df_empresas: pd.DataFrame) -> None:
             "Fonte: propostas aceitas desde 2018. O SESI entrou no sistema de propostas em 2024, então compras "
             "SESI anteriores não aparecem.")
 
-    nat = pd.read_csv(ARQ_NAT_MUN, dtype={"municipio": str}) if ARQ_NAT_MUN.exists() else pd.DataFrame()
+    nat = padronizar_df(pd.read_csv(ARQ_NAT_MUN, dtype={"municipio": str})) if ARQ_NAT_MUN.exists() else pd.DataFrame()
     linhas = {c: l for c, l in cfg["linhas"].items() if l["entidade"] == casa}
     for cod, aba in zip(linhas, st.tabs([f"{c} · {l['nome']}" for c, l in linhas.items()])):
         with aba:
