@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from src.tools.municipios import padronizar_df
 from src.tools.receita_cnpj import ORDEM_FAIXA, carregar_porte_fiea, faixa_colaboradores
 
 RAIZ = Path(__file__).resolve().parents[2]
@@ -38,7 +39,7 @@ def anotar_industrias(df: pd.DataFrame, fiea: pd.DataFrame) -> pd.DataFrame:
 def carregar_ampliada(caminho: Path = ARQ_AMPLIADA) -> pd.DataFrame:
     if not Path(caminho).exists():
         return pd.DataFrame()
-    df = pd.read_csv(caminho, dtype=str, encoding="utf-8-sig").fillna("")
+    df = padronizar_df(pd.read_csv(caminho, dtype=str, encoding="utf-8-sig").fillna(""))
     sesi = df["POSSUI_SESI"].str.upper().eq("TRUE")
     senai = df["POSSUI_SENAI"].str.upper().eq("TRUE")
     df["POSSUI_SESI"], df["POSSUI_SENAI"] = sesi, senai

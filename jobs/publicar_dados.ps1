@@ -17,6 +17,13 @@ param([string]$Destino = "")
 # backup dos dados confidenciais no Teams (só na publicação principal, não na cópia para outra pasta)
 if (-not $Destino) { & (Join-Path $PSScriptRoot "backup_teams.ps1") }
 
+# uma grafia só por município antes de publicar (ex.: "ARAPIRACA" -> "Arapiraca")
+if (-not $Destino) {
+    $py = Join-Path $PSScriptRoot "..\..\AI-Commercial-Intelligence\.venv\Scripts\python.exe"
+    if (-not (Test-Path $py)) { $py = "python" }
+    & $py (Join-Path $PSScriptRoot "padronizar_municipios.py")
+}
+
 $arquivos = @(
     "data/processed/BASE_MESTRE_COMERCIAL.csv",
     "data/processed/PORTE_FIEA.csv",
