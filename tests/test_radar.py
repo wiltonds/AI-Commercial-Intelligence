@@ -182,3 +182,34 @@ def test_cadeia_cruza_producao_e_industrias():
     assert r.loc["Batalha", "industrias"] == 2 and r.loc["Batalha", "sem_relacionamento"] == 1
     assert r.loc["Major Isidoro", "industrias"] == 0 and r.loc["Batalha", "participacao_producao"] == 0.6
     assert "Maceió" not in r.index
+
+
+def test_mapa_pontos_ficam_dentro_do_municipio_e_sempre_no_mesmo_lugar():
+    import numpy as np
+    from src.sinais.mapa import _anel, _dentro, carregar_malha, centroides, cor_escala, pontos_no_municipio
+    malha = carregar_malha()
+    assert len(malha["features"]) == 102
+    maceio = next(f for f in malha["features"] if f["properties"]["municipio"] == "Maceió")
+    anel = _anel(maceio)
+    xy = pontos_no_municipio(["11111111", "22222222", "11111111"], anel)
+    assert _dentro(xy[:, 0], xy[:, 1], anel).all() and np.allclose(xy[0], xy[2])
+    c = centroides(malha).set_index("municipio")
+    assert -10.0 < c.loc["Maceió", "lat"] < -9.4 and -36.0 < c.loc["Maceió", "lon"] < -35.5
+    cores = cor_escala(pd.Series([0, 1, 5, 50, None]))
+    assert cores[0] == cores[4] and cores[3] != cores[1]
+
+
+def test_mapa_empresa_com_sinal_vira_oportunidade_e_fora_da_base_entra():
+    from src.sinais.mapa import empresas_do_mapa
+    ind = pd.DataFrame({"cnpj_basico": ["1", "2"], "razao_social": ["A", "B"], "municipio": ["Maceió", "Penedo"],
+                        "porte": ["DEMAIS", "EPP"], "setor_cni": ["Indústria da Transformação"] * 2,
+                        "cliente": [True, False]})
+    sinais = pd.DataFrame({"cnpj_basico": ["2", "9", None], "razao_social": ["B", "HOTEL X", None],
+                           "municipio": ["Penedo", "Maragogi", "Maceió"], "descricao": ["obra", "BNDES", "notícia"],
+                           "negocios": ["SSI · EP", "SSI", "EP"], "score_momento": [3, 2, 1],
+                           "STATUS_RELACIONAMENTO_REAL": ["Sem relacionamento", "Fora da Base Mestre", ""],
+                           "segmento": [None, "Comércio e serviços", None]})
+    e = empresas_do_mapa(ind, sinais).set_index("cnpj_basico")
+    assert e.loc["1", "status"] == "Cliente" and e.loc["2", "status"] == "Com oportunidade no radar"
+    assert e.loc["9", "municipio"] == "Maragogi" and e.loc["9", "setor_cni"] == "Comércio e serviços"
+    assert e.loc["2", "negocios_sinal"] == "EP · SSI"
