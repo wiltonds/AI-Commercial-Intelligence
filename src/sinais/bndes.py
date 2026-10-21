@@ -22,6 +22,7 @@ import unicodedata
 from datetime import date
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 PACOTE = "10e21ad1-568e-45e5-a8af-43f2c05ef1a2"
@@ -193,6 +194,61 @@ def ler_operacoes(fonte, origem: str = "não automática", uf: str | None = "AL"
 # Sinais: uma linha por empresa (soma das operações recentes)
 # ------------------------------------------------------------
 
+# ------------------------------------------------------------
+# CNPJ mascarado: as operações automáticas mostram só 9 dígitos (**.*XX.XXX/XXXX-**)
+# ------------------------------------------------------------
+_SUFIXOS = {"LTDA", "ME", "EPP", "SA", "S", "A", "EIRELI", "CIA", "DE", "DA", "DO", "DOS", "DAS", "E", "EM", "LTD"}
+
+
+def _tokens_nome(nome) -> set[str]:
+    t = unicodedata.normalize("NFKD", str(nome or "")).encode("ascii", "ignore").decode().upper()
+    return {p for p in re.split(r"[^A-Z0-9]+", t) if len(p) > 1 and p not in _SUFIXOS}
+
+
+def mascarado(cnpj: str) -> bool:
+    """CNPJ das automáticas: 14 dígitos com os 5 primeiros zerados (só 9 visíveis)."""
+    return str(cnpj).startswith("00000")
+
+
+def ligar_mascarados(op: pd.DataFrame, empresas: pd.DataFrame) -> pd.Series:
+    """cnpj_basico da base para cada operação; nos mascarados, pelos dígitos visíveis + nome.
+
+    Dígitos visíveis = posições 4 a 8 da raiz + ordem (filial). Vários CNPJs da base
+    podem ter os mesmos 5 dígitos, então o nome confirma: pelo menos metade das
+    palavras do nome (sem LTDA, S/A...) em comum, contando pelo nome mais longo.
+    """
+    base = empresas[["cnpj", "cnpj_basico", "razao_social"]].dropna(subset=["cnpj"]).copy()
+    base["chave"] = base["cnpj"].astype(str).str.zfill(14).str[3:8]
+    por_chave = {k: g for k, g in base.groupby("chave")}
+    saida = []
+    for cnpj, cliente in zip(op["cnpj"], op["cliente"]):
+        if not mascarado(cnpj):
+            saida.append(str(cnpj)[:8])
+            continue
+        cand = por_chave.get(str(cnpj)[5:10])
+        achou = None
+        if cand is not None:
+            tc = _tokens_nome(cliente)
+            melhor = 0.0
+            for _, r in cand.iterrows():
+                tb = _tokens_nome(r["razao_social"])
+                if not tc or not tb:
+                    continue
+                sim = len(tc & tb) / max(len(tc), len(tb))
+                if sim >= 0.5 and sim > melhor:
+                    melhor, achou = sim, r["cnpj_basico"]
+        saida.append(achou if achou else "*" + str(cnpj)[5:10] + "**")  # não identificado: chave própria
+    return pd.Series(saida, index=op.index)
+
+
+def _cnpj_exibicao(cnpj: str) -> str:
+    c = str(cnpj).zfill(14)
+    if mascarado(c):
+        v = c[5:]
+        return f"**.*{v[0:2]}.{v[2:5]}/{v[5:9]}-**"
+    return c
+
+
 def _mi(v: float) -> str:
     return f"{v / 1e6:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
@@ -212,7 +268,7 @@ def para_sinais(op: pd.DataFrame, empresas: pd.DataFrame, hoje: date, meses: int
             & op["cnpj"].str.fullmatch(r"\d{14}") & op["cnpj"].ne("0" * 14)].copy()
     if op.empty:
         return pd.DataFrame()
-    op["cnpj_basico"] = op["cnpj"].str[:8]
+    op["cnpj_basico"] = ligar_mascarados(op, empresas)
 
     # por empresa: total, quantidade, a operação maior dá o projeto e o segmento
     op = op.sort_values("valor", ascending=False)
@@ -227,9 +283,15 @@ def para_sinais(op: pd.DataFrame, empresas: pd.DataFrame, hoje: date, meses: int
     if emp.empty:
         return pd.DataFrame()
 
-    ref = empresas[["cnpj_basico", "razao_social", "STATUS_RELACIONAMENTO_REAL", "Porte", "tipo_empresa",
-                    "municipio"]].rename(columns={"municipio": "municipio_base"})
+    ref = empresas[["cnpj_basico", "cnpj", "razao_social", "STATUS_RELACIONAMENTO_REAL", "Porte", "tipo_empresa",
+                    "municipio"]].rename(columns={"municipio": "municipio_base", "cnpj": "cnpj_base"})
     df = emp.merge(ref, on="cnpj_basico", how="left")
+    na_base = df["cnpj_base"].notna()
+    mask = df["cnpj"].map(mascarado)
+    df["casamento"] = np.select([na_base & ~mask, na_base & mask, mask],
+                                ["por CNPJ", "por CNPJ parcial + nome", "não identificado (CNPJ mascarado)"],
+                                "por CNPJ")
+    df["cnpj"] = df["cnpj_base"].where(na_base & mask, df["cnpj"].map(_cnpj_exibicao))
     df["na_base_mestre"] = df["tipo_empresa"].eq("Indústria")
     df["razao_social"] = df["razao_social"].fillna(df["cliente"])
     df["STATUS_RELACIONAMENTO_REAL"] = df["STATUS_RELACIONAMENTO_REAL"].fillna("Fora da Base Mestre")
@@ -251,7 +313,7 @@ def para_sinais(op: pd.DataFrame, empresas: pd.DataFrame, hoje: date, meses: int
     bonus = (df["valor"] >= 1e6).astype(float) + (df["valor"] >= 10e6).astype(float)
     df["idade_dias"], df["peso"], df["validade_dias"] = idade, peso + bonus, validade_dias
     df["score_momento"] = (df["peso"] * (1 - idade / validade_dias).clip(lower=0)).round(2)
-    df["casamento"], df["fonte"], df["url_fonte"] = "por CNPJ", "BNDES · dados abertos", URL_FONTE
+    df["fonte"], df["url_fonte"] = "BNDES · dados abertos", URL_FONTE
     df["produto"] = df["produtos"]
     cols = ["tipo_sinal", "tema", "segmento", "descricao", "cnpj_basico", "cnpj", "razao_social",
             "STATUS_RELACIONAMENTO_REAL", "Porte", "na_base_mestre", "casamento", "municipio", "data_publicacao",
