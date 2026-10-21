@@ -255,3 +255,15 @@ def test_noticia_sem_empresa_nao_vira_fora_da_base(tmp_path):
         tmp_path / "SINAIS_X.csv", index=False, encoding="utf-8-sig")
     df = carregar_todos_sinais(tmp_path)
     assert df["STATUS_RELACIONAMENTO_REAL"].tolist() == ["Sem empresa identificada", "Fora da Base Mestre"]
+
+
+def test_bndes_acha_colunas_com_nomes_diferentes_do_dicionario():
+    from src.sinais.bndes import ler_operacoes
+    csv = ("cliente;cpf_cnpj;uf;municipio;municipio_codigo;data_da_contratacao;valor_da_operacao_em_reais;"
+           "valor_desembolsado_reais;produto;instrumento_financeiro;inovacao;setor_cnae;subsetor_cnae_codigo;"
+           "subsetor_cnae_nome;porte_do_cliente;natureza_do_cliente;instituicao_financeira_credenciada\n"
+           "X;77777777000101;AL;MACEIO;2704302;2026-05-10;300000.00;10.00;FINAME;BK;NAO;CONSTRUCAO;F4120;"
+           "Edificios;MEDIA;PRIVADA;BB\n").encode("utf-8")
+    ops = ler_operacoes(csv, "automática")
+    assert ops["valor"].iloc[0] == 300_000 and ops["segmento"].iloc[0] == "Construção"
+    assert ops["banco"].iloc[0] == "BB" and ops["porte_bndes"].iloc[0] == "MEDIA"
