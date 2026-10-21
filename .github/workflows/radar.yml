@@ -1,7 +1,8 @@
 # Radar de Oportunidades — coleta automática diária (grátis no GitHub Actions)
 #
 # Todo dia às 06:00 (Maceió): notícias da indústria de AL (Google News RSS) e,
-# às segundas, indicadores e cadeias produtivas do IBGE e financiamentos do BNDES. Grava os CSVs em data/processed e faz commit;
+# às segundas, indicadores e cadeias produtivas do IBGE e financiamentos do BNDES
+# (o BNDES só é baixado de novo quando o portal publica arquivo novo, ~1x por mês). Grava os CSVs em data/processed e faz commit;
 # o Streamlit lê a versão nova sozinho.
 #
 # O CNO (obras novas) continua no notebook: a Receita bloqueia download
@@ -63,9 +64,10 @@ jobs:
           git config user.name "radar-bot"
           git config user.email "radar-bot@users.noreply.github.com"
           git add -f data/processed/SINAIS_NOTICIAS.csv data/processed/LOG_FONTES_*.csv
-          for f in INDICADORES_MUNICIPIOS CADEIAS_PRODUCAO SINAIS_BNDES; do
+          for f in INDICADORES_MUNICIPIOS CADEIAS_PRODUCAO SINAIS_BNDES BNDES_OPERACOES_AL; do
             [ -f "data/processed/$f.csv" ] && git add -f "data/processed/$f.csv"
           done
+          [ -f data/processed/BNDES_VERSAO.json ] && git add -f data/processed/BNDES_VERSAO.json
           if git diff --cached --quiet; then
             echo "Sem mudanças."
           else
