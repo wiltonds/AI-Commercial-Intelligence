@@ -48,7 +48,12 @@ def achar_recursos(pacote: dict, automaticas: bool = False) -> list[tuple[str, s
     return urls
 
 
-def _col(cols, *nomes, obrigatoria: bool = True):
+def _col(cols, *nomes, obrigatoria: bool = True, contem: tuple = (), evita: tuple = ()):
+    """Acha a coluna pelo nome (normalizado), mesmo com variações entre arquivos do BNDES.
+
+    1) nome exato; 2) começa com o nome; 3) contém todas as palavras de `contem`
+    e nenhuma de `evita` (ex.: 'valor' + 'operacao', sem 'desembolsado').
+    """
     alvo = {c: _n(c) for c in cols}
     for n in nomes:
         for c, k in alvo.items():
@@ -57,6 +62,10 @@ def _col(cols, *nomes, obrigatoria: bool = True):
     for n in nomes:
         for c, k in alvo.items():
             if k.startswith(_n(n)):
+                return c
+    if contem:
+        for c, k in alvo.items():
+            if all(_n(p) in k for p in contem) and not any(_n(p) in k for p in evita):
                 return c
     if obrigatoria:
         raise KeyError(f"coluna não encontrada: {nomes}. Colunas: {list(cols)}")
@@ -125,6 +134,15 @@ def _abrir_texto(fonte) -> tuple[io.TextIOBase, str]:
     return open(fonte, encoding=enc, errors="replace", newline=""), sep
 
 
+def _valor_col(c):
+    for contem in (("valor", "contratad"), ("valor", "operacao")):
+        col = _col(c, "valor contratado reais", "valor da operacao reais", obrigatoria=False,
+                   contem=contem, evita=("desembols", "dolar", "usd"))
+        if col:
+            return col
+    return _col(c, "valor", contem=("valor",), evita=("desembols",))
+
+
 def _padronizar(df: pd.DataFrame, origem: str) -> pd.DataFrame:
     c = df.columns
     opc = lambda *n: _col(c, *n, obrigatoria=False)  # noqa: E731
@@ -139,7 +157,7 @@ def _padronizar(df: pd.DataFrame, origem: str) -> pd.DataFrame:
         "uf": df[_col(c, "uf")].fillna("").str.strip().str.upper(),
         "municipio_bndes": df[_col(c, "municipio")].fillna(""),
         "data_contratacao": pd.to_datetime(df[_col(c, "data da contratacao")], errors="coerce", dayfirst=True),
-        "valor": _numero(df[_col(c, "valor contratado reais", "valor da operacao reais", "valor contratado")]),
+        "valor": _numero(df[_valor_col(c)]),
         "produto": df[_col(c, "produto")].fillna(""),
         "inovacao": df[_col(c, "inovacao")].fillna("").str.upper(),
         "natureza": (df[nat] if nat else vazio).fillna(""),
