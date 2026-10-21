@@ -88,7 +88,7 @@ def test_historico_nao_duplica_e_descarta_vencidos():
 
 
 def test_ler_sidra_fica_com_ano_mais_recente_com_valor():
-    js = [{"D1C": "cod"},
+    js = [{"D1C": "cod", "D1N": "Município", "D3N": "Ano"},
           {"D1C": "2704302", "D1N": "Maceió - AL", "V": "...", "D3N": "2023"},
           {"D1C": "2704302", "D1N": "Maceió - AL", "V": "9432", "D3N": "2021"},
           {"D1C": "2700300", "D1N": "ARAPIRACA - AL", "V": "100", "D3N": "2023"}]
@@ -118,3 +118,30 @@ def test_palavra_comum_minuscula_nao_vira_empresa():
     por = dict(zip(df["descricao"].str[:10], df["casamento"]))
     assert por["Alagoas pr"] == "sem empresa"
     assert df[df["casamento"] == "por nome"]["cnpj_basico"].tolist() == ["55555555"]
+
+
+def test_bndes_le_csv_e_vira_sinal_de_al_privado():
+    from src.sinais.bndes import ler_operacoes, para_sinais
+    csv = ("cliente;cnpj;descricao_do_projeto;uf;municipio;municipio_codigo;data_da_contratacao;valor_contratado_reais;"
+           "produto;inovacao;natureza_do_cliente;subsetor_cnae_nome\n"
+           "SOCOCO SA;11111111000101;AMPLIACAO DA FABRICA;AL;MACEIO;2704302;15/03/2026;12.500.000,00;BNDES FINEM;NAO;"
+           "PRIVADA;Fabricação de alimentos\n"
+           "PREFEITURA X;00000000000100;OBRA;AL;MACEIO;2704302;15/03/2026;1.000,00;BNDES;NAO;ADMINISTRACAO PUBLICA DIRETA;x\n"
+           "EMPRESA SP;99999999000199;PROJETO;SP;SAO PAULO;3550308;15/03/2026;1.000,00;BNDES;NAO;PRIVADA;x\n").encode("latin-1")
+    ops = ler_operacoes(csv)
+    assert ops["valor"].iloc[0] == 12_500_000
+    s = para_sinais(ops, EMPRESAS, date(2026, 10, 21))
+    assert len(s) == 1 and s["cnpj_basico"].iloc[0] == "11111111" and s["municipio"].iloc[0] == "Maceió"
+    assert s["peso"].iloc[0] == 6 and "12,50 mi" in s["descricao"].iloc[0]
+
+
+def test_cadeia_cruza_producao_e_industrias():
+    from src.sinais.cadeias import resumo_cadeia
+    ind = pd.DataFrame({"cnpj_basico": ["1", "2", "3"], "municipio": ["Batalha", "Batalha", "Maceió"],
+                        "cnae": ["1052000", "1052000", "2511000"], "cliente": [True, False, False]})
+    prod = pd.DataFrame({"cadeia": ["leite", "leite"], "municipio": ["Batalha", "Major Isidoro"],
+                         "producao": [60.0, 40.0]})
+    r = resumo_cadeia("leite", {"cnae": ["1052"]}, ind, prod, pd.DataFrame()).set_index("municipio")
+    assert r.loc["Batalha", "industrias"] == 2 and r.loc["Batalha", "sem_relacionamento"] == 1
+    assert r.loc["Major Isidoro", "industrias"] == 0 and r.loc["Batalha", "participacao_producao"] == 0.6
+    assert "Maceió" not in r.index

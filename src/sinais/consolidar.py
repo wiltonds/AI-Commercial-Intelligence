@@ -76,6 +76,9 @@ def _bate(condicao: dict | None, linha) -> bool:
         codigo = str(linha.get("qualificacao") or "").strip().zfill(4)
         if codigo not in {str(c).zfill(4) for c in condicao["qualificacao"]}:
             return False
+    if "inovacao" in condicao:
+        if not str(linha.get("inovacao") or "").upper().startswith(str(condicao["inovacao"]).upper()):
+            return False
     if "area_min" in condicao:
         area = pd.to_numeric(linha.get("area_total"), errors="coerce")
         if pd.isna(area) or area < float(condicao["area_min"]):

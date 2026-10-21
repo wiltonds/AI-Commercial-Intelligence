@@ -19,6 +19,7 @@ import pandas as pd
 import streamlit as st
 
 from src.sinais.consolidar import ARQ_OFERTAS, aplicar_ofertas, carregar_ofertas, carregar_todos_sinais, marcar_novidades
+from src.sinais.cadeias import ARQ_PRODUCAO, carregar_cadeias, industrias_da_cadeia, resumo_cadeia
 from src.sinais.mercado import (NEGOCIOS, carregar_industrias, carregar_metas, mercado_municipios,
                                 mercado_setores, visao_negocios)
 from src.tools.municipios import padronizar
@@ -238,6 +239,67 @@ def pagina_mercado():
                "Fonte: Base Mestre, Visão 360 e IBGE (PIB dos Municípios e estimativa de população).")
 
 
+def pagina_cadeias():
+    sinais, ind = carregar(_assinatura())
+    topo("Radar de Oportunidades", "Cadeias produtivas de Alagoas",
+         "Onde o campo produz (IBGE), quantas indústrias processam essa produção e quantas já atendemos.")
+    cadeias = carregar_cadeias()
+    producao = pd.read_csv(ARQ_PRODUCAO, encoding="utf-8-sig") if ARQ_PRODUCAO.exists() else pd.DataFrame()
+    if producao.empty:
+        st.info("Produção do IBGE ainda não coletada (`python jobs/coletar_ibge.py`, ou aguarde a coleta de segunda-feira). "
+                "Mostrando só as indústrias da base.")
+
+    # visão geral: uma linha por cadeia
+    linhas = []
+    for cid, c in cadeias.items():
+        ic = industrias_da_cadeia(ind, c["cnae"])
+        p = producao[producao["cadeia"] == cid] if not producao.empty else producao
+        linhas.append({"cadeia": c["nome"], "producao": float(p["producao"].sum()) if not p.empty else None,
+                       "unidade": c["producao"]["unidade"], "ano": str(p["ano"].max()) if not p.empty else "",
+                       "industrias": len(ic), "clientes": int(ic["cliente"].sum()),
+                       "sem_relacionamento": int((~ic["cliente"]).sum()),
+                       "negocios": " · ".join(c.get("negocios", []))})
+    geral = pd.DataFrame(linhas)
+    geral["penetracao"] = (geral["clientes"] / geral["industrias"].where(geral["industrias"] > 0)).fillna(0)
+    st.dataframe(geral, width="stretch", hide_index=True, column_config={
+        "cadeia": "Cadeia", "producao": st.column_config.NumberColumn("Produção em AL", format="localized"),
+        "unidade": "Unidade", "ano": "Ano (IBGE)", "industrias": "Indústrias na base",
+        "clientes": "Com relacionamento", "sem_relacionamento": "Sem relacionamento",
+        "penetracao": st.column_config.ProgressColumn("Penetração", min_value=0, max_value=1, format="percent"),
+        "negocios": "Negócios"})
+
+    nomes = {c["nome"]: cid for cid, c in cadeias.items()}
+    escolha = st.selectbox("Ver a cadeia por município", list(nomes))
+    cid = nomes[escolha]
+    cfg = cadeias[cid]
+    st.markdown(f"**Oportunidade:** {cfg['oportunidades'].strip()}")
+    st.markdown(chips(" · ".join(cfg.get("negocios", []))), unsafe_allow_html=True)
+    r = resumo_cadeia(cid, cfg, ind, producao, sinais)
+    r = r[(r["producao"] > 0) | (r["industrias"] > 0)]
+    k = st.columns(4)
+    k[0].metric("Municípios produtores", _n((r["producao"] > 0).sum()))
+    top5 = r.nlargest(5, "producao")["participacao_producao"].sum() if r["producao"].sum() else 0
+    k[1].metric("5 maiores concentram", f"{top5:.0%}".replace(".", ","))
+    k[2].metric("Indústrias da cadeia", _n(r["industrias"].sum()))
+    k[3].metric("Sem relacionamento", _n(r["sem_relacionamento"].sum()))
+    st.dataframe(r, width="stretch", hide_index=True, height=460, column_config={
+        "municipio": "Município",
+        "producao": st.column_config.NumberColumn(f"Produção ({cfg['producao']['unidade']})", format="localized"),
+        "participacao_producao": st.column_config.ProgressColumn("% da produção de AL", min_value=0,
+                                                                 max_value=float(r["participacao_producao"].max() or 1), format="percent"),
+        "industrias": "Indústrias", "clientes": "Com relacionamento", "sem_relacionamento": "Sem relacionamento",
+        "sinais": "Sinais"})
+    st.caption("Município com produção alta e poucas indústrias atendidas = oportunidade de prospecção ou de "
+               "ação com produtores e cooperativas. Produção: IBGE (PPM e PAM). Indústrias: Base Mestre, pelo CNAE da cadeia "
+               "(config/cadeias.yaml).")
+    with st.expander(f"Indústrias da cadeia ({len(industrias_da_cadeia(ind, cfg['cnae']))})"):
+        lista = industrias_da_cadeia(ind, cfg["cnae"])
+        st.dataframe(lista[["razao_social", "municipio", "porte", "cnae", "cliente"]].sort_values(["cliente", "municipio"]),
+                     width="stretch", hide_index=True, column_config={
+                         "razao_social": "Empresa", "municipio": "Município", "porte": "Porte", "cnae": "CNAE",
+                         "cliente": st.column_config.CheckboxColumn("Já é cliente")})
+
+
 def pagina_metas():
     sinais, ind = carregar(_assinatura())
     metas = carregar_metas()
@@ -273,6 +335,7 @@ pg = st.navigation({
     "Radar": [st.Page(pagina_hoje, title="Hoje", icon="📡", default=True),
               st.Page(pagina_sinais, title="Sinais", icon="📋")],
     "Inteligência": [st.Page(pagina_mercado, title="Mercado", icon="🗺️"),
+                     st.Page(pagina_cadeias, title="Cadeias produtivas", icon="🌾"),
                      st.Page(pagina_metas, title="Negócios e metas 2027", icon="🎯")],
     "Governança": [st.Page(pagina_fontes, title="Saúde das fontes", icon="🚦")],
 })

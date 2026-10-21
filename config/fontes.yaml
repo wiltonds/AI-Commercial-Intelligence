@@ -166,6 +166,36 @@ fontes:
       Tabelas 5938 (PIB dos municípios) e 6579 (estimativa de população).
       O IBGE atualiza uma vez por ano; o job pega o ano mais recente de cada indicador.
 
+  ibge_cadeias:
+    nome: IBGE — produção agropecuária por município (cadeias produtivas)
+    tabela_dw: (nova)
+    modulo: mercado
+    granularidade: municipio
+    chave: código IBGE do município
+    frequencia_dias: 30
+    status: implementado
+    job: jobs/coletar_ibge.py
+    saida: data/processed/CADEIAS_PRODUCAO.csv
+    url_pagina: https://sidra.ibge.gov.br
+    observacao: >
+      PPM (tabela 74: leite, ovos) e PAM (tabela 5457: cana, coco, mandioca, fumo).
+      Quais cadeias e quais CNAEs processam cada uma: config/cadeias.yaml.
+
+  bndes:
+    nome: BNDES — financiamentos contratados (dados abertos)
+    tabela_dw: (nova)
+    modulo: sinais
+    granularidade: empresa
+    chave: CNPJ do cliente
+    frequencia_dias: 35
+    status: implementado
+    job: jobs/coletar_bndes.py
+    saida: data/processed/SINAIS_BNDES.csv
+    url_pagina: https://dadosabertos.bndes.gov.br/dataset/operacoes-financiamento
+    observacao: >
+      Operações diretas e indiretas não automáticas, empresas privadas de AL, últimos
+      24 meses. Peso maior acima de R$ 1 mi e de R$ 10 mi; vale 1 ano.
+
   inep_ep:
     nome: Censo Escolar — Educação Profissional (INEP)
     tabela_dw: fontes_externas.inep_censoescolarep

@@ -1,7 +1,7 @@
 # Radar de Oportunidades — coleta automática diária (grátis no GitHub Actions)
 #
 # Todo dia às 06:00 (Maceió): notícias da indústria de AL (Google News RSS) e,
-# às segundas, indicadores do IBGE. Grava os CSVs em data/processed e faz commit;
+# às segundas, indicadores e cadeias produtivas do IBGE e financiamentos do BNDES. Grava os CSVs em data/processed e faz commit;
 # o Streamlit lê a versão nova sozinho.
 #
 # O CNO (obras novas) continua no notebook: a Receita bloqueia download
@@ -43,10 +43,19 @@ jobs:
       - name: Indicadores do IBGE (segundas-feiras ou execução manual)
         continue-on-error: true
         run: |
-          if [ "$(date -u +%u)" = "1" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ ! -f data/processed/INDICADORES_MUNICIPIOS.csv ]; then
+          if [ "$(date -u +%u)" = "1" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ ! -f data/processed/INDICADORES_MUNICIPIOS.csv ] || [ ! -f data/processed/CADEIAS_PRODUCAO.csv ]; then
             python jobs/coletar_ibge.py
           else
             echo "IBGE: só às segundas."
+          fi
+
+      - name: Financiamentos BNDES (segundas-feiras ou execução manual)
+        continue-on-error: true
+        run: |
+          if [ "$(date -u +%u)" = "1" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ ! -f data/processed/SINAIS_BNDES.csv ]; then
+            python jobs/coletar_bndes.py
+          else
+            echo "BNDES: só às segundas."
           fi
 
       - name: Publicar resultados
@@ -54,7 +63,9 @@ jobs:
           git config user.name "radar-bot"
           git config user.email "radar-bot@users.noreply.github.com"
           git add -f data/processed/SINAIS_NOTICIAS.csv data/processed/LOG_FONTES_*.csv
-          [ -f data/processed/INDICADORES_MUNICIPIOS.csv ] && git add -f data/processed/INDICADORES_MUNICIPIOS.csv
+          for f in INDICADORES_MUNICIPIOS CADEIAS_PRODUCAO SINAIS_BNDES; do
+            [ -f "data/processed/$f.csv" ] && git add -f "data/processed/$f.csv"
+          done
           if git diff --cached --quiet; then
             echo "Sem mudanças."
           else
