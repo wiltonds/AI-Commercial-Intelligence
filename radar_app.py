@@ -375,24 +375,48 @@ def pagina_mapa():
     # ---------------- pontos
     v = v.assign(cor=[c_ + [235] for c_ in cor_status(v["status"])],
                  raio=np.where(v["status"] == "Com oportunidade no radar", 900, 380))
-    v["properties"] = [{"titulo": f"{r.razao_social}",
-                        "detalhe": (f"{r.municipio} · {r.porte or ''} · {r.status}"
-                                    + (f"<br/><b>Oportunidade:</b> {r.oportunidade}<br/>Negócios: {r.negocios_sinal}"
-                                       if r.n_sinais else ""))}
-                       for r in v.itertuples()]
+    v["titulo"] = v["razao_social"].fillna("").astype(str)
+    porte = v["porte"].where(v["porte"].notna(), "").astype(str).replace({"nan": ""})
+    v["detalhe"] = [" · ".join(x for x in (m, p_, st_) if x) for m, p_, st_ in zip(v["municipio"], porte, v["status"])]
+    tem = v["n_sinais"] > 0
+    v["oport"] = np.where(tem, "Oportunidade: " + v["oportunidade"].fillna("").astype(str), "")
+    v["neg"] = np.where(tem, "Negócios: " + v["negocios_sinal"].fillna("").astype(str) + "  ·  clique para ver o que oferecer", "")
     v = v.sort_values("n_sinais")  # oportunidades desenhadas por cima
     camadas = [
-        pdk.Layer("GeoJsonLayer", geo, pickable=True, stroked=True, filled=True, get_fill_color="properties.cor",
-                  get_line_color=[90, 100, 120, 160], line_width_min_pixels=0.6),
-        pdk.Layer("ScatterplotLayer", v[["lon", "lat", "cor", "raio", "properties"]], pickable=True,
-                  get_position=["lon", "lat"], get_fill_color="cor", get_radius="raio",
+        pdk.Layer("GeoJsonLayer", geo["features"], id="municipios", pickable=True, stroked=True, filled=True,
+                  get_fill_color="properties.cor", get_line_color=[90, 100, 120, 160], line_width_min_pixels=0.6),
+        pdk.Layer("ScatterplotLayer", v[["lon", "lat", "cor", "raio", "titulo", "detalhe", "oport", "neg", "cnpj_basico", "municipio"]],
+                  id="empresas", pickable=True, get_position=["lon", "lat"], get_fill_color="cor", get_radius="raio",
                   radius_min_pixels=2, radius_max_pixels=11, stroked=True, get_line_color=[255, 255, 255, 200],
                   line_width_min_pixels=0.4),
     ]
-    st.pydeck_chart(pdk.Deck(layers=camadas, initial_view_state=pdk.ViewState(latitude=-9.6, longitude=-36.6, zoom=7.7),
-                             tooltip={"html": "<b>{properties.titulo}</b><br/>{properties.detalhe}",
-                                      "style": {"fontSize": "12px", "maxWidth": "320px"}},
-                             map_style=None), height=620)
+    evento = st.pydeck_chart(
+        pdk.Deck(layers=camadas, initial_view_state=pdk.ViewState(latitude=-9.6, longitude=-36.6, zoom=7.7),
+                 tooltip={"html": "<b>{titulo}</b><br/>{detalhe}<br/>{oport}<br/><i>{neg}</i>", "style": {"fontSize": "12px", "maxWidth": "320px"}},
+                 map_style=None),
+        height=620, on_select="rerun", selection_mode="single-object", key="mapa_al")
+    sel = (getattr(getattr(evento, "selection", None), "objects", None) or {}) if evento else {}
+    emp_sel = (sel.get("empresas") or [None])[0]
+    mun_sel = (sel.get("municipios") or [None])[0]
+    mun_clicado = (emp_sel or {}).get("municipio") or ((mun_sel or {}).get("properties") or {}).get("municipio")
+
+    if emp_sel:
+        cnpj = str(emp_sel.get("cnpj_basico"))
+        e = emp[emp["cnpj_basico"].astype(str) == cnpj]
+        ops_emp = sinais[sinais["cnpj_basico"].astype(str) == cnpj].sort_values("score_momento", ascending=False) \
+            if not sinais.empty else sinais
+        st.markdown(f"##### 📌 {emp_sel.get('titulo', '')}")
+        if not e.empty:
+            r0 = e.iloc[0]
+            st.caption(" · ".join(str(x) for x in [r0["municipio"], r0["porte"], r0["setor_cni"], r0["status"]]
+                                  if pd.notna(x) and str(x)))
+        if ops_emp.empty:
+            st.info("Sem oportunidade ativa no radar para esta empresa. "
+                    + ("Já é cliente." if not e.empty and bool(e.iloc[0]["cliente"]) else
+                       "Ainda não é cliente: entra na prospecção pelo setor e porte."))
+        for _, s_ in ops_emp.iterrows():
+            cartao(s_)
+
     leg = st.columns(4)
     for col_, (nome, cor) in zip(leg, [("Cliente", COR_CLIENTE), ("Sem relacionamento", COR_SEM_REL),
                                        ("Com oportunidade no radar", COR_OPORTUNIDADE)]):
@@ -401,11 +425,14 @@ def pagina_mapa():
                       f"(**{_n((v['status'] == nome).sum())}**)", unsafe_allow_html=True)
     leg[3].caption(f"Municípios: mais escuro = mais {pintar.lower()}.")
     st.caption("Cada ponto é uma empresa, posicionada dentro do seu município (a base ainda não tem endereço geocodificado; "
-               "o ponto não é o endereço). Passe o mouse para ver a empresa e a oportunidade.")
+               "o ponto não é o endereço). Passe o mouse para ver a empresa; clique no ponto para ver a oportunidade e o que "
+               "oferecer, ou no município para ver o detalhe dele.")
 
     # ---------------- detalhe do município
     st.markdown("##### Olhar um município")
-    escolha = st.selectbox("Município", ["—"] + mun.sort_values("industrias", ascending=False)["municipio"].tolist())
+    lista_mun = ["—"] + mun.sort_values("industrias", ascending=False)["municipio"].tolist()
+    escolha = st.selectbox("Município (ou clique no mapa)", lista_mun,
+                           index=lista_mun.index(mun_clicado) if mun_clicado in lista_mun else 0)
     if escolha != "—":
         r = mun.set_index("municipio").loc[escolha]
         k = st.columns(4)
