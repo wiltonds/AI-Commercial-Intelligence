@@ -267,3 +267,29 @@ def test_bndes_acha_colunas_com_nomes_diferentes_do_dicionario():
     ops = ler_operacoes(csv, "automática")
     assert ops["valor"].iloc[0] == 300_000 and ops["segmento"].iloc[0] == "Construção"
     assert ops["banco"].iloc[0] == "BB" and ops["porte_bndes"].iloc[0] == "MEDIA"
+
+
+def test_bndes_cnpj_mascarado_liga_pela_parte_visivel_e_nome():
+    from src.sinais.bndes import ligar_mascarados, para_sinais, ler_operacoes
+    emp = pd.concat([EMPRESAS, pd.DataFrame([
+        {"cnpj_basico": "11907140", "cnpj": "11907140000164", "razao_social": "KRONA TUBOS E CONEXOES DO NORDESTE LTDA",
+         "nome_fantasia": "", "municipio": "Marechal Deodoro", "Porte": "DEMAIS",
+         "STATUS_RELACIONAMENTO_REAL": "SESI + SENAI", "tipo_empresa": "Indústria"},
+        {"cnpj_basico": "55907140", "cnpj": "55507140000199", "razao_social": "PADARIA OUTRA LTDA",
+         "nome_fantasia": "", "municipio": "Maceió", "Porte": "MICRO EMPRESA",
+         "STATUS_RELACIONAMENTO_REAL": "Sem relacionamento", "tipo_empresa": "Indústria"}])], ignore_index=True)
+    csv = ("cliente;cpf_cnpj;uf;municipio;data_da_contratacao;valor_da_operacao_em_reais;produto;inovacao;"
+           "subsetor_cnae_codigo;subsetor_cnae_nome;natureza_do_cliente\n"
+           "KRONA TUBOS E CONEXOES DO NORDESTE LTDA;71400001;AL;MARECHAL DEODORO;2026-05-10;15000000;FINAME;NAO;"
+           "C2222;Tubos;PRIVADA\n"
+           "OUTRA EMPRESA QUALQUER LTDA;71400001;AL;MACEIO;2026-05-10;500000;FINAME;NAO;G4711;Varejo;PRIVADA\n"
+           ).encode("utf-8")
+    ops = ler_operacoes(csv, "automática")
+    assert ops["cnpj"].iloc[0] == "00000071400001"
+    assert ligar_mascarados(ops, emp).tolist() == ["11907140", "*07140**"]
+    s = para_sinais(ops, emp, date(2026, 10, 21)).set_index("razao_social")
+    k = s.loc["KRONA TUBOS E CONEXOES DO NORDESTE LTDA"]
+    assert k["STATUS_RELACIONAMENTO_REAL"] == "SESI + SENAI" and k["casamento"] == "por CNPJ parcial + nome"
+    assert k["cnpj"] == "11907140000164"
+    o = s.loc["OUTRA EMPRESA QUALQUER LTDA"]
+    assert o["STATUS_RELACIONAMENTO_REAL"] == "Fora da Base Mestre" and o["cnpj"] == "**.*07.140/0001-**"
