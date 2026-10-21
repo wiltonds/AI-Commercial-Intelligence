@@ -1,0 +1,152 @@
+# ============================================================
+# RADAR DE OPORTUNIDADES — o que procurar nas notícias e como classificar
+#
+# Editável sem mexer em código. O job jobs/coletar_noticias.py:
+#   1. roda cada consulta no Google News (RSS, grátis, sem chave)
+#   2. fica só com o que fala de Alagoas (estado ou um dos 102 municípios)
+#   3. classifica o tema pelo primeiro grupo de palavras que aparecer
+#      (ordem importa: o mais específico primeiro)
+#   4. procura no texto o nome de uma empresa da Base Mestre / Ampliada
+#   5. grava data/processed/SINAIS_NOTICIAS.csv no formato padrão de sinais
+#
+# Para incluir uma fonte oficial, acrescente uma consulta "site:dominio termo".
+# Para um tema novo: crie aqui o tema e, em config/ofertas.yaml, o tipo_sinal
+# com o que ofertar.
+# ============================================================
+
+janela_dias: 7            # cada consulta busca notícias dos últimos N dias (when:Nd)
+primeira_carga_dias: 30   # na primeira execução, quando ainda não há histórico
+historico_dias: 120       # sinais mais velhos que isso saem do arquivo
+
+consultas:
+  # ---- movimento industrial em Alagoas
+  - Alagoas fábrica
+  - Alagoas "nova fábrica"
+  - Alagoas "nova unidade" indústria
+  - Alagoas indústria investimento
+  - Alagoas indústria ampliação
+  - Alagoas "polo industrial"
+  - Alagoas "distrito industrial"
+  - Alagoas usina investimento
+  - Alagoas indústria empregos
+  - Alagoas indústria vagas
+  - Maceió indústria
+  - Arapiraca indústria
+  - Marechal Deodoro indústria
+  - Rio Largo indústria
+  - São Miguel dos Campos indústria
+  - Penedo indústria
+  # ---- fomento, incentivos e financiamento
+  - Alagoas "incentivo fiscal" empresa
+  - Alagoas Prodesin
+  - Alagoas "protocolo de intenções" empresa
+  - Alagoas BNB financiamento indústria
+  - Alagoas BNDES indústria
+  # ---- construção e infraestrutura
+  - Alagoas construtora obra empreendimento
+  - Alagoas "licença ambiental" empreendimento
+  # ---- SST e fiscalização
+  - Alagoas "acidente de trabalho"
+  - Alagoas fiscalização trabalho empresa
+  # ---- modernização e tecnologia
+  - Alagoas indústria automação
+  - Alagoas indústria "energia solar"
+  - Alagoas indústria exportação
+  # ---- fontes oficiais e do Sistema Indústria (validar domínios)
+  - site:alagoas.al.gov.br indústria
+  - site:alagoas.al.gov.br investimento
+  - site:fiea.org.br
+  - site:portaldaindustria.com.br Alagoas
+
+# Precisa citar Alagoas (ou um município de AL) e ter contexto empresarial.
+contexto_empresarial:
+  - industria
+  - industrial
+  - fabrica
+  - usina
+  - empresa
+  - empreendimento
+  - construtora
+  - planta
+  - unidade
+  - negocio
+  - investimento
+  - grupo
+
+# Temas, do mais específico para o mais geral. tipo_sinal liga a config/ofertas.yaml.
+temas:
+  - id: incentivo
+    tipo_sinal: noticia_incentivo
+    rotulo: Incentivo / fomento
+    peso: 4
+    validade_dias: 120
+    palavras: [incentivo fiscal, beneficio fiscal, prodesin, protocolo de intencoes,
+               desenvolve, fne, financiamento, bnb, bndes, fomento, linha de credito]
+  - id: expansao
+    tipo_sinal: noticia_expansao
+    rotulo: Nova fábrica / ampliação
+    peso: 4
+    validade_dias: 120
+    palavras: [nova fabrica, nova unidade, nova planta, inaugura, inauguracao, ampliacao,
+               amplia, expansao, expande, implantacao, vai instalar, se instalar, nova sede,
+               centro de distribuicao]
+  - id: licenciamento
+    tipo_sinal: noticia_licenciamento
+    rotulo: Licenciamento / obra
+    peso: 3
+    validade_dias: 90
+    palavras: [licenca ambiental, licenciamento, licenca previa, licenca de instalacao,
+               canteiro, obra, empreendimento imobiliario, terraplenagem]
+  - id: contratacao
+    tipo_sinal: noticia_contratacao
+    rotulo: Contratação
+    peso: 3
+    validade_dias: 60
+    palavras: [vagas, contrata, contratacao, empregos, selecao, recrutamento, mao de obra,
+               qualificacao profissional]
+  - id: sst
+    tipo_sinal: noticia_sst
+    rotulo: SST / fiscalização
+    peso: 3
+    validade_dias: 60
+    palavras: [acidente de trabalho, acidente com trabalhador, morre trabalhador, interdicao,
+               interditada, auditor fiscal, fiscalizacao do trabalho, nr-, norma regulamentadora]
+  - id: modernizacao
+    tipo_sinal: noticia_modernizacao
+    rotulo: Modernização / tecnologia
+    peso: 2
+    validade_dias: 90
+    palavras: [automacao, modernizacao, moderniza, tecnologia, digital, industria 4.0,
+               energia solar, eficiencia energetica, certificacao, iso, exportacao, exporta,
+               inovacao]
+  - id: investimento
+    tipo_sinal: noticia_investimento
+    rotulo: Investimento
+    peso: 3
+    validade_dias: 90
+    palavras: [investimento, investe, investir, aporte, milhoes, bilhao, bilhoes]
+
+# Palavras que não servem para identificar empresa (aparecem em muitos nomes)
+nomes_genericos:
+  - alagoas
+  - maceio
+  - nordeste
+  - brasil
+  - brasileira
+  - industria
+  - comercio
+  - servicos
+  - construcoes
+  - engenharia
+  - alimentos
+  - transportes
+  - empreendimentos
+  - participacoes
+  - holding
+  - agropecuaria
+  - distribuidora
+  - solucoes
+  - tecnologia
+  - grupo
+  - usina
+  - nacional

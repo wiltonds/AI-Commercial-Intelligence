@@ -38,7 +38,9 @@ $arquivos = @(
     "data/processed/CARTEIRA_UNIDADES.csv",
     "data/processed/POTENCIAL_MERCADO.csv",
     "data/processed/MEI_BASE_MESTRE.csv",
-    "data/processed/LOG_ATUALIZACOES.csv"
+    "data/processed/LOG_ATUALIZACOES.csv",
+    "data/processed/SINAIS_CNO.csv",
+    "data/processed/LOG_FONTES_cno.csv"
 )
 $origem = (Get-Location).Path
 $alvo = if ($Destino) { (Resolve-Path $Destino).Path } else { $origem }
@@ -62,6 +64,8 @@ git -C $alvo diff --cached --quiet
 if ($LASTEXITCODE -eq 0) { Write-Host "$(Get-Date -Format HH:mm) [$branch] sem mudanças."; exit 0 }
 
 git -C $alvo commit -q -m "Dados atualizados $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
+# o robô do Radar (GitHub Actions) também publica todo dia: traz o que ele gravou antes de subir
+git -C $alvo pull -q --rebase origin $branch
 git -C $alvo push -q origin $branch
 if ($LASTEXITCODE -eq 0) { Write-Host "$(Get-Date -Format HH:mm) [$branch] publicado: $($presentes -join ', ')" }
 else { Write-Host "$(Get-Date -Format HH:mm) [$branch] FALHA no push — confira a conexão/credenciais." }

@@ -1,0 +1,285 @@
+# ============================================================
+# OFERTA SUGERIDA POR TIPO DE SINAL
+#
+# Traduz "o que aconteceu" em "o que ofertar e como abordar".
+# Nomes de produto tirados do catálogo real (knowledge/portfolio).
+# Editável pelo comercial: mudou a estratégia, muda aqui, sem código.
+#
+# Para cada tipo de sinal:
+#   rotulo / icone   como aparece na tela
+#   perfis           lista avaliada em ordem; vale o PRIMEIRO cujo
+#                    "quando" bate. Sem "quando" = perfil padrão.
+#                    Condições aceitas: qualificacao (lista de códigos),
+#                    area_min (m²), valor_min (R$)
+#   adicionais       blocos somados a qualquer perfil quando a
+#                    condição bate (ex.: obra de grande porte)
+# ============================================================
+
+obra_nova:
+  rotulo: Obra nova
+  icone: "🏗️"
+  negocios: [SSI, EP, STI]
+  perfis:
+    - nome: Construtora no canteiro
+      quando: {qualificacao: ["0053", "0111", "0109", "0110"]}
+      abordagem: >
+        Canteiro ativo e equipe sendo montada agora. Abordar o engenheiro
+        responsável ou o técnico de segurança da obra: exigências de SST do
+        canteiro e mão de obra qualificada para as próximas etapas.
+      sesi:
+        - PGR - Programa de Gerenciamento de Riscos (Construção Civil)
+        - PCMSO - Programa de Controle Médico de Saúde Ocupacional
+        - Treinamento de NR 35 - Trabalho em Altura
+        - Palestra SST - Segurança do Trabalho na Indústria da Construção
+      senai:
+        - Pedreiro de Alvenaria
+        - Montador de Andaimes
+        - Eletricista Instalador Predial
+        - Encanador Instalador Predial
+    - nome: Incorporadora
+      quando: {qualificacao: ["0064"]}
+      abordagem: >
+        Incorporadora costuma contratar construtoras. Abordar para SST do
+        empreendimento e perguntar quem executa a obra — a construtora é
+        o segundo lead.
+      sesi:
+        - PGR - Programa de Gerenciamento de Riscos (Construção Civil)
+        - PCMSO - Programa de Controle Médico de Saúde Ocupacional
+      senai:
+        - Mestre de Obras
+    - nome: Dono da obra (expansão)
+      abordagem: >
+        A empresa está construindo ou ampliando a própria unidade: sinal de
+        expansão. Duas conversas: (1) quem é a construtora contratada — lead
+        de SST do canteiro; (2) a nova unidade vai precisar de SST e de
+        equipe qualificada quando começar a operar.
+      sesi:
+        - PGR - Programa de Gerenciamento de Riscos
+        - PCMSO - Programa de Controle Médico de Saúde Ocupacional
+        - Avaliação clínica - ASO (admissionais da nova equipe)
+      senai:
+        - Qualificação da equipe da nova unidade (conforme CNAE)
+  adicionais:
+    - nome: Obra de grande porte
+      quando: {area_min: 5000}
+      sesi:
+        - Treinamento de NR 11/NR 18 - PEMT (Plataforma Elevatória)
+        - Treinamento de NR 10 - Segurança em Eletricidade
+        - LTCAT - Laudo Técnico das Condições Ambientais do Trabalho
+      senai:
+        - Aplicação da NR12 na operação de máquinas da construção civil
+        - Mestre de Obras
+
+# --- tipos já previstos: entram na tela assim que a fonte for construída ---
+
+empresa_nova:
+  rotulo: Empresa nova
+  icone: "🆕"
+  perfis:
+    - nome: Indústria recém-aberta
+      abordagem: >
+        Empresa começando do zero: obrigações de SST desde a primeira
+        contratação e equipe a formar. Abordar o sócio-administrador.
+      sesi:
+        - PGR - Programa de Gerenciamento de Riscos
+        - PCMSO - Programa de Controle Médico de Saúde Ocupacional
+      senai:
+        - Qualificação conforme o CNAE da empresa
+      outros:
+        - Brasil Mais Produtivo (se elegível SEBRAE)
+
+filial_nova:
+  rotulo: Filial nova
+  icone: "🏭"
+  perfis:
+    - nome: Expansão de empresa existente
+      abordagem: >
+        Empresa que já existe abriu nova unidade. Se já é cliente, é
+        cross-sell para a filial; se não é, a expansão é o gancho da conversa.
+      sesi:
+        - PGR e PCMSO da nova unidade
+      senai:
+        - Qualificação da equipe da nova unidade
+
+noticia_investimento:
+  rotulo: Investimento anunciado
+  icone: "💰"
+  negocios: [EP, STI, SSI]
+  perfis:
+    - nome: Investimento anunciado
+      abordagem: >
+        Usar a notícia como abertura: parabenizar pelo investimento e perguntar
+        como está o plano de formação da equipe, de segurança e de produtividade.
+      sesi:
+        - PGR - Programa de Gerenciamento de Riscos
+        - PCMSO - Programa de Controle Médico de Saúde Ocupacional
+      senai:
+        - Qualificação Profissional sob medida para a operação
+        - Consultoria em Aumento de Produtividade e Redução de Custos
+      outros:
+        - Captação de Recursos para inovação (STI)
+
+noticia_expansao:
+  rotulo: Nova fábrica / ampliação
+  icone: "🏭"
+  negocios: [EP, SSI, STI, EB]
+  perfis:
+    - nome: Nova unidade ou ampliação
+      abordagem: >
+        Sinal mais forte do radar: equipe nova a contratar e formar antes da
+        partida. Abordar RH e direção industrial com um pacote de implantação
+        (formação + SST + partida da produção), antes da inauguração.
+      sesi:
+        - PGR e PCMSO da nova unidade
+        - Exames admissionais (ASO) da nova equipe
+        - EJA para nivelar a escolaridade da equipe
+      senai:
+        - Qualificação Profissional para operadores
+        - Aprendizagem Industrial (cota da nova unidade)
+        - Calibração e ensaios na partida da produção
+        - Consultoria em Aumento de Produtividade
+
+noticia_incentivo:
+  rotulo: Incentivo fiscal / fomento
+  icone: "🏛️"
+  negocios: [EP, STI, SSI]
+  perfis:
+    - nome: Projeto incentivado
+      abordagem: >
+        Incentivo e financiamento costumam exigir metas de emprego, qualificação
+        e inovação. Oferecer o SENAI/SESI como parceiro para cumprir as
+        contrapartidas do projeto.
+      sesi:
+        - Pacote SST para a implantação
+      senai:
+        - Qualificação Profissional (contrapartida de emprego)
+        - Captação de Recursos e projetos de inovação
+        - Consultoria para atendimento a normas e regulamentos técnicos
+
+noticia_contratacao:
+  rotulo: Contratação
+  icone: "👷"
+  negocios: [EP, EB, SSI]
+  perfis:
+    - nome: Empresa contratando
+      abordagem: >
+        Contratação em volume pede formação rápida e exames admissionais.
+        Oferecer turma fechada e a cota de aprendizes.
+      sesi:
+        - Exames admissionais (ASO)
+        - EJA - Educação de Jovens e Adultos
+      senai:
+        - Qualificação Profissional (turma fechada)
+        - Aprendizagem Industrial
+
+noticia_licenciamento:
+  rotulo: Licenciamento / obra
+  icone: "🏗️"
+  negocios: [STI, SSI, EP]
+  perfis:
+    - nome: Empreendimento em licenciamento ou obra
+      abordagem: >
+        Licença e obra vêm antes da operação: hora de oferecer ensaios, SST do
+        canteiro e formar a equipe que vai operar.
+      sesi:
+        - PGR - Construção Civil
+        - Treinamento de NR 35 - Trabalho em Altura
+      senai:
+        - Ensaios de concreto e materiais
+        - Consultoria para atendimento a normas ambientais e técnicas
+
+noticia_sst:
+  rotulo: SST / fiscalização
+  icone: "⛑️"
+  negocios: [SSI, EP]
+  perfis:
+    - nome: Acidente ou fiscalização
+      abordagem: >
+        Abordar com cuidado e foco em prevenção: diagnóstico de SST, adequação às
+        NRs e treinamento da equipe, sem explorar o fato negativo.
+      sesi:
+        - Consultoria em SST
+        - Higiene Ocupacional
+        - Treinamentos de NR
+      senai:
+        - Treinamento de NR 10 / NR 12 / NR 35
+
+noticia_modernizacao:
+  rotulo: Modernização / tecnologia
+  icone: "⚙️"
+  negocios: [STI, EP]
+  perfis:
+    - nome: Modernização ou tecnologia
+      abordagem: >
+        Empresa investindo em tecnologia: oferecer consultoria, soluções digitais
+        e qualificação da equipe para operar o novo processo.
+      senai:
+        - Soluções Digitais (sistemas, dados, automação)
+        - Consultoria em Aumento de Produtividade
+        - Aperfeiçoamento Profissional em automação
+        - Calibração de instrumentos
+
+abaixo_cota_aprendiz:
+  rotulo: Abaixo da cota de aprendiz
+  icone: "🎓"
+  perfis:
+    - nome: Cota de aprendizagem não cumprida
+      abordagem: >
+        Obrigação legal (5% a 15% das funções que demandam formação).
+        Abordar o RH: o SENAI resolve a cota com a aprendizagem industrial.
+      senai:
+        - Aprendizagem Industrial Básica
+
+vigencia_vencendo:
+  rotulo: Vigência vencendo
+  icone: "🔁"
+  perfis:
+    - nome: Cliente volta a ser elegível
+      abordagem: >
+        Fim do período de 2 anos: a empresa pode contratar de novo. Retomar
+        com o histórico do que foi entregue e os resultados.
+      outros:
+        - Reoferta do programa contratado anteriormente
+
+setor_aquecido:
+  rotulo: Setor aquecido no município
+  icone: "📈"
+  perfis:
+    - nome: Contratação em alta no segmento
+      abordagem: >
+        Sinal do setor, não da empresa: o segmento está contratando no
+        município. Usar como argumento, confirmar na conversa.
+      sesi:
+        - Avaliação clínica - ASO (admissionais)
+      senai:
+        - Qualificação para as ocupações em alta
+
+licitacao_vencida:
+  rotulo: Venceu licitação
+  icone: "🏛️"
+  perfis:
+    - nome: Obra pública contratada
+      abordagem: >
+        Contrato assinado com prazo de execução: equipe a mobilizar agora e
+        contratante público que costuma exigir SST em dia (PGR, PCMSO, ASO,
+        NRs). Abrir a conversa pelo contrato ("vimos que vocês assumiram a
+        obra X") e oferecer resolver a documentação e o treinamento da frente
+        de trabalho antes do início.
+      sesi:
+        - PGR - Programa de Gerenciamento de Riscos (Construção Civil)
+        - PCMSO - Programa de Controle Médico de Saúde Ocupacional
+        - Avaliação clínica - ASO (admissionais da equipe mobilizada)
+        - Treinamento de NR 35 - Trabalho em Altura
+      senai:
+        - Pedreiro de Alvenaria
+        - Eletricista Instalador Predial
+        - Encanador Instalador Predial
+  adicionais:
+    - nome: Contrato de grande valor
+      quando: {valor_min: 5000000}
+      sesi:
+        - Treinamento de NR 11/NR 18 - PEMT (Plataforma Elevatória)
+        - Treinamento de NR 10 - Segurança em Eletricidade
+        - LTCAT - Laudo Técnico das Condições Ambientais do Trabalho
+      senai:
+        - Mestre de Obras
