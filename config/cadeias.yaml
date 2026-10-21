@@ -1,0 +1,66 @@
+# ============================================================
+# CADEIAS PRODUTIVAS DE ALAGOAS
+#
+# Para cada cadeia: o que o campo produz em cada município (IBGE) e quais
+# indústrias processam essa produção (CNAE). O Radar cruza os dois com a nossa
+# base e mostra onde há produção forte e indústria pouco atendida.
+#
+# Produção: IBGE/SIDRA, por município de AL, ano mais recente.
+#   PPM (Pesquisa da Pecuária Municipal)  tabela 74,   variável 106, classificação 80
+#   PAM (Produção Agrícola Municipal)     tabela 5457, variável 214, classificação 782
+# CNAE: prefixos (4 dígitos = classe). Para incluir uma cadeia, copie um bloco.
+# ============================================================
+
+cadeias:
+  leite:
+    nome: Bacia leiteira
+    producao: {tabela: 74, variavel: 106, classificacao: 80, categoria: 2682, unidade: mil litros}
+    cnae: ["1051", "1052", "1053"]
+    oportunidades: >
+      Laticínios e queijarias: boas práticas de fabricação, qualificação de operadores
+      de laticínios, análises e ensaios de alimentos, SST e PCMSO.
+    negocios: [EP, STI, SSI]
+
+  sucroenergetico:
+    nome: Sucroenergético (cana, açúcar, etanol, bioenergia)
+    producao: {tabela: 5457, variavel: 214, classificacao: 782, categoria: 40106, unidade: toneladas}
+    cnae: ["1071", "1072", "1931", "1932"]
+    oportunidades: >
+      Usinas e destilarias: safra exige contratação e formação em volume, NR-12 e NR-10,
+      manutenção industrial, calibração e metrologia, eficiência energética.
+    negocios: [EP, SSI, STI, EB]
+
+  coco:
+    nome: Coco
+    producao: {tabela: 5457, variavel: 214, classificacao: 782, categoria: 40145, unidade: toneladas}
+    cnae: ["1031", "1033", "1099"]
+    oportunidades: >
+      Processamento de coco e derivados: boas práticas, segurança de alimentos,
+      ensaios, produtividade e qualificação de operadores.
+    negocios: [EP, STI, SSI]
+
+  mandioca:
+    nome: Mandioca (farinha e derivados)
+    producao: {tabela: 5457, variavel: 214, classificacao: 782, categoria: 40119, unidade: toneladas}
+    cnae: ["1063"]
+    oportunidades: >
+      Casas de farinha e fecularias, muitas informais e pequenas: boas práticas,
+      segurança de máquinas, formalização e qualificação básica.
+    negocios: [EP, SSI]
+
+  avicultura:
+    nome: Avicultura (ovos e frango)
+    producao: {tabela: 74, variavel: 106, classificacao: 80, categoria: 2685, unidade: mil dúzias}
+    cnae: ["1012", "1066"]
+    oportunidades: >
+      Abatedouros e fábricas de ração: SST (frio, faca, NR-36), boas práticas,
+      qualificação em processamento de alimentos.
+    negocios: [SSI, EP]
+
+  fumo:
+    nome: Fumo (Agreste)
+    producao: {tabela: 5457, variavel: 214, classificacao: 782, categoria: 40113, unidade: toneladas}
+    cnae: ["1210", "1220"]
+    oportunidades: >
+      Beneficiamento e processamento de fumo: SST, higiene ocupacional e qualificação.
+    negocios: [SSI, EP]

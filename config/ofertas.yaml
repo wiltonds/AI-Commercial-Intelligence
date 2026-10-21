@@ -219,6 +219,31 @@ noticia_modernizacao:
         - Aperfeiçoamento Profissional em automação
         - Calibração de instrumentos
 
+financiamento_bndes:
+  rotulo: Financiamento BNDES
+  icone: "🏦"
+  negocios: [EP, STI, SSI]
+  perfis:
+    - nome: Projeto de inovação financiado
+      quando: {inovacao: "S"}
+      abordagem: >
+        Financiamento com selo de inovação: oferecer o SENAI como parceiro técnico do
+        projeto (desenvolvimento, ensaios, certificação) e a qualificação da equipe.
+      senai:
+        - Projetos de inovação e Soluções Digitais (STI)
+        - Ensaios, calibração e certificação
+        - Aperfeiçoamento Profissional na nova tecnologia
+    - nome: Investimento financiado
+      abordagem: >
+        Investimento confirmado (contrato assinado com o BNDES): máquina nova ou ampliação
+        vêm com equipe a formar e riscos novos. Abordar com o projeto em mãos.
+      sesi:
+        - PGR e PCMSO atualizados para a nova operação
+      senai:
+        - Qualificação Profissional para operar os novos equipamentos
+        - Treinamento de NR 12 (máquinas e equipamentos)
+        - Consultoria em Aumento de Produtividade
+
 abaixo_cota_aprendiz:
   rotulo: Abaixo da cota de aprendiz
   icone: "🎓"

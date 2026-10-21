@@ -46,6 +46,8 @@ def carregar_industrias() -> pd.DataFrame:
         "cnpj_basico": m["cnpj_basico"],
         "municipio": padronizar(m["Municipio"]),
         "porte": m["Porte"],
+        "razao_social": m["razao_social"],
+        "cnae": m["SEBRAE_cnae_codigo_recuperado"].fillna("").str.replace(r"\D", "", regex=True),
         "setor_cni": m["SEBRAE_cnae_codigo_recuperado"].fillna("").map(setor_cni),
         "cliente": m["STATUS_RELACIONAMENTO"].fillna("").str.upper().ne("SEM RELACIONAMENTO"),
     })

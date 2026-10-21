@@ -2,7 +2,8 @@
 coletar_ibge.py — Indicadores econômicos dos 102 municípios de AL (IBGE/SIDRA).
 
 Grava data/processed/INDICADORES_MUNICIPIOS.csv com PIB, VAB da indústria,
-peso da indústria na economia local e população. O IBGE atualiza uma vez por
+peso da indústria na economia local e população, e data/processed/CADEIAS_PRODUCAO.csv
+com a produção do campo por cadeia (config/cadeias.yaml). O IBGE atualiza uma vez por
 ano; o job pode rodar toda semana sem custo (só baixa se a fonte respondeu).
 
 Uso:
@@ -17,6 +18,7 @@ RAIZ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RAIZ))
 
 from src.sinais.fontes import registrar_execucao  # noqa: E402
+from src.sinais.cadeias import ARQ_PRODUCAO, baixar_producao, carregar_cadeias  # noqa: E402
 from src.sinais.ibge import baixar_indicadores  # noqa: E402
 
 FONTE_ID = "ibge_sidra"
@@ -34,6 +36,16 @@ def main():
         raise
     registrar_execucao(FONTE_ID, "sucesso", len(df), f"PIB {df['ano_pib_mil'].iloc[0]}, população {df['ano_populacao'].iloc[0]}")
     print(f"Pronto: {len(df)} municípios em {SAIDA.name}")
+
+    # produção das cadeias produtivas (PPM e PAM): leite, cana, coco, mandioca, ovos, fumo
+    try:
+        prod = baixar_producao(carregar_cadeias())
+        prod.to_csv(ARQ_PRODUCAO, index=False, encoding="utf-8-sig")
+    except Exception as erro:
+        registrar_execucao("ibge_cadeias", "falha", 0, f"{type(erro).__name__}: {erro}")
+        raise
+    registrar_execucao("ibge_cadeias", "sucesso", len(prod), f"{prod['cadeia'].nunique()} cadeias, ano {prod['ano'].max()}")
+    print(f"Pronto: produção de {prod['cadeia'].nunique()} cadeias em {ARQ_PRODUCAO.name}")
 
 
 if __name__ == "__main__":

@@ -31,7 +31,10 @@ def ler_sidra(json_lista: list[dict], nome: str) -> pd.DataFrame:
     if df.empty:
         return pd.DataFrame(columns=["cod_ibge", "municipio", nome, f"ano_{nome}"])
     valor = pd.to_numeric(df["V"].replace({"-": None, "...": None, "X": None}), errors="coerce")
-    ano_col = [c for c in df.columns if c.endswith("N") and c.startswith("D")][-1]
+    # a coluna do ano é a que o cabeçalho chama de "Ano" (com classificação, o produto vem depois)
+    cab = json_lista[0] if json_lista else {}
+    ano_col = next((k for k, v in cab.items() if k.startswith("D") and k.endswith("N")
+                    and str(v).strip().lower().startswith("ano")), "D3N")
     out = pd.DataFrame({
         "cod_ibge": df["D1C"],
         "municipio": padronizar(df["D1N"].str.replace(r"\s*-\s*AL$", "", regex=True)),
