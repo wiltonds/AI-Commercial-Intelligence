@@ -25,7 +25,7 @@ concurrency:
 jobs:
   coletar:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v5
 
@@ -53,7 +53,7 @@ jobs:
         continue-on-error: true
         run: |
           if [ "$(date -u +%u)" = "1" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ ! -f data/processed/SINAIS_BNDES.csv ]; then
-            python jobs/coletar_bndes.py
+            python jobs/coletar_bndes.py --automaticas
           else
             echo "BNDES: só às segundas."
           fi

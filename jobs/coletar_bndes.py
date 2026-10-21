@@ -1,22 +1,24 @@
 """
 coletar_bndes.py — Financiamentos do BNDES contratados por empresas de AL.
 
-Baixa do portal de dados abertos do BNDES o arquivo de operações (diretas e
-indiretas não automáticas), fica com as empresas privadas de AL dos últimos 24
-meses e grava data/processed/SINAIS_BNDES.csv, ligado à base pelo CNPJ.
+Baixa do portal de dados abertos do BNDES os arquivos de operações (não
+automáticas e, com --automaticas, as feitas via bancos: FINAME/BNDES Máquinas,
+giro etc.), fica com as empresas privadas de AL dos últimos 24 meses (uma linha
+por empresa, com segmento: indústria, construção, comércio e serviços...) e grava
+data/processed/SINAIS_BNDES.csv, ligado à base pelo CNPJ.
 
 O BNDES atualiza mensalmente; o GitHub Actions roda às segundas.
 
 Uso:
     python jobs/coletar_bndes.py
     python jobs/coletar_bndes.py --arquivo operacoes.csv     # arquivo baixado à mão
-    python jobs/coletar_bndes.py --automaticas               # inclui as automáticas (arquivo grande)
+    python jobs/coletar_bndes.py --automaticas               # inclui as via bancos (arquivo grande, usado no Actions)
 """
 from __future__ import annotations
 
 import argparse
-import io
 import sys
+import tempfile
 import zipfile
 from datetime import date
 from pathlib import Path
@@ -34,9 +36,11 @@ FONTE_ID = "bndes"
 SAIDA = RAIZ / "data" / "processed" / "SINAIS_BNDES.csv"
 
 
-def _conteudos(arquivo: str | None, automaticas: bool):
+def _fontes(arquivo: str | None, automaticas: bool, pasta: Path):
+    """(origem, caminho) de cada CSV. Baixa em streaming para o disco: o arquivo
+    das automáticas tem centenas de MB e não cabe com folga na memória."""
     if arquivo:
-        yield Path(arquivo).read_bytes()
+        yield ("automática" if automaticas else "não automática"), Path(arquivo)
         return
     import requests
 
@@ -46,17 +50,22 @@ def _conteudos(arquivo: str | None, automaticas: bool):
     urls = achar_recursos(pacote, automaticas)
     if not urls:
         raise RuntimeError("nenhum arquivo de operações encontrado no pacote do BNDES")
-    for url in urls:
-        print(f"  baixando {url.rsplit('/', 1)[-1]} ...")
-        r = s.get(url, timeout=600)
-        r.raise_for_status()
-        if url.lower().endswith(".zip"):
-            with zipfile.ZipFile(io.BytesIO(r.content)) as z:
+    for i, (origem, url) in enumerate(urls):
+        destino = pasta / f"bndes_{i}{Path(url).suffix.lower() or '.csv'}"
+        print(f"  baixando {url.rsplit('/', 1)[-1]} ({origem}) ...", flush=True)
+        with s.get(url, timeout=1800, stream=True) as r:
+            r.raise_for_status()
+            with open(destino, "wb") as f:
+                for parte in r.iter_content(chunk_size=1 << 20):
+                    f.write(parte)
+        print(f"    {destino.stat().st_size / 1e6:,.0f} MB", flush=True)
+        if destino.suffix == ".zip":
+            with zipfile.ZipFile(destino) as z:
                 for nome in z.namelist():
                     if nome.lower().endswith(".csv"):
-                        yield z.read(nome)
+                        yield origem, Path(z.extract(nome, pasta))
         else:
-            yield r.content
+            yield origem, destino
 
 
 def main():
@@ -65,14 +74,18 @@ def main():
     ap.add_argument("--automaticas", action="store_true")
     a = ap.parse_args()
     try:
-        ops = pd.concat([ler_operacoes(c) for c in _conteudos(a.arquivo, a.automaticas)], ignore_index=True)
+        with tempfile.TemporaryDirectory() as tmp:
+            ops = pd.concat([ler_operacoes(caminho, origem) for origem, caminho
+                             in _fontes(a.arquivo, a.automaticas, Path(tmp))], ignore_index=True)
         sinais = para_sinais(ops, carregar_empresas(), date.today())
         sinais.to_csv(SAIDA, index=False, encoding="utf-8-sig")
     except Exception as erro:
         registrar_execucao(FONTE_ID, "falha", 0, f"{type(erro).__name__}: {erro}")
         raise
     n_emp = sinais["cnpj_basico"].nunique() if not sinais.empty else 0
-    registrar_execucao(FONTE_ID, "sucesso", len(sinais), f"{n_emp} empresas de AL com financiamento em 24 meses")
+    seg = sinais["segmento"].value_counts().to_dict() if not sinais.empty else {}
+    resumo = ", ".join(f"{k} {v}" for k, v in seg.items())
+    registrar_execucao(FONTE_ID, "sucesso", len(sinais), f"{n_emp} empresas de AL com financiamento em 24 meses ({resumo})")
     print(f"Pronto: {len(sinais)} operações, {n_emp} empresas de AL.")
 
 

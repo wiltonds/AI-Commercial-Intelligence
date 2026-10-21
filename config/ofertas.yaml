@@ -223,9 +223,13 @@ financiamento_bndes:
   rotulo: Financiamento BNDES
   icone: "🏦"
   negocios: [EP, STI, SSI]
+  # O perfil é escolhido pelo segmento da empresa (src/sinais/bndes.py: segmento).
+  # Não é só indústria: hotel que amplia vira obra, hospital que compra equipamento
+  # precisa de manutenção e SST. O primeiro perfil que bater vale.
   perfis:
     - nome: Projeto de inovação financiado
       quando: {inovacao: "S"}
+      negocios: [STI, EP]
       abordagem: >
         Financiamento com selo de inovação: oferecer o SENAI como parceiro técnico do
         projeto (desenvolvimento, ensaios, certificação) e a qualificação da equipe.
@@ -233,7 +237,9 @@ financiamento_bndes:
         - Projetos de inovação e Soluções Digitais (STI)
         - Ensaios, calibração e certificação
         - Aperfeiçoamento Profissional na nova tecnologia
-    - nome: Investimento financiado
+    - nome: Indústria investindo
+      quando: {segmento: [Indústria, Utilidade pública]}
+      negocios: [EP, STI, SSI]
       abordagem: >
         Investimento confirmado (contrato assinado com o BNDES): máquina nova ou ampliação
         vêm com equipe a formar e riscos novos. Abordar com o projeto em mãos.
@@ -243,6 +249,49 @@ financiamento_bndes:
         - Qualificação Profissional para operar os novos equipamentos
         - Treinamento de NR 12 (máquinas e equipamentos)
         - Consultoria em Aumento de Produtividade
+    - nome: Construção financiada
+      quando: {segmento: Construção}
+      negocios: [SSI, EP]
+      abordagem: >
+        Construtora com crédito na mão = obras e contratação pela frente. Entrar com a
+        segurança do canteiro e a mão de obra qualificada para a obra.
+      sesi:
+        - PGR e PCMSO da obra (NR 18)
+        - Exames ocupacionais da equipe contratada
+      senai:
+        - Qualificação em construção civil (pedreiro, armador, eletricista predial)
+        - Treinamentos de NR 18, NR 35 (altura) e NR 10
+    - nome: Serviços e comércio investindo
+      quando: {segmento: Comércio e serviços}
+      negocios: [SSI, EP, EB]
+      abordagem: >
+        Empresa fora da indústria (hotel, hospital, varejo, logística) investindo:
+        ampliação vira obra e equipamento novo vira manutenção. Não é público do
+        Sistema Indústria na contribuição, mas compra SST e cursos como cliente.
+      sesi:
+        - SST para a ampliação (PGR, PCMSO, exames)
+        - EJA / Educação Básica para os colaboradores
+      senai:
+        - Manutenção predial, refrigeração e climatização, eletricista
+        - NR 10, NR 35 e operação dos novos equipamentos
+    - nome: Agropecuária financiada
+      quando: {segmento: Agropecuária}
+      negocios: [EP, SSI]
+      abordagem: >
+        Produtor rural ou cooperativa comprando máquina ou ampliando: entrar pela
+        operação e manutenção das máquinas e, se houver beneficiamento, pela agroindústria.
+      sesi:
+        - PGR e PCMSO (NR 31)
+      senai:
+        - Mecânico de máquinas agrícolas e operação de tratores/colheitadeiras
+        - Treinamento de NR 12 nas máquinas novas
+    - nome: Investimento financiado
+      abordagem: >
+        Investimento confirmado com o BNDES. Abordar com o projeto em mãos.
+      sesi:
+        - PGR e PCMSO atualizados
+      senai:
+        - Qualificação da equipe para o investimento
 
 abaixo_cota_aprendiz:
   rotulo: Abaixo da cota de aprendiz
