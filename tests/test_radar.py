@@ -103,3 +103,18 @@ def test_setor_cni_pela_divisao_cnae():
     assert setor_cni("4120-4/00") == "Indústria da Construção"
     assert setor_cni("0810-0/01") == "Indústria Extrativa"
     assert setor_cni("6201-5/01") == "Outros enquadrados pela CNI"
+
+
+def test_palavra_comum_minuscula_nao_vira_empresa():
+    emp = pd.concat([EMPRESAS, pd.DataFrame([
+        {"cnpj_basico": "44444444", "cnpj": "44444444000101", "razao_social": "EMPREGOS MATCH LTDA",
+         "nome_fantasia": "", "municipio": "Maceió", "Porte": "DEMAIS",
+         "STATUS_RELACIONAMENTO_REAL": "Sem relacionamento", "tipo_empresa": "Não indústria"},
+        {"cnpj_basico": "55555555", "cnpj": "55555555000101", "razao_social": "USINA CAETE S A",
+         "nome_fantasia": "", "municipio": "São Miguel dos Campos", "Porte": "DEMAIS",
+         "STATUS_RELACIONAMENTO_REAL": "SESI + SENAI", "tipo_empresa": "Indústria"}])], ignore_index=True)
+    df = processar([_n("Alagoas prevê vagas e 4 mil empregos na indústria"),
+                    _n("Usina Caeté anuncia ampliação em São Miguel dos Campos")], emp, CFG, date(2026, 10, 21))
+    por = dict(zip(df["descricao"].str[:10], df["casamento"]))
+    assert por["Alagoas pr"] == "sem empresa"
+    assert df[df["casamento"] == "por nome"]["cnpj_basico"].tolist() == ["55555555"]

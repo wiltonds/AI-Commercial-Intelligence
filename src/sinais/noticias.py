@@ -32,6 +32,14 @@ URL_RSS = "https://news.google.com/rss/search?q={q}&hl=pt-BR&gl=BR&ceid=BR:pt-41
 
 SUFIXOS = r"\b(ltda|s\/?a|eireli|me|epp|cia|companhia|sociedade anonima|limitada|e filhos|filial)\b"
 CONECTIVOS = {"de", "da", "do", "das", "dos", "e", "em", "a", "o"}
+# começo de nome que indica organização: o nome próprio vem logo depois
+ORGANIZACAO = {"usina", "grupo", "cooperativa", "construtora", "industria", "industrias", "fabrica",
+               "laticinios", "laticinio", "destilaria", "ceramica", "metalurgica", "frigorifico", "moinho"}
+# palavras do dia a dia que aparecem em nome de empresa e em qualquer notícia
+PALAVRAS_COMUNS = {"empresas", "empresa", "empregos", "emprego", "alagoanas", "alagoano", "alagoanos",
+                   "tradicao", "transformacao", "noticia", "noticias", "investimentos", "governo",
+                   "estado", "brasil", "futuro", "progresso", "sucesso", "energia", "digital", "inovacao",
+                   "desenvolvimento", "trabalho", "industrial", "nacional", "regional", "nordeste"}
 
 
 # ------------------------------------------------------------------ texto
@@ -115,7 +123,7 @@ def achar_municipio(texto_norm: str) -> str:
 
 
 def cita_alagoas(texto_norm: str) -> bool:
-    return bool(re.search(r"\balagoas\b|\balagoan[oa]s?\b|\b- al\b|\b/al\b", texto_norm)) or bool(achar_municipio(texto_norm))
+    return bool(re.search(r"\balagoas\b|\balagoan[oa]s?\b|(?:\bde|\bem|\bno|\bdo|-|/) ?al\b", texto_norm)) or bool(achar_municipio(texto_norm))
 
 
 def classificar(texto_norm: str, cfg: dict) -> dict | None:
@@ -149,12 +157,15 @@ def indice_empresas(empresas: pd.DataFrame, genericos: set[str]) -> dict[str, li
     empresas, ou primeira palavra comum (nome próprio, palavra do dia a dia), não entra.
     """
     reg = empresas.to_dict("records")
-    # frequência da primeira palavra distintiva no universo todo: nomes de pessoa são frequentes
+    # quantas empresas usam cada palavra no nome: palavra comum não identifica ninguém
     freq: dict[str, int] = {}
     for e in reg:
-        _, d = _tokens(e.get("razao_social"), genericos)
-        if d:
-            freq[d[0]] = freq.get(d[0], 0) + 1
+        tokens, _ = _tokens(e.get("razao_social"), genericos)
+        for w in set(tokens):
+            freq[w] = freq.get(w, 0) + 1
+
+    def rara(w: str) -> bool:
+        return len(w) >= 5 and freq.get(w, 0) <= 3 and w not in PALAVRAS_COMUNS
 
     indice: dict[str, list[dict]] = {}
     for e in reg:
@@ -171,17 +182,30 @@ def indice_empresas(empresas: pd.DataFrame, genericos: set[str]) -> dict[str, li
             if len(d) >= 2:
                 chaves.add(" ".join(tokens))
                 chaves.add(f"{d[0]} {d[1]}")
-            if d and len(d[0]) >= 6 and freq.get(d[0], 0) <= 3:
+            if d and len(d[0]) >= 6 and rara(d[0]):
                 chaves.add(d[0])
+            # 'Usina Caeté', 'Cooperativa Pindorama', 'Grupo Amarante': palavra de organização + nome
+            if len(tokens) >= 2 and tokens[0] in ORGANIZACAO and tokens[1] not in genericos:
+                chaves.add(f"{tokens[0]} {tokens[1]}")
+                if rara(tokens[1]):
+                    chaves.add(tokens[1])
         for ch in chaves:
-            if len(ch) >= 6 and len(ch.split()) <= 6:
+            if len(ch) >= 5 and len(ch.split()) <= 6:
                 lista = indice.setdefault(ch, [])
                 if e["cnpj_basico"] not in {x["cnpj_basico"] for x in lista}:
                     lista.append(e)
     return {k: v for k, v in indice.items() if len(v) <= 3}
 
 
-def casar_empresa(texto_norm: str, municipio: str, indice: dict[str, list[dict]]) -> dict:
+def _maiusculo_no_original(chave: str, original: str) -> bool:
+    primeira = chave.split()[0]
+    for palavra in re.findall(r"[\w']+", original):
+        if normalizar(palavra) == primeira:
+            return palavra[:1].isupper()
+    return True
+
+
+def casar_empresa(texto_norm: str, municipio: str, indice: dict[str, list[dict]], original: str | None = None) -> dict:
     """Procura o nome de empresa mais longo citado no texto.
 
     Nome de uma palavra só ('sococo') vale como casamento só se o município da
@@ -189,6 +213,8 @@ def casar_empresa(texto_norm: str, municipio: str, indice: dict[str, list[dict]]
     """
     texto = " " + re.sub(r"[^a-z0-9 ]", " ", texto_norm) + " "
     achados = [ch for ch in indice if f" {ch} " in texto]
+    if original is not None:  # nome de empresa vem com maiúscula ('Pindorama'), palavra comum não ('empregos')
+        achados = [ch for ch in achados if _maiusculo_no_original(ch, original)]
     if not achados:
         return {"casamento": "sem empresa"}
     ch = max(achados, key=lambda k: (len(k.split()), len(k)))
@@ -213,7 +239,11 @@ def processar(noticias: list[dict], empresas: pd.DataFrame, cfg: dict, hoje: dat
         chave_titulo = normalizar(n["titulo"])[:90]
         if not chave_titulo or chave_titulo in vistos:
             continue
-        texto = normalizar(f"{n['titulo']} {n['resumo']}")
+        resumo = n["resumo"]
+        if n.get("veiculo"):
+            resumo = resumo.replace(n["veiculo"], " ")  # o Google News repete o nome do veículo no resumo
+        original = f"{n['titulo']} {resumo}"
+        texto = normalizar(original)
         if not relevante(texto, cfg):
             continue
         tema = classificar(texto, cfg)
@@ -221,7 +251,7 @@ def processar(noticias: list[dict], empresas: pd.DataFrame, cfg: dict, hoje: dat
             continue
         vistos.add(chave_titulo)
         mun = achar_municipio(texto)
-        emp = casar_empresa(texto, mun, indice)
+        emp = casar_empresa(texto, mun, indice, original)
         linhas.append({
             "tipo_sinal": tema["tipo_sinal"], "tema": tema["rotulo"], "palavras_chave": tema["palavras"],
             "descricao": n["titulo"], "resumo": n["resumo"][:400],
