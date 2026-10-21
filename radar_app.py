@@ -24,6 +24,7 @@ from src.sinais.cadeias import ARQ_PRODUCAO, carregar_cadeias, industrias_da_cad
 from src.sinais.mercado import (NEGOCIOS, carregar_industrias, carregar_metas, mercado_municipios,
                                 mercado_setores, visao_negocios)
 from src.tools.municipios import padronizar
+from src.tools.porte import opcoes as opcoes_porte, padronizar as padronizar_porte
 
 RAIZ = Path(__file__).resolve().parent
 P = RAIZ / "data" / "processed"
@@ -67,7 +68,10 @@ def carregar(assinatura: tuple):  # noqa: ARG001 — a assinatura invalida o cac
                 sinais[c] = ""
         sinais["casamento"] = sinais["casamento"].replace("", pd.NA).fillna(
             sinais["cnpj_basico"].notna().map({True: "por CNPJ", False: "sem empresa"}))
+        if "Porte" in sinais:
+            sinais["Porte"] = padronizar_porte(sinais["cnpj_basico"], sinais["Porte"])
     ind = carregar_industrias()
+    ind["porte"] = padronizar_porte(ind["cnpj_basico"], ind["porte"])
     return sinais, ind
 
 
@@ -318,7 +322,9 @@ def _propensao(assinatura: tuple):  # noqa: ARG001
 @st.cache_data(ttl=3600, show_spinner=False)
 def _empresas_todas(assinatura: tuple):  # noqa: ARG001
     from src.sinais.noticias import carregar_empresas
-    return carregar_empresas()
+    e = carregar_empresas()
+    e["Porte"] = padronizar_porte(e["cnpj_basico"], e["Porte"])
+    return e
 
 
 def pagina_prioridades():
@@ -355,7 +361,7 @@ def pagina_prioridades():
     pr = prioridades(prop, _empresas_todas(_assinatura()), sinais, neg)
     c = st.columns(4)
     f_mun = c[0].multiselect("Município", sorted(pr["municipio"].dropna().unique()))
-    f_porte = c[1].multiselect("Porte", sorted(pr["Porte"].dropna().astype(str).unique()))
+    f_porte = c[1].multiselect("Porte", opcoes_porte(pr["Porte"]))
     f_rel = c[2].selectbox("Relação", ["Todas", "Cross-sell (já compra outro negócio)", "Sem compra registrada"])
     so_ind = c[3].toggle("Só indústrias", value=False)
     v = pr
@@ -407,7 +413,7 @@ def pagina_mapa():
     # ---------------- filtros
     c = st.columns([2, 2, 2, 3])
     f_setor = c[0].multiselect("Setor", sorted(emp["setor_cni"].dropna().unique()))
-    f_porte = c[1].multiselect("Porte", sorted(emp["porte"].dropna().astype(str).unique()))
+    f_porte = c[1].multiselect("Porte", opcoes_porte(emp["porte"]))
     neg = c[2].selectbox("Negócio", ["Todos"] + list(NEGOCIOS),
                          help="Escolha um negócio para ver clientes, oportunidades e o potencial (modelo lookalike) dele.")
     prop = _propensao(_assinatura()) if neg != "Todos" else None
