@@ -1,0 +1,9 @@
+﻿negocio,treino_compradores,candidatos,novos,auc,top1_captura,top1_lift,top5_captura,top5_lift,top10_captura,top10_lift,top20_captura,top20_lift,grupo,corte,ticket_medio,ticket_mediano,empresas_compradoras
+SSI,1021,86851,178,0.869,0.399,39.9,0.517,10.3,0.646,6.5,0.73,3.7,compradores novos do negócio,2026-07-01,9177.933413014609,630.08,753
+SSI,1021,86851,107,0.783,0.009,0.9,0.196,3.9,0.411,4.1,0.551,2.8,sem compra anterior em nenhum negócio,2026-07-01,9177.933413014609,630.08,753
+STI,1010,86862,107,0.942,0.374,37.4,0.71,14.2,0.822,8.2,0.935,4.7,compradores novos do negócio,2026-07-01,48572.370243902435,1400.0,328
+STI,1010,86862,72,0.917,0.097,9.7,0.597,11.9,0.75,7.5,0.903,4.5,sem compra anterior em nenhum negócio,2026-07-01,48572.370243902435,1400.0,328
+EP,511,87361,36,0.967,0.611,61.1,0.917,18.3,0.944,9.4,0.944,4.7,compradores novos do negócio,2026-07-01,40402.476007326004,0.0,273
+EP,511,87361,16,0.929,0.25,25.0,0.812,16.2,0.875,8.8,0.875,4.4,sem compra anterior em nenhum negócio,2026-07-01,40402.476007326004,0.0,273
+EB,272,87600,47,0.947,0.745,74.5,0.809,16.2,0.851,8.5,0.851,4.3,compradores novos do negócio,2026-07-01,755521.1399999999,755521.1399999999,2
+EB,272,87600,8,0.714,0.0,0.0,0.0,0.0,0.125,1.2,0.125,0.6,sem compra anterior em nenhum negócio,2026-07-01,755521.1399999999,755521.1399999999,2

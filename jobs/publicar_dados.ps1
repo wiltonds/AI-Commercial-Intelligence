@@ -40,7 +40,9 @@ $arquivos = @(
     "data/processed/MEI_BASE_MESTRE.csv",
     "data/processed/LOG_ATUALIZACOES.csv",
     "data/processed/SINAIS_CNO.csv",
-    "data/processed/LOG_FONTES_cno.csv"
+    "data/processed/LOG_FONTES_cno.csv",
+    "data/processed/PROPENSAO.csv",
+    "data/processed/PROPENSAO_VALIDACAO.csv"
 )
 $origem = (Get-Location).Path
 $alvo = if ($Destino) { (Resolve-Path $Destino).Path } else { $origem }

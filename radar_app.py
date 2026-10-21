@@ -50,7 +50,7 @@ REL = {"Sem relacionamento": "🎯 Sem relacionamento", "Fora da Base Mestre": "
 
 # ------------------------------------------------------------------ dados
 def _assinatura() -> tuple:
-    arqs = sorted(P.glob("SINAIS_*.csv")) + [ARQ_OFERTAS, ARQ_PRODUCAO, P / "CNPJ_NOMES.csv", P / "BASE_MESTRE_COMERCIAL.csv", P / "VISAO_360.csv",
+    arqs = sorted(P.glob("SINAIS_*.csv")) + [ARQ_OFERTAS, ARQ_PRODUCAO, P / "CNPJ_NOMES.csv", P / "PROPENSAO.csv", P / "BASE_MESTRE_COMERCIAL.csv", P / "VISAO_360.csv",
                                                P / "INDICADORES_MUNICIPIOS.csv"]
     return tuple((a.name, a.stat().st_mtime) for a in arqs if a.exists())
 
@@ -309,10 +309,94 @@ def _pontos(assinatura: tuple):  # noqa: ARG001
     return posicionar(empresas_do_mapa(ind, sinais), carregar_malha())
 
 
+@st.cache_data(ttl=3600, show_spinner=False)
+def _propensao(assinatura: tuple):  # noqa: ARG001
+    arq = P / "PROPENSAO.csv"
+    return pd.read_csv(arq, dtype={"cnpj_basico": str}, encoding="utf-8-sig") if arq.exists() else None
+
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def _empresas_todas(assinatura: tuple):  # noqa: ARG001
+    from src.sinais.noticias import carregar_empresas
+    return carregar_empresas()
+
+
+def pagina_prioridades():
+    from src.sinais.propensao import QUADRANTES, prioridades
+
+    sinais, _ = carregar(_assinatura())
+    topo("Radar de Oportunidades", "Prioridades por negócio",
+         "Triangulação: quem se parece com quem já compra (modelo) × quem tem sinal agora × onde está.")
+    prop = _propensao(_assinatura())
+    if prop is None:
+        st.warning("Notas de potencial ainda não publicadas. Na máquina local: `python jobs/treinar_propensao.py` "
+                   "e depois publicar os dados.")
+        return
+    neg = st.radio("Negócio", list(NEGOCIOS), horizontal=True, format_func=lambda n: f"{n} · {NEGOCIOS[n]}")
+    val_arq = P / "PROPENSAO_VALIDACAO.csv"
+    if val_arq.exists():
+        val = pd.read_csv(val_arq)
+        r = val[(val["negocio"] == neg) & (val["grupo"] == "compradores novos do negócio")]
+        r2 = val[(val["negocio"] == neg) & (val["grupo"] == "sem compra anterior em nenhum negócio")]
+        if not r.empty and r.iloc[0].get("novos", 0):
+            r, r2 = r.iloc[0], (r2.iloc[0] if not r2.empty else None)
+            txt = (f"**Teste do modelo:** treinado só com quem comprava até {pd.Timestamp(r['corte']):%m/%Y}, as 10% empresas "
+                   f"com maior nota concentraram **{r['top10_captura']:.0%}** dos {int(r['novos'])} compradores novos de {neg} "
+                   f"depois disso ({r['top10_captura'] / 0.10:.1f}× o acaso).")
+            if r2 is not None and r2.get("novos", 0) >= 15:
+                txt += f" Entre empresas sem nenhuma compra anterior: **{r2['top10_captura']:.0%}** ({int(r2['novos'])} casos)."
+            elif r2 is not None:
+                txt += (f" Para empresas sem nenhuma compra anterior há poucos casos ({int(r2.get('novos', 0))}): "
+                        "use a nota principalmente para cross-sell.")
+            st.info(txt)
+            if r.get("empresas_compradoras", 0) >= 30 and pd.notna(r.get("ticket_medio")):
+                st.caption(f"Ticket médio por empresa em {neg} (propostas aceitas): "
+                           f"R$ {r['ticket_medio']:,.0f}".replace(",", "."))
+    pr = prioridades(prop, _empresas_todas(_assinatura()), sinais, neg)
+    c = st.columns(4)
+    f_mun = c[0].multiselect("Município", sorted(pr["municipio"].dropna().unique()))
+    f_porte = c[1].multiselect("Porte", sorted(pr["Porte"].dropna().astype(str).unique()))
+    f_rel = c[2].selectbox("Relação", ["Todas", "Cross-sell (já compra outro negócio)", "Sem compra registrada"])
+    so_ind = c[3].toggle("Só indústrias", value=False)
+    v = pr
+    if f_mun:
+        v = v[v["municipio"].isin(f_mun)]
+    if f_porte:
+        v = v[v["Porte"].astype(str).isin(f_porte)]
+    if f_rel.startswith("Cross"):
+        v = v[v["relacao"].str.contains("cross-sell")]
+    elif f_rel.startswith("Sem"):
+        v = v[v["relacao"].eq("Sem compra registrada")]
+    if so_ind:
+        v = v[v["tipo_empresa"].eq("Indústria")]
+    k = st.columns(4)
+    for col_, q in zip(k, ["agora", "planejar", "pontual"]):
+        col_.metric(QUADRANTES[q], _n((v["quadrante"] == QUADRANTES[q]).sum()))
+    k[3].metric("Cross-sell com nota ≥ 90", _n(((v["fit"] >= 90) & v["relacao"].str.contains("cross-sell")).sum()))
+    st.caption("🔥 nota ≥ 90 e sinal que aciona o negócio · 📅 nota ≥ 90 sem sinal (prospecção planejada) · "
+               "⚡ sinal com nota menor. Nota = percentil do modelo (100 = mais parecida com quem compra).")
+    quad = st.multiselect("Quadrante", list(QUADRANTES.values())[:3], default=list(QUADRANTES.values())[:2])
+    if quad:
+        v = v[v["quadrante"].isin(quad)]
+    st.dataframe(v.head(500)[["quadrante", "prioridade", "fit", "momento", "razao_social", "municipio", "Porte",
+                              "relacao", "motivo", "sinal", "cnpj_basico"]],
+                 width="stretch", hide_index=True, height=520, column_config={
+                     "quadrante": "Quadrante",
+                     "prioridade": st.column_config.ProgressColumn("Prioridade", min_value=0, max_value=100, format="%.0f"),
+                     "fit": st.column_config.NumberColumn("Nota (fit)", help="0 a 100: quanto se parece com quem compra"),
+                     "momento": st.column_config.NumberColumn("Momento", format="%.1f"),
+                     "razao_social": "Empresa", "municipio": "Município", "Porte": "Porte", "relacao": "Relação",
+                     "motivo": "Por que", "sinal": "Sinal agora", "cnpj_basico": "CNPJ raiz"})
+    st.download_button(f"⬇️ Baixar prioridades {neg} (CSV para Excel / Moskit)",
+                       v.drop(columns=[c_ for c_ in v.columns if c_.startswith("compra_")]).to_csv(index=False, sep=";")
+                       .encode("utf-8-sig"), file_name=f"prioridades_{neg}_{pd.Timestamp.now():%Y-%m-%d}.csv",
+                       mime="text/csv")
+
+
 def pagina_mapa():
     import pydeck as pdk
 
-    from src.sinais.mapa import COR_CLIENTE, COR_OPORTUNIDADE, COR_SEM_REL, carregar_malha, cor_status, malha_com_indicadores
+    from src.sinais.mapa import COR_CLIENTE, COR_OPORTUNIDADE, COR_SEM_REL, carregar_malha, malha_com_indicadores
 
     sinais, ind = carregar(_assinatura())
     topo("Radar de Oportunidades", "Mapa de Alagoas",
@@ -324,26 +408,49 @@ def pagina_mapa():
     c = st.columns([2, 2, 2, 3])
     f_setor = c[0].multiselect("Setor", sorted(emp["setor_cni"].dropna().unique()))
     f_porte = c[1].multiselect("Porte", sorted(emp["porte"].dropna().astype(str).unique()))
-    f_neg = c[2].multiselect("Negócio do sinal", list(NEGOCIOS))
+    neg = c[2].selectbox("Negócio", ["Todos"] + list(NEGOCIOS),
+                         help="Escolha um negócio para ver clientes, oportunidades e o potencial (modelo lookalike) dele.")
+    prop = _propensao(_assinatura()) if neg != "Todos" else None
+    if neg != "Todos" and prop is None:
+        st.info("Notas de potencial ainda não publicadas (rode `python jobs/treinar_propensao.py`). "
+                "Mostrando só os sinais do negócio.")
     cadeias = carregar_cadeias()
     opcoes = {"Indústrias sem relacionamento": "sem_relacionamento", "Penetração (clientes ÷ indústrias)": "penetracao",
               "Sinais do radar (90 dias)": "sinais_90d", "VAB da indústria (IBGE)": "vab_industria_mil"}
     opcoes.update({f"Produção: {c_['nome']}": f"prod_{cid}" for cid, c_ in cadeias.items()})
+    if prop is not None:
+        opcoes = {f"Potencial {neg} não atendido (modelo)": "potencial", **opcoes}
     pintar = c[3].selectbox("Pintar os municípios por", list(opcoes))
-    c2 = st.columns(3)
-    ver_cli = c2[0].toggle("🟢 Clientes", value=True)
-    ver_sem = c2[1].toggle("⚪ Sem relacionamento", value=True)
-    ver_op = c2[2].toggle("🟠 Com oportunidade no radar", value=True)
+    if prop is not None:
+        rot = {"cli": f"🟢 Clientes {neg}", "sem": "⚪ Demais", "op": f"🟠 Sinal que aciona {neg}",
+               "pot": f"🟣 Alto potencial {neg} (nota ≥ 90)"}
+    else:
+        rot = {"cli": "🟢 Clientes", "sem": "⚪ Sem relacionamento", "op": "🟠 Com oportunidade no radar"}
+    c2 = st.columns(len(rot))
+    ver = {k: c2[i].toggle(r, value=True) for i, (k, r) in enumerate(rot.items())}
 
     v = emp
     if f_setor:
         v = v[v["setor_cni"].isin(f_setor)]
     if f_porte:
         v = v[v["porte"].astype(str).isin(f_porte)]
-    if f_neg:
-        v = v[v["negocios_sinal"].fillna("").apply(lambda x: any(n in x for n in f_neg))]
-    mostrar = {"Cliente": ver_cli, "Sem relacionamento": ver_sem, "Com oportunidade no radar": ver_op}
-    v = v[v["status"].map(mostrar)]
+    if neg != "Todos":
+        aciona = v["negocios_sinal"].fillna("").str.contains(neg)
+        if prop is not None:
+            pp = prop[["cnpj_basico", f"fit_{neg}", f"compra_{neg}"]].rename(columns={f"fit_{neg}": "fit",
+                                                                                       f"compra_{neg}": "compra_neg"})
+            v = v.merge(pp, on="cnpj_basico", how="left")
+            aciona = v["negocios_sinal"].fillna("").str.contains(neg)
+            v["status"] = np.select([v["compra_neg"].eq(1), aciona, v["fit"].fillna(0) >= 90],
+                                    [f"Cliente {neg}", f"Sinal que aciona {neg}", f"Alto potencial {neg}"], "Demais")
+            chave = {f"Cliente {neg}": "cli", f"Sinal que aciona {neg}": "op", f"Alto potencial {neg}": "pot",
+                     "Demais": "sem"}
+        else:
+            v = v[aciona]
+            chave = {"Cliente": "cli", "Sem relacionamento": "sem", "Com oportunidade no radar": "op"}
+    else:
+        chave = {"Cliente": "cli", "Sem relacionamento": "sem", "Com oportunidade no radar": "op"}
+    v = v[v["status"].map(chave).map(ver).fillna(False).astype(bool)]
 
     # ---------------- indicadores por município (respeitam setor e porte)
     base_ind = ind
@@ -358,6 +465,12 @@ def pagina_mapa():
         piv = prod.pivot_table(index="municipio", columns="cadeia", values="producao", aggfunc="sum")
         piv.columns = [f"prod_{c_}" for c_ in piv.columns]
         mun = mun.merge(piv.reset_index(), on="municipio", how="left")
+    if prop is not None:
+        e_all = _empresas_todas(_assinatura())
+        pot = prop[prop[f"compra_{neg}"].eq(0)][["cnpj_basico", f"fit_{neg}"]].merge(
+            e_all[["cnpj_basico", "municipio"]], on="cnpj_basico")
+        pot = pot[pot[f"fit_{neg}"] >= 90].groupby("municipio").size().rename("potencial").reset_index()
+        mun = mun.merge(pot, on="municipio", how="outer").fillna({"potencial": 0})
     col = opcoes[pintar]
     if col not in mun:
         st.info("Esse indicador ainda não foi coletado (aguarde a coleta do IBGE de segunda-feira).")
@@ -369,13 +482,17 @@ def pagina_mapa():
     elif col.startswith("prod_"):
         un = cadeias[col[5:]]["producao"]["unidade"]
         fmt = lambda x, un=un: f"{x:,.0f} {un}".replace(",", ".")  # noqa: E731
+    elif col == "potencial":
+        fmt = lambda x: f"{_n(x)} empresas com nota ≥ 90 que ainda não compram"  # noqa: E731
     else:
         fmt = lambda x: _n(x)  # noqa: E731
     geo = malha_com_indicadores(malha, mun, col, pintar, fmt)
 
     # ---------------- pontos
-    v = v.assign(cor=[c_ + [235] for c_ in cor_status(v["status"])],
-                 raio=np.where(v["status"] == "Com oportunidade no radar", 900, 380))
+    cores = {"cli": COR_CLIENTE, "sem": COR_SEM_REL, "op": COR_OPORTUNIDADE, "pot": [123, 63, 191]}
+    k_ = v["status"].map(chave)
+    v = v.assign(cor=[cores.get(x, COR_SEM_REL) + [235] for x in k_],
+                 raio=np.select([k_.eq("op"), k_.eq("pot")], [900, 700], 380))
     v["titulo"] = v["razao_social"].fillna("").astype(str)
     porte = v["porte"].where(v["porte"].notna(), "").astype(str).replace({"nan": ""})
     v["detalhe"] = [" · ".join(x for x in (m, p_, st_) if x) for m, p_, st_ in zip(v["municipio"], porte, v["status"])]
@@ -418,13 +535,12 @@ def pagina_mapa():
         for _, s_ in ops_emp.iterrows():
             cartao(s_)
 
-    leg = st.columns(4)
-    for col_, (nome, cor) in zip(leg, [("Cliente", COR_CLIENTE), ("Sem relacionamento", COR_SEM_REL),
-                                       ("Com oportunidade no radar", COR_OPORTUNIDADE)]):
-        col_.markdown(f"<span style='display:inline-block;width:.8rem;height:.8rem;border-radius:50%;"
-                      f"background:rgb{tuple(cor)};margin-right:.4rem'></span>{nome} "
-                      f"(**{_n((v['status'] == nome).sum())}**)", unsafe_allow_html=True)
-    leg[3].caption(f"Municípios: mais escuro = mais {pintar.lower()}.")
+    leg = st.columns(len(rot) + 1)
+    for i, (k, nome) in enumerate(rot.items()):
+        leg[i].markdown(f"<span style='display:inline-block;width:.8rem;height:.8rem;border-radius:50%;"
+                        f"background:rgb{tuple(cores[k])};margin-right:.4rem'></span>{nome[2:]} "
+                        f"(**{_n((v['status'].map(chave) == k).sum())}**)", unsafe_allow_html=True)
+    leg[-1].caption(f"Municípios: mais escuro = mais {pintar.lower()}.")
     st.caption("Cada ponto é uma empresa, posicionada dentro do seu município (a base ainda não tem endereço geocodificado; "
                "o ponto não é o endereço). Passe o mouse para ver a empresa; clique no ponto para ver a oportunidade e o que "
                "oferecer, ou no município para ver o detalhe dele.")
@@ -494,7 +610,8 @@ def pagina_fontes():
 
 pg = st.navigation({
     "Radar": [st.Page(pagina_hoje, title="Hoje", icon="📡", default=True),
-              st.Page(pagina_sinais, title="Sinais", icon="📋")],
+              st.Page(pagina_sinais, title="Sinais", icon="📋"),
+              st.Page(pagina_prioridades, title="Prioridades por negócio", icon="🎯")],
     "Inteligência": [st.Page(pagina_mapa, title="Mapa de Alagoas", icon="📍"),
                      st.Page(pagina_mercado, title="Mercado", icon="🗺️"),
                      st.Page(pagina_cadeias, title="Cadeias produtivas", icon="🌾"),
