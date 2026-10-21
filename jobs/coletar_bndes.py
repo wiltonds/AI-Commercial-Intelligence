@@ -36,6 +36,46 @@ FONTE_ID = "bndes"
 SAIDA = RAIZ / "data" / "processed" / "SINAIS_BNDES.csv"
 
 
+def baixar_com_retomada(sessao, url: str, destino: Path, tentativas: int = 30) -> None:
+    """Baixa arquivo grande retomando de onde parou (HTTP Range) quando a conexão cai.
+
+    O arquivo das automáticas passa de 1 GB e o servidor do BNDES costuma cortar
+    a conexão no meio do caminho.
+    """
+    import time
+
+    import requests
+
+    total = None
+    for tentativa in range(1, tentativas + 1):
+        feito = destino.stat().st_size if destino.exists() else 0
+        if total is not None and feito >= total:
+            return
+        cab = {"Range": f"bytes={feito}-"} if feito else {}
+        try:
+            with sessao.get(url, headers=cab, timeout=(30, 120), stream=True) as r:
+                if r.status_code == 416:          # já tem tudo
+                    return
+                r.raise_for_status()
+                if feito and r.status_code != 206:  # servidor ignorou o Range: recomeça
+                    feito = 0
+                if total is None:
+                    tam = r.headers.get("Content-Range", "").rsplit("/", 1)[-1] if r.status_code == 206 \
+                        else r.headers.get("Content-Length")
+                    total = int(tam) if tam and tam.isdigit() else None
+                with open(destino, "ab" if feito else "wb") as f:
+                    for parte in r.iter_content(chunk_size=1 << 20):
+                        f.write(parte)
+            if total is None or destino.stat().st_size >= total:
+                return
+        except (requests.exceptions.ChunkedEncodingError, requests.exceptions.ConnectionError,
+                requests.exceptions.Timeout) as erro:
+            print(f"    conexão caiu em {destino.stat().st_size / 1e6:,.0f} MB "
+                  f"(tentativa {tentativa}): {type(erro).__name__}", flush=True)
+            time.sleep(min(5 * tentativa, 30))
+    raise RuntimeError(f"download incompleto após {tentativas} tentativas: {url}")
+
+
 def _fontes(arquivo: str | None, automaticas: bool, pasta: Path):
     """(origem, caminho) de cada CSV. Baixa em streaming para o disco: o arquivo
     das automáticas tem centenas de MB e não cabe com folga na memória."""
@@ -47,17 +87,14 @@ def _fontes(arquivo: str | None, automaticas: bool, pasta: Path):
     s = requests.Session()
     s.headers["User-Agent"] = "Mozilla/5.0 (Radar de Oportunidades SENAI-AL)"
     pacote = s.get(API_CKAN, timeout=60).json()
-    urls = achar_recursos(pacote, automaticas)
+    # o pequeno (não automáticas) primeiro: se o grande falhar, este já está garantido
+    urls = sorted(achar_recursos(pacote, automaticas), key=lambda o: o[0] != "não automática")
     if not urls:
         raise RuntimeError("nenhum arquivo de operações encontrado no pacote do BNDES")
     for i, (origem, url) in enumerate(urls):
         destino = pasta / f"bndes_{i}{Path(url).suffix.lower() or '.csv'}"
         print(f"  baixando {url.rsplit('/', 1)[-1]} ({origem}) ...", flush=True)
-        with s.get(url, timeout=1800, stream=True) as r:
-            r.raise_for_status()
-            with open(destino, "wb") as f:
-                for parte in r.iter_content(chunk_size=1 << 20):
-                    f.write(parte)
+        baixar_com_retomada(s, url, destino)
         print(f"    {destino.stat().st_size / 1e6:,.0f} MB", flush=True)
         if destino.suffix == ".zip":
             with zipfile.ZipFile(destino) as z:
@@ -68,6 +105,26 @@ def _fontes(arquivo: str | None, automaticas: bool, pasta: Path):
             yield origem, destino
 
 
+def _ler_tudo(fontes) -> tuple[pd.DataFrame, list[str]]:
+    """Lê cada arquivo; se um falhar (ex.: download do grande), segue com os outros."""
+    partes, erros = [], []
+    while True:
+        try:
+            origem, caminho = next(fontes)
+        except StopIteration:
+            break
+        except Exception as erro:  # falha no download de um arquivo: o gerador acaba, guarda o erro
+            erros.append(f"{type(erro).__name__}: {str(erro)[:200]}")
+            break
+        try:
+            partes.append(ler_operacoes(caminho, origem))
+        except Exception as erro:
+            erros.append(f"{origem}: {type(erro).__name__}: {str(erro)[:200]}")
+    if not partes:
+        raise RuntimeError("; ".join(erros) or "nenhum arquivo lido")
+    return pd.concat(partes, ignore_index=True), erros
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--arquivo")
@@ -75,8 +132,7 @@ def main():
     a = ap.parse_args()
     try:
         with tempfile.TemporaryDirectory() as tmp:
-            ops = pd.concat([ler_operacoes(caminho, origem) for origem, caminho
-                             in _fontes(a.arquivo, a.automaticas, Path(tmp))], ignore_index=True)
+            ops, erros = _ler_tudo(_fontes(a.arquivo, a.automaticas, Path(tmp)))
         sinais = para_sinais(ops, carregar_empresas(), date.today())
         sinais.to_csv(SAIDA, index=False, encoding="utf-8-sig")
     except Exception as erro:
@@ -85,7 +141,10 @@ def main():
     n_emp = sinais["cnpj_basico"].nunique() if not sinais.empty else 0
     seg = sinais["segmento"].value_counts().to_dict() if not sinais.empty else {}
     resumo = ", ".join(f"{k} {v}" for k, v in seg.items())
-    registrar_execucao(FONTE_ID, "sucesso", len(sinais), f"{n_emp} empresas de AL com financiamento em 24 meses ({resumo})")
+    msg = f"{n_emp} empresas de AL com financiamento em 24 meses ({resumo})"
+    if erros:
+        msg += " · PARCIAL, arquivo não lido: " + "; ".join(erros)
+    registrar_execucao(FONTE_ID, "sucesso", len(sinais), msg)
     print(f"Pronto: {len(sinais)} operações, {n_emp} empresas de AL.")
 
 
