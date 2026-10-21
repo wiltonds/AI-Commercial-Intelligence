@@ -44,12 +44,13 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 REL = {"Sem relacionamento": "🎯 Sem relacionamento", "Fora da Base Mestre": "➕ Fora da base",
+       "Sem empresa identificada": "📰 Sem empresa identificada",
        "Somente SESI": "🔵 Cliente SESI", "Somente SENAI": "🟠 Cliente SENAI", "SESI + SENAI": "🟣 Cliente SESI + SENAI"}
 
 
 # ------------------------------------------------------------------ dados
 def _assinatura() -> tuple:
-    arqs = sorted(P.glob("SINAIS_*.csv")) + [ARQ_OFERTAS, ARQ_PRODUCAO, P / "BASE_MESTRE_COMERCIAL.csv", P / "VISAO_360.csv",
+    arqs = sorted(P.glob("SINAIS_*.csv")) + [ARQ_OFERTAS, ARQ_PRODUCAO, P / "CNPJ_NOMES.csv", P / "BASE_MESTRE_COMERCIAL.csv", P / "VISAO_360.csv",
                                                P / "INDICADORES_MUNICIPIOS.csv"]
     return tuple((a.name, a.stat().st_mtime) for a in arqs if a.exists())
 

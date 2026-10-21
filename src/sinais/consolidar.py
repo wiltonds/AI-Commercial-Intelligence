@@ -41,7 +41,17 @@ def carregar_todos_sinais(pasta: Path = PASTA_SINAIS) -> pd.DataFrame:
     df["na_base_mestre"] = df["na_base_mestre"].astype(str).str.upper().eq("TRUE")
     if "STATUS_RELACIONAMENTO_REAL" not in df:
         df["STATUS_RELACIONAMENTO_REAL"] = pd.NA
-    df["STATUS_RELACIONAMENTO_REAL"] = df["STATUS_RELACIONAMENTO_REAL"].fillna("Fora da Base Mestre")
+    df["STATUS_RELACIONAMENTO_REAL"] = df["STATUS_RELACIONAMENTO_REAL"].astype(object)
+    # sem CNPJ = notícia de mercado sem empresa citada; com CNPJ fora das bases = "Fora da Base Mestre"
+    sem_cnpj = df["cnpj_basico"].isna() | df["cnpj_basico"].astype(str).str.strip().isin(["", "nan"]) \
+        if "cnpj_basico" in df else pd.Series(True, index=df.index)
+    vazio = df["STATUS_RELACIONAMENTO_REAL"].isna() | df["STATUS_RELACIONAMENTO_REAL"].astype(str).str.strip().eq("")
+    df.loc[vazio & sem_cnpj, "STATUS_RELACIONAMENTO_REAL"] = "Sem empresa identificada"
+    df.loc[vazio & ~sem_cnpj, "STATUS_RELACIONAMENTO_REAL"] = "Fora da Base Mestre"
+    df.loc[sem_cnpj & df["STATUS_RELACIONAMENTO_REAL"].eq("Fora da Base Mestre"),
+           "STATUS_RELACIONAMENTO_REAL"] = "Sem empresa identificada"
+    from src.sinais.nomes_cnpj import aplicar_nomes, carregar_nomes
+    df = aplicar_nomes(df, carregar_nomes())
     for coluna in ("data_evento", "data_publicacao"):
         if coluna in df:
             df[coluna] = pd.to_datetime(df[coluna], errors="coerce")
