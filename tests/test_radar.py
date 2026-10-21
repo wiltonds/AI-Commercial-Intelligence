@@ -293,3 +293,37 @@ def test_bndes_cnpj_mascarado_liga_pela_parte_visivel_e_nome():
     assert k["cnpj"] == "11907140000164"
     o = s.loc["OUTRA EMPRESA QUALQUER LTDA"]
     assert o["STATUS_RELACIONAMENTO_REAL"] == "Fora da Base Mestre" and o["cnpj"] == "**.*07.140/0001-**"
+
+
+def test_propensao_backtest_acha_compradores_parecidos_e_prioridade_triangula():
+    import numpy as np
+    from src.sinais.propensao import NEGOCIOS, QUADRANTES, avaliar_backtest, matriz, prioridades
+    rng = np.random.default_rng(0)
+    n = 3000
+    cnae = rng.choice(["1052000", "2511000", "4711302", "8630501"], n)
+    u = pd.DataFrame({"cnpj_basico": [f"{i:08d}" for i in range(n)], "cnae": cnae,
+                      "porte": rng.choice(["MICRO EMPRESA", "EMPRESA DE PEQUENO PORTE", "DEMAIS"], n),
+                      "natureza": "Ltda", "capital": rng.uniform(1e3, 1e6, n), "inicio": pd.Timestamp("2015-01-01"),
+                      "n_estab": 1, "n_cnae_sec": 0, "industria": np.isin(cnae, ["1052000", "2511000"])})
+    # quem compra SSI: laticínios (1052) grandes
+    alvo = u["cnae"].eq("1052000") & u["porte"].eq("DEMAIS")
+    ids = u.loc[alvo, "cnpj_basico"].tolist()
+    antes, depois = set(ids[: len(ids) // 2]), set(ids[len(ids) // 2:])
+    x = matriz(u, pd.Timestamp("2026-07-01"), {k: set() for k in NEGOCIOS})
+    r = avaliar_backtest(u, x, antes, depois, "SSI")
+    assert r["auc"] > 0.9 and r["top10_captura"] > 0.8
+
+    prop = pd.DataFrame({"cnpj_basico": ["1", "2", "3", "4"], "fit_SSI": [95, 90, 30, 99],
+                         "compra_SSI": [0, 0, 0, 1], "clientes_classe_SSI": [12, 0, 0, 5], "clientes_grupo_SSI": [20, 4, 0, 9],
+                         **{f"{c}_{o}": [0, 1, 0, 0] if c == "compra" else [0] * 4
+                            for o in ["STI", "EP", "EB"] for c in ["fit", "compra", "clientes_classe", "clientes_grupo"]}})
+    emp = pd.DataFrame({"cnpj_basico": ["1", "2", "3", "4"], "razao_social": list("ABCD"), "municipio": "Maceió",
+                        "Porte": "DEMAIS", "tipo_empresa": "Indústria", "STATUS_RELACIONAMENTO_REAL": "Sem relacionamento"})
+    sin = pd.DataFrame({"cnpj_basico": ["1", "3"], "negocios": ["SSI · EP", "SSI"], "score_momento": [4.0, 2.0],
+                        "rotulo_tipo": ["Obra nova", "Notícia"], "tipo_sinal": ["obra_nova", "noticia"], "descricao": ["x", "y"]})
+    p = prioridades(prop, emp, sin, "SSI").set_index("cnpj_basico")
+    assert "4" not in p.index                                   # já compra SSI: fora
+    assert p.loc["1", "quadrante"] == QUADRANTES["agora"] and p.loc["2", "quadrante"] == QUADRANTES["planejar"]
+    assert p.loc["3", "quadrante"] == QUADRANTES["pontual"]
+    assert "cross-sell" in p.loc["2", "relacao"] and "12 clientes SSI" in p.loc["1", "motivo"]
+    assert p.index[0] == "1"
