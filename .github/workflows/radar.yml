@@ -1,0 +1,64 @@
+# Radar de Oportunidades — coleta automática diária (grátis no GitHub Actions)
+#
+# Todo dia às 06:00 (Maceió): notícias da indústria de AL (Google News RSS) e,
+# às segundas, indicadores do IBGE. Grava os CSVs em data/processed e faz commit;
+# o Streamlit lê a versão nova sozinho.
+#
+# O CNO (obras novas) continua no notebook: a Receita bloqueia download
+# automatizado em servidor. Ele entra pelo publicar_dados.ps1.
+#
+# Para rodar na hora: aba Actions > Radar de Oportunidades > Run workflow.
+name: Radar de Oportunidades
+
+on:
+  schedule:
+    - cron: "0 9 * * *"        # 09:00 UTC = 06:00 em Maceió
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: radar
+  cancel-in-progress: false
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install pandas pyyaml requests openpyxl
+
+      - name: Notícias da indústria de AL
+        run: python jobs/coletar_noticias.py
+
+      - name: Indicadores do IBGE (segundas-feiras ou execução manual)
+        continue-on-error: true
+        run: |
+          if [ "$(date -u +%u)" = "1" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ ! -f data/processed/INDICADORES_MUNICIPIOS.csv ]; then
+            python jobs/coletar_ibge.py
+          else
+            echo "IBGE: só às segundas."
+          fi
+
+      - name: Publicar resultados
+        run: |
+          git config user.name "radar-bot"
+          git config user.email "radar-bot@users.noreply.github.com"
+          git add -f data/processed/SINAIS_NOTICIAS.csv data/processed/LOG_FONTES_*.csv
+          [ -f data/processed/INDICADORES_MUNICIPIOS.csv ] && git add -f data/processed/INDICADORES_MUNICIPIOS.csv
+          if git diff --cached --quiet; then
+            echo "Sem mudanças."
+          else
+            git commit -m "Radar: coleta automática $(date -u +%Y-%m-%d)"
+            git pull --rebase -X theirs origin "${GITHUB_REF_NAME}"
+            git push
+          fi
