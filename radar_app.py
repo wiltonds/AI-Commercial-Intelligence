@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import streamlit as st
 
@@ -48,7 +49,7 @@ REL = {"Sem relacionamento": "🎯 Sem relacionamento", "Fora da Base Mestre": "
 
 # ------------------------------------------------------------------ dados
 def _assinatura() -> tuple:
-    arqs = sorted(P.glob("SINAIS_*.csv")) + [ARQ_OFERTAS, P / "BASE_MESTRE_COMERCIAL.csv", P / "VISAO_360.csv",
+    arqs = sorted(P.glob("SINAIS_*.csv")) + [ARQ_OFERTAS, ARQ_PRODUCAO, P / "BASE_MESTRE_COMERCIAL.csv", P / "VISAO_360.csv",
                                                P / "INDICADORES_MUNICIPIOS.csv"]
     return tuple((a.name, a.stat().st_mtime) for a in arqs if a.exists())
 
@@ -300,6 +301,138 @@ def pagina_cadeias():
                          "cliente": st.column_config.CheckboxColumn("Já é cliente")})
 
 
+@st.cache_data(ttl=3600, show_spinner="Montando o mapa ...")
+def _pontos(assinatura: tuple):  # noqa: ARG001
+    from src.sinais.mapa import carregar_malha, empresas_do_mapa, posicionar
+    sinais, ind = carregar(assinatura)
+    return posicionar(empresas_do_mapa(ind, sinais), carregar_malha())
+
+
+def pagina_mapa():
+    import pydeck as pdk
+
+    from src.sinais.mapa import COR_CLIENTE, COR_OPORTUNIDADE, COR_SEM_REL, carregar_malha, cor_status, malha_com_indicadores
+
+    sinais, ind = carregar(_assinatura())
+    topo("Radar de Oportunidades", "Mapa de Alagoas",
+         "Onde estão as indústrias, quem já é cliente e onde o radar encontrou oportunidade agora.")
+    malha = carregar_malha()
+    emp = _pontos(_assinatura())
+
+    # ---------------- filtros
+    c = st.columns([2, 2, 2, 3])
+    f_setor = c[0].multiselect("Setor", sorted(emp["setor_cni"].dropna().unique()))
+    f_porte = c[1].multiselect("Porte", sorted(emp["porte"].dropna().astype(str).unique()))
+    f_neg = c[2].multiselect("Negócio do sinal", list(NEGOCIOS))
+    cadeias = carregar_cadeias()
+    opcoes = {"Indústrias sem relacionamento": "sem_relacionamento", "Penetração (clientes ÷ indústrias)": "penetracao",
+              "Sinais do radar (90 dias)": "sinais_90d", "VAB da indústria (IBGE)": "vab_industria_mil"}
+    opcoes.update({f"Produção: {c_['nome']}": f"prod_{cid}" for cid, c_ in cadeias.items()})
+    pintar = c[3].selectbox("Pintar os municípios por", list(opcoes))
+    c2 = st.columns(3)
+    ver_cli = c2[0].toggle("🟢 Clientes", value=True)
+    ver_sem = c2[1].toggle("⚪ Sem relacionamento", value=True)
+    ver_op = c2[2].toggle("🟠 Com oportunidade no radar", value=True)
+
+    v = emp
+    if f_setor:
+        v = v[v["setor_cni"].isin(f_setor)]
+    if f_porte:
+        v = v[v["porte"].astype(str).isin(f_porte)]
+    if f_neg:
+        v = v[v["negocios_sinal"].fillna("").apply(lambda x: any(n in x for n in f_neg))]
+    mostrar = {"Cliente": ver_cli, "Sem relacionamento": ver_sem, "Com oportunidade no radar": ver_op}
+    v = v[v["status"].map(mostrar)]
+
+    # ---------------- indicadores por município (respeitam setor e porte)
+    base_ind = ind
+    if f_setor:
+        base_ind = base_ind[base_ind["setor_cni"].isin(f_setor)]
+    if f_porte:
+        base_ind = base_ind[base_ind["porte"].astype(str).isin(f_porte)]
+    mun = mercado_municipios(base_ind, sinais)
+    if ARQ_PRODUCAO.exists():
+        prod = pd.read_csv(ARQ_PRODUCAO, encoding="utf-8-sig")
+        prod = prod.sort_values("ano").drop_duplicates(["cadeia", "municipio"], keep="last")
+        piv = prod.pivot_table(index="municipio", columns="cadeia", values="producao", aggfunc="sum")
+        piv.columns = [f"prod_{c_}" for c_ in piv.columns]
+        mun = mun.merge(piv.reset_index(), on="municipio", how="left")
+    col = opcoes[pintar]
+    if col not in mun:
+        st.info("Esse indicador ainda não foi coletado (aguarde a coleta do IBGE de segunda-feira).")
+        mun[col] = 0
+    if col == "penetracao":
+        fmt = lambda x: f"{x:.0%}"  # noqa: E731
+    elif col == "vab_industria_mil":
+        fmt = lambda x: f"R$ {x / 1000:,.0f} mi".replace(",", ".")  # noqa: E731
+    elif col.startswith("prod_"):
+        un = cadeias[col[5:]]["producao"]["unidade"]
+        fmt = lambda x, un=un: f"{x:,.0f} {un}".replace(",", ".")  # noqa: E731
+    else:
+        fmt = lambda x: _n(x)  # noqa: E731
+    geo = malha_com_indicadores(malha, mun, col, pintar, fmt)
+
+    # ---------------- pontos
+    v = v.assign(cor=[c_ + [235] for c_ in cor_status(v["status"])],
+                 raio=np.where(v["status"] == "Com oportunidade no radar", 900, 380))
+    v["properties"] = [{"titulo": f"{r.razao_social}",
+                        "detalhe": (f"{r.municipio} · {r.porte or ''} · {r.status}"
+                                    + (f"<br/><b>Oportunidade:</b> {r.oportunidade}<br/>Negócios: {r.negocios_sinal}"
+                                       if r.n_sinais else ""))}
+                       for r in v.itertuples()]
+    v = v.sort_values("n_sinais")  # oportunidades desenhadas por cima
+    camadas = [
+        pdk.Layer("GeoJsonLayer", geo, pickable=True, stroked=True, filled=True, get_fill_color="properties.cor",
+                  get_line_color=[90, 100, 120, 160], line_width_min_pixels=0.6),
+        pdk.Layer("ScatterplotLayer", v[["lon", "lat", "cor", "raio", "properties"]], pickable=True,
+                  get_position=["lon", "lat"], get_fill_color="cor", get_radius="raio",
+                  radius_min_pixels=2, radius_max_pixels=11, stroked=True, get_line_color=[255, 255, 255, 200],
+                  line_width_min_pixels=0.4),
+    ]
+    st.pydeck_chart(pdk.Deck(layers=camadas, initial_view_state=pdk.ViewState(latitude=-9.6, longitude=-36.6, zoom=7.7),
+                             tooltip={"html": "<b>{properties.titulo}</b><br/>{properties.detalhe}",
+                                      "style": {"fontSize": "12px", "maxWidth": "320px"}},
+                             map_style=None), height=620)
+    leg = st.columns(4)
+    for col_, (nome, cor) in zip(leg, [("Cliente", COR_CLIENTE), ("Sem relacionamento", COR_SEM_REL),
+                                       ("Com oportunidade no radar", COR_OPORTUNIDADE)]):
+        col_.markdown(f"<span style='display:inline-block;width:.8rem;height:.8rem;border-radius:50%;"
+                      f"background:rgb{tuple(cor)};margin-right:.4rem'></span>{nome} "
+                      f"(**{_n((v['status'] == nome).sum())}**)", unsafe_allow_html=True)
+    leg[3].caption(f"Municípios: mais escuro = mais {pintar.lower()}.")
+    st.caption("Cada ponto é uma empresa, posicionada dentro do seu município (a base ainda não tem endereço geocodificado; "
+               "o ponto não é o endereço). Passe o mouse para ver a empresa e a oportunidade.")
+
+    # ---------------- detalhe do município
+    st.markdown("##### Olhar um município")
+    escolha = st.selectbox("Município", ["—"] + mun.sort_values("industrias", ascending=False)["municipio"].tolist())
+    if escolha != "—":
+        r = mun.set_index("municipio").loc[escolha]
+        k = st.columns(4)
+        k[0].metric("Indústrias", _n(r.get("industrias", 0)))
+        k[1].metric("Clientes", _n(r.get("clientes", 0)))
+        k[2].metric("Sem relacionamento", _n(r.get("sem_relacionamento", 0)))
+        k[3].metric("Sinais (90 dias)", _n(r.get("sinais_90d", 0)))
+        ops = sinais[sinais["municipio"] == escolha].sort_values("score_momento", ascending=False) if not sinais.empty \
+            else sinais
+        if not ops.empty:
+            st.markdown("**Oportunidades no radar**")
+            st.dataframe(ops[["rotulo_tipo", "descricao", "razao_social", "STATUS_RELACIONAMENTO_REAL", "negocios",
+                              "oferta_senai", "oferta_sesi"]], width="stretch", hide_index=True, column_config={
+                "rotulo_tipo": "Sinal", "descricao": "O que aconteceu", "razao_social": "Empresa",
+                "STATUS_RELACIONAMENTO_REAL": "Relacionamento", "negocios": "Negócios",
+                "oferta_senai": "Ofertar SENAI", "oferta_sesi": "Ofertar SESI"})
+        lista = emp[emp["municipio"] == escolha].sort_values(["n_sinais", "cliente"], ascending=[False, True])
+        st.markdown(f"**Empresas ({_n(len(lista))})**")
+        st.dataframe(lista[["razao_social", "status", "porte", "setor_cni", "oportunidade"]], width="stretch",
+                     hide_index=True, height=360, column_config={
+                         "razao_social": "Empresa", "status": "Situação", "porte": "Porte", "setor_cni": "Setor",
+                         "oportunidade": "Oportunidade"})
+        st.download_button("⬇️ Baixar lista do município (CSV)",
+                           lista.drop(columns=["lon", "lat"]).to_csv(index=False, sep=";").encode("utf-8-sig"),
+                           file_name=f"radar_{escolha}.csv", mime="text/csv")
+
+
 def pagina_metas():
     sinais, ind = carregar(_assinatura())
     metas = carregar_metas()
@@ -334,7 +467,8 @@ def pagina_fontes():
 pg = st.navigation({
     "Radar": [st.Page(pagina_hoje, title="Hoje", icon="📡", default=True),
               st.Page(pagina_sinais, title="Sinais", icon="📋")],
-    "Inteligência": [st.Page(pagina_mercado, title="Mercado", icon="🗺️"),
+    "Inteligência": [st.Page(pagina_mapa, title="Mapa de Alagoas", icon="📍"),
+                     st.Page(pagina_mercado, title="Mercado", icon="🗺️"),
                      st.Page(pagina_cadeias, title="Cadeias produtivas", icon="🌾"),
                      st.Page(pagina_metas, title="Negócios e metas 2027", icon="🎯")],
     "Governança": [st.Page(pagina_fontes, title="Saúde das fontes", icon="🚦")],
