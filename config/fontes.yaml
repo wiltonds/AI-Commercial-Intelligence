@@ -193,8 +193,11 @@ fontes:
     saida: data/processed/SINAIS_BNDES.csv
     url_pagina: https://dadosabertos.bndes.gov.br/dataset/operacoes-financiamento
     observacao: >
-      Operações diretas e indiretas não automáticas, empresas privadas de AL, últimos
-      24 meses. Peso maior acima de R$ 1 mi e de R$ 10 mi; vale 1 ano.
+      Operações não automáticas e automáticas (via bancos: FINAME/BNDES Máquinas,
+      giro), empresas privadas de AL, últimos 24 meses, uma linha por empresa
+      (soma ≥ R$ 100 mil). Todos os segmentos — indústria, construção, comércio e
+      serviços, agro — com oferta por segmento. Peso maior acima de R$ 1 mi e de
+      R$ 10 mi; vale 1 ano.
 
   inep_ep:
     nome: Censo Escolar — Educação Profissional (INEP)

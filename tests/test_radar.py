@@ -135,6 +135,43 @@ def test_bndes_le_csv_e_vira_sinal_de_al_privado():
     assert s["peso"].iloc[0] == 6 and "12,50 mi" in s["descricao"].iloc[0]
 
 
+def test_bndes_automaticas_soma_por_empresa_e_classifica_segmento():
+    from src.sinais.bndes import ler_operacoes, para_sinais, segmento
+    csv = ("Cliente;CNPJ;UF;Municipio;Municipio codigo;Data da contratacao;Valor da operacao Reais;Produto;"
+           "Instrumento financeiro;Inovacao;Setor CNAE;Subsetor CNAE codigo;Subsetor CNAE nome;Porte do cliente;"
+           "Natureza do cliente;Instituicao Financeira Credenciada\n"
+           "RESORT SA;45879348000139;AL;Sem Município;;09/12/2025;4999488,94;BNDES MAQUINAS;FINAME;NAO;"
+           "COMERCIO E SERVICOS;I5510;Hoteis;GRANDE;PRIVADA;BANCO DO NORDESTE\n"
+           "CONSTRUTORA X;77777777000101;AL;MACEIO;2704302;10/05/2026;300000,00;BNDES MAQUINAS;FINAME;NAO;"
+           "CONSTRUCAO;F4120;Edificios;MEDIA;PRIVADA;BANCO DO BRASIL\n"
+           "CONSTRUTORA X;77777777000101;AL;MACEIO;2704302;10/06/2026;200000,00;BNDES GIRO;GIRO;NAO;"
+           "CONSTRUCAO;F4120;Edificios;MEDIA;PRIVADA;BANCO DO BRASIL\n"
+           "PADARIA Y;66666666000101;AL;ARAPIRACA;2700300;10/06/2026;20000,00;CARTAO BNDES;CARTAO;NAO;"
+           "INDUSTRIA DE TRANSFORMACAO;C1091;Panificacao;MICRO;PRIVADA;CAIXA\n"
+           "EMPRESA PE;88888888000101;PE;RECIFE;2611606;10/06/2026;900000,00;BNDES;X;NAO;"
+           "INDUSTRIA;C1071;Acucar;GRANDE;PRIVADA;BB\n").encode("latin-1")
+    ops = ler_operacoes(csv, "automática")
+    assert len(ops) == 4 and set(ops["segmento"]) == {"Comércio e serviços", "Construção", "Indústria"}
+    s = para_sinais(ops, EMPRESAS, date(2026, 10, 21)).set_index("cnpj_basico")
+    assert "66666666" not in s.index                     # abaixo do valor mínimo (Cartão BNDES)
+    assert s.loc["77777777", "valor"] == 500_000 and s.loc["77777777", "n_operacoes"] == 2
+    assert s.loc["77777777", "segmento"] == "Construção" and s.loc["77777777", "municipio"] == "Maceió"
+    assert s.loc["45879348", "municipio"] == "Não informado" and "Banco Do Nordeste" in s.loc["45879348", "descricao"]
+    assert segmento("", "AGROPECUÁRIA") == "Agropecuária" and segmento("35.11-5") == "Utilidade pública"
+
+
+def test_oferta_do_bndes_muda_com_o_segmento():
+    from src.sinais.consolidar import sugerir
+    import yaml
+    ofertas = yaml.safe_load(open("config/ofertas.yaml", encoding="utf-8"))
+    obra = sugerir({"tipo_sinal": "financiamento_bndes", "segmento": "Construção", "inovacao": "NÃO"}, ofertas)
+    hotel = sugerir({"tipo_sinal": "financiamento_bndes", "segmento": "Comércio e serviços", "inovacao": "NÃO"}, ofertas)
+    inov = sugerir({"tipo_sinal": "financiamento_bndes", "segmento": "Construção", "inovacao": "SIM"}, ofertas)
+    assert obra["perfil"] == "Construção financiada" and "NR 18" in obra["oferta_senai"]
+    assert hotel["perfil"] == "Serviços e comércio investindo" and "EB" in hotel["negocios"]
+    assert inov["perfil"] == "Projeto de inovação financiado"
+
+
 def test_cadeia_cruza_producao_e_industrias():
     from src.sinais.cadeias import resumo_cadeia
     ind = pd.DataFrame({"cnpj_basico": ["1", "2", "3"], "municipio": ["Batalha", "Batalha", "Maceió"],
