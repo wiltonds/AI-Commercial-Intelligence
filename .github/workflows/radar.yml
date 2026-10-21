@@ -59,12 +59,16 @@ jobs:
             echo "BNDES: só às segundas."
           fi
 
+      - name: Nome dos CNPJs sem nome (cadastro público da Receita)
+        continue-on-error: true
+        run: python jobs/enriquecer_cnpj.py
+
       - name: Publicar resultados
         run: |
           git config user.name "radar-bot"
           git config user.email "radar-bot@users.noreply.github.com"
           git add -f data/processed/SINAIS_NOTICIAS.csv data/processed/LOG_FONTES_*.csv
-          for f in INDICADORES_MUNICIPIOS CADEIAS_PRODUCAO SINAIS_BNDES BNDES_OPERACOES_AL; do
+          for f in INDICADORES_MUNICIPIOS CADEIAS_PRODUCAO SINAIS_BNDES BNDES_OPERACOES_AL CNPJ_NOMES; do
             [ -f "data/processed/$f.csv" ] && git add -f "data/processed/$f.csv"
           done
           [ -f data/processed/BNDES_VERSAO.json ] && git add -f data/processed/BNDES_VERSAO.json

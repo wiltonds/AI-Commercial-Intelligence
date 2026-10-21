@@ -199,6 +199,21 @@ fontes:
       serviços, agro — com oferta por segmento. Peso maior acima de R$ 1 mi e de
       R$ 10 mi; vale 1 ano.
 
+  cnpj_nomes:
+    nome: Cadastro CNPJ (BrasilAPI / Minha Receita) — nome dos CNPJs sem nome
+    tabela_dw: (nova)
+    modulo: sinais
+    granularidade: empresa
+    chave: CNPJ
+    frequencia_dias: 2
+    status: implementado
+    job: jobs/enriquecer_cnpj.py
+    saida: data/processed/CNPJ_NOMES.csv
+    url_pagina: https://brasilapi.com.br/docs#tag/CNPJ
+    observacao: >
+      Dá nome aos CNPJs que chegam sem nome nos sinais (ex.: responsável pela obra no
+      CNO fora das nossas bases). Consulta só CNPJs novos; grátis.
+
   inep_ep:
     nome: Censo Escolar — Educação Profissional (INEP)
     tabela_dw: fontes_externas.inep_censoescolarep

@@ -34,6 +34,7 @@ TRAVA_MAX_MIN = 30  # trava mais velha que isso é resto de execução interromp
 REL_BADGE = {
     "Sem relacionamento": "🎯 Sem relacionamento",
     "Fora da Base Mestre": "➕ Fora da Base Mestre",
+    "Sem empresa identificada": "📰 Sem empresa identificada",
     "Somente SESI": "🔵 Cliente SESI",
     "Somente SENAI": "🟠 Cliente SENAI",
     "SESI + SENAI": "🟣 Cliente SESI + SENAI",

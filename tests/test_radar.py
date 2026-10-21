@@ -213,3 +213,45 @@ def test_mapa_empresa_com_sinal_vira_oportunidade_e_fora_da_base_entra():
     assert e.loc["1", "status"] == "Cliente" and e.loc["2", "status"] == "Com oportunidade no radar"
     assert e.loc["9", "municipio"] == "Maragogi" and e.loc["9", "setor_cni"] == "Comércio e serviços"
     assert e.loc["2", "negocios_sinal"] == "EP · SSI"
+
+
+def test_nomes_cnpj_preenche_sem_nome_e_nao_reconsulta():
+    from src.sinais.nomes_cnpj import COLS, aplicar_nomes, cnpjs_sem_nome, enriquecer
+
+    class Resp:
+        def __init__(s, code, js=None): s.status_code, s._js = code, js or {}
+        def json(s): return s._js
+
+    class Sess:
+        chamadas = 0
+        def get(s, url, timeout):
+            Sess.chamadas += 1
+            if "12333761000144" in url:
+                return Resp(200, {"razao_social": "CONSTRUTORA Y LTDA", "municipio": "RECIFE", "uf": "PE",
+                                  "cnae_fiscal": 4120400, "porte": "EMPRESA DE PEQUENO PORTE"})
+            return Resp(404)
+
+    sinais = pd.DataFrame({"cnpj": ["12333761000144", "99999999000199", "11111111000101"],
+                           "razao_social": ["(sem nome no CNO) CNPJ 12333761000144", "(sem nome no CNO) CNPJ x", "A"],
+                           "Porte": ["", "", "DEMAIS"]})
+    alvo = cnpjs_sem_nome(sinais)
+    assert alvo == ["12333761000144", "99999999000199"]
+    cache = enriquecer(alvo, pd.DataFrame(columns=COLS), Sess(), date(2026, 10, 21), pausa=0)
+    n = Sess.chamadas
+    cache = enriquecer(alvo, cache, Sess(), date(2026, 10, 21), pausa=0)
+    assert Sess.chamadas == n                      # já consultados: não chama de novo
+    out = aplicar_nomes(sinais, cache)
+    assert out["razao_social"].tolist()[0] == "CONSTRUTORA Y LTDA" and out["uf_sede"].iloc[0] == "PE"
+    assert out["razao_social"].iloc[1].startswith("(sem nome")   # não encontrado: mantém
+    assert out["Porte"].iloc[0] == "EMPRESA DE PEQUENO PORTE"
+
+
+def test_noticia_sem_empresa_nao_vira_fora_da_base(tmp_path):
+    from src.sinais.consolidar import carregar_todos_sinais
+    pd.DataFrame([{"tipo_sinal": "noticia_expansao", "descricao": "x", "cnpj_basico": None, "na_base_mestre": False,
+                   "STATUS_RELACIONAMENTO_REAL": None, "data_publicacao": "2026-10-20"},
+                  {"tipo_sinal": "obra_nova", "descricao": "y", "cnpj_basico": "12333761", "na_base_mestre": False,
+                   "STATUS_RELACIONAMENTO_REAL": None, "data_publicacao": "2026-10-20"}]).to_csv(
+        tmp_path / "SINAIS_X.csv", index=False, encoding="utf-8-sig")
+    df = carregar_todos_sinais(tmp_path)
+    assert df["STATUS_RELACIONAMENTO_REAL"].tolist() == ["Sem empresa identificada", "Fora da Base Mestre"]
