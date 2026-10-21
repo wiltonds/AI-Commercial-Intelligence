@@ -166,10 +166,12 @@ def malha_com_indicadores(malha: dict, tabela: pd.DataFrame, coluna: str, rotulo
         def g(c, r=r):
             return int(r[c]) if r is not None and c in r and pd.notna(r[c]) else 0
 
-        detalhe = (f"{rotulo}: {fmt(val) if val is not None and pd.notna(val) else '—'}<br/>"
-                   f"Indústrias: {g('industrias')} · Clientes: {g('clientes')} · "
-                   f"Sem relacionamento: {g('sem_relacionamento')}<br/>Sinais (90 dias): {g('sinais_90d')}")
+        # o tooltip do Streamlit não interpreta HTML dentro dos valores: uma linha por campo
         out["features"].append({"type": "Feature", "geometry": f["geometry"], "properties": {
-            "municipio": mun, "titulo": mun, "detalhe": detalhe,
+            "municipio": mun, "titulo": mun,
+            "detalhe": f"{rotulo}: {fmt(val) if val is not None and pd.notna(val) else '—'}",
+            "oport": f"Indústrias: {g('industrias')} · Clientes: {g('clientes')} · "
+                     f"Sem relacionamento: {g('sem_relacionamento')}",
+            "neg": f"Sinais (90 dias): {g('sinais_90d')}  ·  clique para ver o município",
             "cor": cores.get(mun, ESCALA[0]) + [170]}})
     return out
