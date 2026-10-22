@@ -144,6 +144,17 @@ def _valor_col(c):
     return _col(c, "valor", contem=("valor",), evita=("desembols",))
 
 
+def datas(s: pd.Series) -> pd.Series:
+    """Datas do BNDES: o arquivo das automáticas vem em AAAA-MM-DD e o das não automáticas
+    em DD/MM/AAAA. dayfirst=True num AAAA-MM-DD trocava dia e mês (12/08 virava 08/12)."""
+    t = s.fillna("").astype(str).str.strip().str[:10]
+    iso = pd.to_datetime(t, format="%Y-%m-%d", errors="coerce")
+    return iso.fillna(pd.to_datetime(t, format="%d/%m/%Y", errors="coerce"))
+
+
+ARQUIVO = {"automática": "Operações indiretas automáticas", "não automática": "Operações não automáticas"}
+
+
 def _padronizar(df: pd.DataFrame, origem: str) -> pd.DataFrame:
     c = df.columns
     opc = lambda *n: _col(c, *n, obrigatoria=False)  # noqa: E731
@@ -157,7 +168,7 @@ def _padronizar(df: pd.DataFrame, origem: str) -> pd.DataFrame:
         "projeto": (df[proj] if proj else df[instr] if instr else vazio).fillna(""),
         "uf": df[_col(c, "uf")].fillna("").str.strip().str.upper(),
         "municipio_bndes": df[_col(c, "municipio")].fillna(""),
-        "data_contratacao": pd.to_datetime(df[_col(c, "data da contratacao")], errors="coerce", dayfirst=True),
+        "data_contratacao": datas(df[_col(c, "data da contratacao")]),
         "valor": _numero(df[_valor_col(c)]),
         "produto": df[_col(c, "produto")].fillna(""),
         "inovacao": df[_col(c, "inovacao")].fillna("").str.upper(),
@@ -270,6 +281,10 @@ def para_sinais(op: pd.DataFrame, empresas: pd.DataFrame, hoje: date, meses: int
         return pd.DataFrame()
     op["cnpj_basico"] = ligar_mascarados(op, empresas)
 
+    # cada operação como linha conferível no arquivo do BNDES
+    op["_linha"] = (op["data_contratacao"].dt.strftime("%d/%m/%Y") + " · R$ " + op["valor"].map(_mi) + " mi · "
+                    + op["produto"].str.strip() + op["banco"].map(lambda b: f" · {b.strip().title()}"
+                                                                   if str(b).strip().strip("-") else ""))
     # por empresa: total, quantidade, a operação maior dá o projeto e o segmento
     op = op.sort_values("valor", ascending=False)
     g = op.groupby("cnpj_basico", sort=False)
@@ -279,6 +294,8 @@ def para_sinais(op: pd.DataFrame, empresas: pd.DataFrame, hoje: date, meses: int
     emp["data_contratacao"] = g["data_contratacao"].max()
     emp["inovacao"] = g["inovacao"].agg(lambda s: "SIM" if s.str.startswith("S").any() else "NÃO")
     emp["produtos"] = g["produto"].agg(lambda s: ", ".join(dict.fromkeys(p.strip() for p in s if p.strip()))[:120])
+    emp["detalhe_fonte"] = g["_linha"].agg(lambda s: " | ".join(s.head(8)))
+    emp["arquivo_fonte"] = g["origem"].agg(lambda s: " e ".join(dict.fromkeys(ARQUIVO.get(o, o) for o in s)))
     emp = emp[emp["valor"] >= valor_min].reset_index()
     if emp.empty:
         return pd.DataFrame()
@@ -318,5 +335,5 @@ def para_sinais(op: pd.DataFrame, empresas: pd.DataFrame, hoje: date, meses: int
     cols = ["tipo_sinal", "tema", "segmento", "descricao", "cnpj_basico", "cnpj", "razao_social",
             "STATUS_RELACIONAMENTO_REAL", "Porte", "na_base_mestre", "casamento", "municipio", "data_publicacao",
             "data_evento", "valor", "n_operacoes", "produto", "subsetor", "inovacao", "origem", "peso",
-            "validade_dias", "idade_dias", "score_momento", "fonte", "url_fonte"]
+            "validade_dias", "idade_dias", "score_momento", "fonte", "url_fonte", "detalhe_fonte", "arquivo_fonte"]
     return df[cols].sort_values("score_momento", ascending=False).reset_index(drop=True)

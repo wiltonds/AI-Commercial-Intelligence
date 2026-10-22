@@ -24,6 +24,7 @@ from src.sinais.cadeias import ARQ_PRODUCAO, carregar_cadeias, industrias_da_cad
 from src.sinais.mercado import (NEGOCIOS, carregar_industrias, carregar_metas, mercado_municipios,
                                 mercado_setores, visao_negocios)
 from src.tools.municipios import padronizar
+from src.sinais.detalhe_fonte import detalhes as detalhes_fonte, rotulo_data
 from src.tools.porte import opcoes as opcoes_porte, padronizar as padronizar_porte
 
 RAIZ = Path(__file__).resolve().parent
@@ -96,6 +97,8 @@ def cartao(s) -> None:
         c2.markdown(f"<div style='text-align:right'>Momento <b>{float(s['score_momento']):.1f}</b></div>",
                     unsafe_allow_html=True)
         data = pd.Timestamp(s["data_publicacao"]).strftime("%d/%m/%Y") if pd.notna(s["data_publicacao"]) else "—"
+        if rotulo_data(s.get("tipo_sinal")) and data != "—":
+            data = f"{rotulo_data(s.get('tipo_sinal'))} {data}"
         rel = REL.get(s.get("STATUS_RELACIONAMENTO_REAL"), s.get("STATUS_RELACIONAMENTO_REAL") or "")
         st.caption(" · ".join(x for x in [str(s.get("municipio") or ""), data, str(s.get("fonte") or ""),
                                          rel if empresa != "Empresa não identificada" else ""] if x))
@@ -110,7 +113,11 @@ def cartao(s) -> None:
             st.markdown(f"💡 **O que oferecer:** {ofertas}")
         if s.get("abordagem"):
             st.markdown(f"🗣️ **Como abordar:** {s['abordagem']}")
-        if str(s.get("url_fonte") or "").startswith("http"):
+        linhas = detalhes_fonte(s)
+        if linhas:
+            with st.expander("📄 De onde vem este dado"):
+                st.markdown("\n".join(f"- {x}" for x in linhas))
+        if str(s.get("url_fonte") or "").startswith("http") and s.get("tipo_sinal") != "financiamento_bndes":
             st.markdown(f"[Ler na fonte ↗]({s['url_fonte']})")
 
 
