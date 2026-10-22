@@ -19,3 +19,9 @@ def test_padronizar_so_quatro_classes(monkeypatch):
     p = pd.Series(["MICRO EMPRESA", "DEMAIS", "DEMAIS", "PEQUENO PORTE", "MÉDIA"])
     assert porte.padronizar(cnpj, p).tolist() == ["GRANDE", "PEQUENA", "MÉDIA", "PEQUENA", "MÉDIA"]
     assert porte.opcoes(pd.Series(["GRANDE", "MICRO", "MÉDIA"])) == ["MICRO", "MÉDIA", "GRANDE"]
+
+
+def test_universo_comercial_usa_cadastro_fiea_em_4_classes():
+    from src.tools.universo_comercial import FIEA_PARA_4, ORDEM_PORTE
+    assert ORDEM_PORTE == ["MICRO", "PEQUENA", "MÉDIA", "GRANDE"]
+    assert FIEA_PARA_4["EPP"] == "PEQUENA" and FIEA_PARA_4["Demais"] == "GRANDE"

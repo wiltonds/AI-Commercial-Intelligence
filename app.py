@@ -16,6 +16,9 @@ from pathlib import Path
 
 import pandas as pd
 import streamlit as st
+
+PORTE4 = "Porte (classe)"
+ORDEM_PORTE = ["MICRO", "PEQUENA", "MÉDIA", "GRANDE"]
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -215,6 +218,11 @@ def carregar_base() -> pd.DataFrame:
     if "CNAE PRIMARIO" in df.columns:
         df["CNAE PRIMARIO"] = df["CNAE PRIMARIO"].fillna("NÃO INFORMADO")
 
+    # Porte exibido em 4 classes (MICRO, PEQUENA, MÉDIA, GRANDE); "Porte" segue o da Receita para os modelos
+    if "Porte" in df.columns and "CNPJ_BASICO" in df.columns:
+        from src.tools.porte import padronizar as _porte4
+        df[PORTE4] = _porte4(df["CNPJ_BASICO"], df["Porte"].replace("NÃO INFORMADO", "")).replace("", "NÃO INFORMADO")
+
     # Unidade responsável SESI/SENAI pela Minuta de Carteirização (jobs/distribuir_carteira.py)
     df = carregar_carteira(df, col_raiz="CNPJ_BASICO")
 
@@ -351,10 +359,11 @@ if pagina not in PAGINAS_FILTRO_PROPRIO:
     )
     municipio_filtro = st.sidebar.multiselect("Município", municipios)
 
-    portes = sorted(
-        [p for p in base_ativa["Porte"].unique() if p and p != "NÃO INFORMADO"]
-    )
-    porte_filtro = st.sidebar.multiselect("Porte", portes)
+    portes = [p for p in ORDEM_PORTE if p in set(base_ativa[PORTE4].unique())]
+    porte_filtro = st.sidebar.multiselect(
+        "Porte", portes,
+        help="Micro até 19 colaboradores, Pequena 20–99, Média 100–499, Grande 500+ (cadastro FIEA ou nº de "
+             "colaboradores; sem dado, 'DEMAIS' da Receita conta como Média).")
 
     UNIDADES_FILTRO = ["Farol", "Tabuleiro", "Agreste/Sertão", "Poço"]
     unidade_filtro = st.sidebar.multiselect(
@@ -376,7 +385,7 @@ if unidade_filtro:
 if municipio_filtro:
     df_view = df_view[df_view["Municipio"].isin(municipio_filtro)]
 if porte_filtro:
-    df_view = df_view[df_view["Porte"].isin(porte_filtro)]
+    df_view = df_view[df_view[PORTE4].isin(porte_filtro)]
 
 # Independente do toggle acima, a página "Empresas (CNPJ raiz)" sempre
 # consolida por conta própria — precisa da base por estabelecimento.
@@ -389,7 +398,7 @@ if municipio_filtro:
     ]
 if porte_filtro:
     df_estabelecimentos_view = df_estabelecimentos_view[
-        df_estabelecimentos_view["Porte"].isin(porte_filtro)
+        df_estabelecimentos_view[PORTE4].isin(porte_filtro)
     ]
 
 subtitulo_universo = "estabelecimentos" if visao_estabelecimento else "empresas (CNPJ raiz)"
@@ -504,7 +513,7 @@ elif pagina == "📊 Visão Geral":
 
     with col2:
         st.subheader("Distribuição por Porte")
-        st.bar_chart(df_view["Porte"].value_counts())
+        st.bar_chart(df_view[PORTE4].value_counts().reindex(ORDEM_PORTE).dropna(), sort=False)
 
 
 # ------------------------------------------------------------
@@ -955,7 +964,7 @@ elif pagina == "🎯 Base Qualificada (CRM)":
         )
     with col2:
         f_porte = st.multiselect(
-            "Porte", sorted(df_view["Porte"].dropna().unique())
+            "Porte", [p for p in ORDEM_PORTE if p in set(df_view[PORTE4].unique())]
         )
     with col3:
         limite = st.slider("Quantas empresas processar", 50, 1000, 200, step=50,
@@ -964,7 +973,7 @@ elif pagina == "🎯 Base Qualificada (CRM)":
     # ---- seleciona o recorte a processar ----
     recorte = df_view.copy()
     if f_porte:
-        recorte = recorte[recorte["Porte"].isin(f_porte)]
+        recorte = recorte[recorte[PORTE4].isin(f_porte)]
     if "CROSS-SELL (já cliente)" in f_trat and "AQUISIÇÃO (sem vínculo)" not in f_trat:
         recorte = recorte[recorte["POSSUI_SESI"] | recorte["POSSUI_SENAI"]]
     elif "AQUISIÇÃO (sem vínculo)" in f_trat and "CROSS-SELL (já cliente)" not in f_trat:
