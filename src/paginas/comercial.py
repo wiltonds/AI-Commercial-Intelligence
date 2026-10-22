@@ -13,8 +13,7 @@ from __future__ import annotations
 import pandas as pd
 import streamlit as st
 
-from src.tools.universo_comercial import (A_CONFIRMAR, CLIENTE, MERCADO, ORDEM_FAIXAS, ORDEM_PORTE_FIEA,
-                                          ORDEM_PORTE_RECEITA, filtrar, opcoes)
+from src.tools.universo_comercial import CLIENTE, MERCADO, ORDEM_FAIXAS, ORDEM_PORTE, filtrar, opcoes
 
 UNIDADES_SESI = ["Farol", "Tabuleiro", "Agreste/Sertão"]
 UNIDADES_SENAI = ["Poço", "Agreste/Sertão"]
@@ -24,8 +23,6 @@ EXPLICA_PUBLICO = {
     INDUSTRIA: "Empresas com atividade industrial (tabela da CNI): fábricas, construção, extração, energia…",
     NAO_INDUSTRIA: "Comércio, serviços, saúde, educação, alimentação… O SESI também atende essas empresas.",
 }
-# nomes da Receita em linguagem do dia a dia (o filtro continua usando o valor original)
-NOME_PORTE_RECEITA = {"MICRO EMPRESA": "Micro", "PEQUENO PORTE": "Pequena (EPP)", "DEMAIS": "Média ou grande"}
 
 
 def _n(x) -> str:
@@ -70,20 +67,11 @@ def filtros(u: pd.DataFrame, chave: str, regua_padrao: str) -> tuple[pd.DataFram
     bairros = sb.multiselect("Bairro", opcoes(base_bairro["Bairro"]), key=k("bairro"))
     segmentos = sb.multiselect("Atividade", opcoes(u["Segmento"]), key=k("seg"),
                                help="Grande grupo da atividade principal (CNAE).")
-    with sb.expander("Mais opções"):
-        regua = st.radio("Porte medido por", ["FIEA", "Receita"], horizontal=True, key=k("regua"),
-                         index=["FIEA", "Receita"].index(regua_padrao),
-                         format_func={"FIEA": "Colaboradores (FIEA)", "Receita": "Faturamento (Receita)"}.get,
-                         help="Colaboradores (FIEA): Micro 0–19, EPP 20–99, Média 100–499, Demais 500+. "
-                              "Faturamento (Receita): Micro, Pequena, Média ou grande. São medidas diferentes: "
-                              "uma empresa pode faturar muito e ter poucos funcionários. Quem não tem o número de "
-                              f"colaboradores no cadastro aparece como '{A_CONFIRMAR}'.")
-    col_porte = "Porte FIEA" if regua == "FIEA" else "Porte Receita"
-    ordem = ORDEM_PORTE_FIEA if regua == "FIEA" else ORDEM_PORTE_RECEITA
-    portes = sb.multiselect("Porte", opcoes(u[col_porte], ordem), key=k(f"porte_{regua}"),
-                            format_func=lambda p: NOME_PORTE_RECEITA.get(p, p))
-    sb.caption(f"Porte por {'colaboradores (FIEA)' if regua == 'FIEA' else 'faturamento (Receita)'} — "
-               "troque em *Mais opções*.")
+    regua = "Porte"
+    portes = sb.multiselect("Porte", opcoes(u["Porte"], ORDEM_PORTE), key=k("porte4"),
+                            help="Micro até 19 colaboradores, Pequena 20–99, Média 100–499, Grande 500+. "
+                                 "Vem do cadastro FIEA; sem cadastro, do nº de colaboradores (real ou estimado). "
+                                 "Sem nenhum dado, porte 'DEMAIS' da Receita conta como Média.")
     df = filtrar(u, unidades_sesi=sesi, unidades_senai=senai, segmentos=segmentos, regua=regua, portes=portes,
                  municipios=municipios, bairros=bairros, busca=busca)
     return df, regua
@@ -124,10 +112,8 @@ def render_clientes(universo: pd.DataFrame) -> None:
     _cartao(c[3], "Compram de uma casa só", _n(uma_casa), "só SESI ou só SENAI · oferecer a outra")
 
     a, b = st.columns(2)
-    col_porte = "Porte FIEA" if regua == "FIEA" else "Porte Receita"
-    ordem = ORDEM_PORTE_FIEA if regua == "FIEA" else ORDEM_PORTE_RECEITA
     a.markdown("**Clientes por porte**")
-    a.bar_chart(_contagem(df, col_porte, ordem).rename(index=NOME_PORTE_RECEITA), sort=False)
+    a.bar_chart(_contagem(df, "Porte", ORDEM_PORTE), sort=False)
     b.markdown("**Clientes por unidade**")
     b.bar_chart(_por_unidade(df), stack=False, color=["#0b3d91", "#e8792b"])
 
@@ -135,7 +121,7 @@ def render_clientes(universo: pd.DataFrame) -> None:
     tabela = pd.DataFrame({
         "Empresa": df["Razão social"], "CNPJ raiz": df["cnpj_basico"], "Situação": df["Situação"],
         "Compra de": df["Entidade"], "Última compra": df["Última compra"],
-        "Porte": df[col_porte].map(lambda p: NOME_PORTE_RECEITA.get(p, p)), "Atividade": _atividade(df),
+        "Porte": df["Porte"], "Atividade": _atividade(df),
         "Município": df["Município"], "Bairro": df["Bairro"],
         "Unidade SESI": df["Unidade SESI"], "Unidade SENAI": df["Unidade SENAI"],
     }).sort_values(["Situação", "Última compra"], ascending=[False, False])
@@ -192,7 +178,7 @@ def render_mercado(universo: pd.DataFrame) -> None:
     tabela = pd.DataFrame({
         "Empresa": vis["Razão social"], "CNPJ raiz": vis["cnpj_basico"], "Nota": vis["Nota"],
         "Prioridade": vis["Potencial"], "Por quê": vis["Motivo"], "Atividade": _atividade(vis),
-        "Porte": vis["Porte Receita"].map(lambda p: NOME_PORTE_RECEITA.get(p, p)),
+        "Porte": vis["Porte"],
         "Município": vis["Município"], "Bairro": vis["Bairro"],
         "Unidade SESI": vis["Unidade SESI"], "Unidade SENAI": vis["Unidade SENAI"], "Atenção": vis["Alerta"],
     }).sort_values("Nota", ascending=False)

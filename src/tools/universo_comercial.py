@@ -29,9 +29,13 @@ ORDEM_PORTE_RECEITA = ["MICRO EMPRESA", "PEQUENO PORTE", "DEMAIS"]
 MAPA_PORTE_FIEA = {"micro": "Micro", "pequena": "EPP", "epp": "EPP", "pequeno": "EPP",
                    "média": "Média", "media": "Média", "grande": "Demais", "demais": "Demais"}
 COLUNAS = ["cnpj_basico", "Razão social", "Categoria", "Segmento", "CNAE", "Município", "Bairro",
-           "Porte Receita", "Porte FIEA", "Unidade SESI", "Unidade SENAI", "unidades",
+           "Porte", "Porte Receita", "Porte FIEA", "Unidade SESI", "Unidade SENAI", "unidades",
            "Relacionamento", "Situação", "Entidade", "Última compra",
            "Nota", "Potencial", "Motivo", "Alerta"]
+
+
+FIEA_PARA_4 = {"Micro": "MICRO", "EPP": "PEQUENA", "Média": "MÉDIA", "Demais": "GRANDE"}
+ORDEM_PORTE = ["MICRO", "PEQUENA", "MÉDIA", "GRANDE"]
 
 
 def porte_fiea_padrao(valor: str) -> str:
@@ -117,6 +121,11 @@ def montar(mestre: pd.DataFrame, ampliada: pd.DataFrame, porte_fiea: pd.DataFram
     pf = porte_fiea.drop_duplicates("cnpj_basico").set_index("cnpj_basico")["porte_fiea"] \
         if porte_fiea is not None and not porte_fiea.empty else pd.Series(dtype=str)
     u["Porte FIEA"] = u["cnpj_basico"].map(pf).map(porte_fiea_padrao)
+    # Porte exibido: 4 classes (MICRO, PEQUENA, MÉDIA, GRANDE). Cadastro FIEA primeiro;
+    # senão colaboradores ou Receita (src/tools/porte.py).
+    from src.tools.porte import padronizar as _porte4
+    fiea4 = u["Porte FIEA"].map(FIEA_PARA_4).fillna("")
+    u["Porte"] = fiea4.where(fiea4.ne(""), _porte4(u["cnpj_basico"], u["Porte Receita"]))
 
     pot = potencial if potencial is not None else pd.DataFrame()
     if not pot.empty:
@@ -151,7 +160,7 @@ def opcoes(serie: pd.Series, ordem: list[str] | None = None) -> list[str]:
 
 
 def filtrar(u: pd.DataFrame, *, unidades_sesi=None, unidades_senai=None, categorias=None, segmentos=None,
-            regua="FIEA", portes=None, municipios=None, bairros=None, busca="") -> pd.DataFrame:
+            regua="Porte", portes=None, municipios=None, bairros=None, busca="") -> pd.DataFrame:
     m = pd.Series(True, index=u.index)
     if unidades_sesi:
         m &= u["Unidade SESI"].isin(unidades_sesi)
@@ -162,7 +171,7 @@ def filtrar(u: pd.DataFrame, *, unidades_sesi=None, unidades_senai=None, categor
     if segmentos:
         m &= u["Segmento"].isin(segmentos)
     if portes:
-        m &= u["Porte FIEA" if regua == "FIEA" else "Porte Receita"].isin(portes)
+        m &= u[{"FIEA": "Porte FIEA", "Receita": "Porte Receita"}.get(regua, "Porte")].isin(portes)
     if municipios:
         m &= u["Município"].isin(municipios)
     if bairros:
@@ -175,4 +184,4 @@ def filtrar(u: pd.DataFrame, *, unidades_sesi=None, unidades_senai=None, categor
 
 
 __all__ = ["montar", "filtrar", "opcoes", "carregar_potencial", "carregar_mei", "CLIENTE", "MERCADO", "ORDEM_FAIXAS",
-           "ORDEM_PORTE_FIEA", "ORDEM_PORTE_RECEITA", "A_CONFIRMAR"]
+           "ORDEM_PORTE_FIEA", "ORDEM_PORTE_RECEITA", "ORDEM_PORTE", "A_CONFIRMAR"]
