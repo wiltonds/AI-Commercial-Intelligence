@@ -1,0 +1,40 @@
+# PNCP · BIM em editais de obra (AL) — execução manual.
+# Lista as contratações de obra e serviço de engenharia publicadas no PNCP por órgãos de AL
+# e lê edital/termo de referência para ver quantas pedem BIM. Grava em data/processed e faz commit.
+# Para rodar: aba Actions > "PNCP · BIM em editais de obra" > Run workflow.
+name: PNCP · BIM em editais de obra
+
+on:
+  workflow_dispatch:
+    inputs:
+      meses:
+        description: "Quantos meses para trás"
+        default: "12"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: radar
+  cancel-in-progress: false
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Instalar dependências
+        run: pip install pandas requests pypdf
+      - name: Coletar editais e ler documentos
+        run: python jobs/coletar_pncp_bim.py --meses "${{ github.event.inputs.meses || '12' }}"
+      - name: Gravar resultado
+        run: |
+          git config user.name "radar-bot"
+          git config user.email "radar-bot@users.noreply.github.com"
+          git add -f data/processed/PNCP_OBRAS_AL.csv data/processed/PNCP_BIM_RESUMO.csv
+          git commit -m "PNCP: editais de obra em AL e uso de BIM" || echo "sem mudanças"
+          git pull --rebase origin master && git push
