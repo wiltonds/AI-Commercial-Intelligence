@@ -63,9 +63,9 @@ def janelas(meses: int, hoje: date) -> list[tuple[str, str]]:
     return out
 
 
-def listar(s, uf: str, meses: int) -> list[dict]:
+def listar(s, uf: str, meses: int, modalidades=None) -> list[dict]:
     linhas = []
-    for mod in MODALIDADES:
+    for mod in (modalidades or MODALIDADES):
         for ini, fim in janelas(meses, date.today()):
             pagina = 1
             while True:
@@ -81,7 +81,7 @@ def listar(s, uf: str, meses: int) -> list[dict]:
                 if not j.get("paginasRestantes"):
                     break
                 pagina += 1
-            print(f"{MODALIDADES[mod]} {ini}-{fim}: {len(linhas)} obras até aqui")
+            print(f"{MODALIDADES[mod]} {ini}-{fim}: {len(linhas)} obras até aqui", flush=True)
     return linhas
 
 
@@ -150,21 +150,35 @@ def main():
     ap.add_argument("--meses", type=int, default=12)
     ap.add_argument("--uf", default="AL")
     ap.add_argument("--sem-docs", action="store_true")
+    ap.add_argument("--docs-modalidades", default="4,5,6,8", help="modalidades cujos documentos são lidos")
+    ap.add_argument("--docs-valor-min", type=float, default=0, help="só lê documentos de editais acima deste valor")
+    ap.add_argument("--docs-max", type=int, default=0, help="máximo de editais com documentos lidos (0 = todos)")
+    ap.add_argument("--modalidades", default="4,5,6,8")
     a = ap.parse_args()
     s = requests.Session()
     s.headers["User-Agent"] = "Radar-Oportunidades-AL (dados abertos)"
-    linhas = listar(s, a.uf, a.meses)
+    mods_docs = {int(x) for x in a.docs_modalidades.split(",") if x.strip()}
+    linhas = listar(s, a.uf, a.meses, [int(x) for x in a.modalidades.split(",") if x.strip()])
     df = pd.DataFrame(linhas).drop_duplicates("numero_controle") if linhas else pd.DataFrame()
     if df.empty:
         print("Nenhuma contratação de obra encontrada (ou API indisponível).")
         sys.exit(1)
     print(f"{len(df)} contratações de obra/engenharia em {a.uf}. Lendo documentos: {not a.sem_docs}")
-    extra = []
-    for i, ln in enumerate(df.to_dict("records"), 1):
-        extra.append({"docs_lidos": 0, "bim_no_documento": False, "termos_bim": "", "trecho_bim": "", "documentos": ""}
-                     if a.sem_docs else ler_documentos(s, ln))
-        if i % 50 == 0:
-            print(f"  {i}/{len(df)} lidos")
+    from src.sinais.pncp_bim import MODALIDADES as M
+    nome_mod = {v: k for k, v in M.items()}
+    valor = pd.to_numeric(df["valor_estimado"], errors="coerce").fillna(0)
+    ler = (~pd.Series(a.sem_docs, index=df.index)) & df["modalidade"].map(nome_mod).isin(mods_docs) \
+        & (valor >= a.docs_valor_min)
+    if a.docs_max:
+        ler &= valor.where(ler).rank(ascending=False, method="first").le(a.docs_max)
+    print(f"Documentos serão lidos em {int(ler.sum())} editais.", flush=True)
+    vazio = {"docs_lidos": 0, "bim_no_documento": False, "termos_bim": "", "trecho_bim": "", "documentos": ""}
+    extra, feitos = [], 0
+    for ln, sim in zip(df.to_dict("records"), ler):
+        extra.append(ler_documentos(s, ln) if sim else dict(vazio))
+        feitos += bool(sim)
+        if sim and feitos % 25 == 0:
+            print(f"  {feitos}/{int(ler.sum())} lidos", flush=True)
     df = pd.concat([df.reset_index(drop=True), pd.DataFrame(extra)], axis=1)
     df = df.drop(columns=[c for c in df.columns if c.startswith("_")]).sort_values("data_publicacao", ascending=False)
     df.to_csv(SAIDA, index=False, encoding="utf-8-sig")
