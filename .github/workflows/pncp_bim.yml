@@ -10,6 +10,9 @@ on:
       meses:
         description: "Quantos meses para trás"
         default: "12"
+      rapido:
+        description: "Rápido: lê documentos só das concorrências ≥ R$ 1 mi (máx. 120)"
+        default: "sim"
 
 permissions:
   contents: write
@@ -30,7 +33,12 @@ jobs:
       - name: Instalar dependências
         run: pip install pandas requests pypdf
       - name: Coletar editais e ler documentos
-        run: python jobs/coletar_pncp_bim.py --meses "${{ github.event.inputs.meses || '12' }}"
+        run: |
+          if [ "${{ github.event.inputs.rapido }}" = "sim" ]; then
+            python -u jobs/coletar_pncp_bim.py --meses "${{ github.event.inputs.meses || '12' }}" --docs-modalidades 4,5 --docs-valor-min 1000000 --docs-max 120
+          else
+            python -u jobs/coletar_pncp_bim.py --meses "${{ github.event.inputs.meses || '12' }}"
+          fi
       - name: Gravar resultado
         run: |
           git config user.name "radar-bot"
